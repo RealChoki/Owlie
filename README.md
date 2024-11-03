@@ -16,11 +16,17 @@ The assistant's responses are customized to fit the HTW Berlin course's curricul
 
 ```plaintext
 ├── data/
-│   └── [Lecture Transcripts] : Contains lecture scripts and questions on various topics in "Grundlagen der Programmierung"
-├── main.py                   : Main script to run the assistant and manage interactions
-├── .env                       : Environment file with the OpenAI API key
-├── README.md                  : Project documentation
-└── requirements.txt           : Dependencies for setting up the environment
+│   └── [Lecture Transcripts]      : Contains lecture scripts and questions on various topics in "Grundlagen der Programmierung"
+├── openai/
+│   └── htwcodingmentor.py         : Core assistant script to initialize and manage interactions
+├── utils/
+│   └── clean_up.py                : Cleanup utility to manage OpenAI resources after each session
+├── main.py                        : Main script to run the assistant and manage interactions
+├── .env                           : Environment file with the OpenAI API key
+├── .gitignore                     : Gitignore file to exclude unnecessary files
+├── README.md                      : Project documentation
+└── requirements.txt               : Dependencies for setting up the environment
+
 ```
 
 ### Key Components
