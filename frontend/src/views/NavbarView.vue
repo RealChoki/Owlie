@@ -37,7 +37,6 @@
         />
         <button class="btn btn-outline-primary">
           <i class="fas fa-paper-plane"></i>
-          <!-- Send icon -->
         </button>
       </div>
     </div>

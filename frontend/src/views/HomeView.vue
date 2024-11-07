@@ -13,7 +13,6 @@
           />
         </div>
 
-        <!-- Action buttons -->
         <font-awesome-icon :icon="['fas', 'pen-to-square']" 
         class="pen-to-square"
         style="color: #5b5b5b;"
@@ -23,23 +22,18 @@
     </nav>
 
     <div class="container my-4 logo-container">
-      <img class="original-logo" src="../components/icons/ChatGPT.png" />
-      <div class="arrow-container">
-        <div class="arrow-text">don't sue</div>
-        <font-awesome-icon :icon="['fas', 'arrow-right-long']" class="arrow" />
-      </div>
+      <img class="" src="../components/icons/dontSueChatGPT.png" />
+      
     </div>
 
     <!-- Sticky input bar at the bottom -->
-    <div class="d-flex gap-2 sticky-footer mb-3">
-      <!-- Plus icon button with circular style -->
+    <div class="d-flex justify-content-center gap-2 sticky-footer mb-3">
       <font-awesome-icon
         :icon="['fas', 'plus']"
         class="cursor-pointer btn-circle"
         style="background-color: #5b5b5b;"
       />
 
-      <!-- Message input -->
       <input
         type="text"
         class="custom-input"
@@ -86,11 +80,6 @@ const message = ref("");
 </script>
 
 <style scoped>
-/* Optional: Additional styling for specific components */
-.container {
-  max-width: 800px;
-  position: relative;
-}
 
 .custom-input {
   width: 80%;
@@ -134,12 +123,12 @@ const message = ref("");
   align-items: center;
   height: 60vh;
   position: relative;
+  top: 0;
+  bottom: 0;
+  left: -42px;
+  right: 0;
 }
 
-.original-logo {
-  width: 50px;
-  height: 50px;
-}
 
 .sticky-footer {
   position: fixed;
@@ -154,29 +143,6 @@ const message = ref("");
   display: flex;
   gap: 1rem;
   align-items: center;
-}
-
-.arrow-container {
-  position: absolute;
-  top: 43%; /* Adjust as needed */
-  left: 40%; /* Adjust as needed */
-  transform: translate(-50%, -50%); /* Adjust as needed */
-  display: flex;
-  align-items: center;
-}
-
-.arrow {
-  color: white;
-  font-size: 24px; /* Adjust as needed */
-  margin-right: 10px;
-  rotate: 45deg;
-}
-
-.arrow-text {
-  color: white;
-  font-size: 14px;
-  margin-top: -25px;
-  margin-right: 3px;
 }
 
 .pen-to-square {
