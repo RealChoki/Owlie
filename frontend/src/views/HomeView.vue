@@ -5,23 +5,29 @@
         class="container-fluid d-flex justify-content-between align-items-center"
       >
         <!-- Burger icon -->
-        <button class="btn btn-outline-secondary me-2">
-          <font-awesome-icon :icon="['fas', 'bars']" />
-        </button>
-        <!-- Action buttons -->
-        <div class="d-flex align-items-start">
-          <button class="btn btn-primary mb-2">
-            <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-          </button>
-          <button class="btn btn-outline-primary">
-            <font-awesome-icon :icon="['fas', 'leaf']" />
-          </button>
+        <img src="../components/icons/Menu.png" />
+        
+        <div class="calendar-days-background">
+          <font-awesome-icon :icon="['fas', 'calendar-days']"
+          class="calendar-days" 
+          />
         </div>
+
+        <!-- Action buttons -->
+        <font-awesome-icon :icon="['fas', 'pen-to-square']" 
+        class="pen-to-square"
+        style="color: #5b5b5b;"
+        />
+        
       </div>
     </nav>
 
-    <div class="container my-4" style="height: 60vh; overflow-y: auto">
-      <img class="origial-logo" src="../components/icons/ChatGPT.png" />
+    <div class="container my-4 logo-container">
+      <img class="original-logo" src="../components/icons/ChatGPT.png" />
+      <div class="arrow-container">
+        <div class="arrow-text">don't sue</div>
+        <font-awesome-icon :icon="['fas', 'arrow-right-long']" class="arrow" />
+      </div>
     </div>
 
     <!-- Sticky input bar at the bottom -->
@@ -30,7 +36,7 @@
       <font-awesome-icon
         :icon="['fas', 'plus']"
         class="cursor-pointer btn-circle"
-        style="background-color: #858585;"
+        style="background-color: #5b5b5b;"
       />
 
       <!-- Message input -->
@@ -68,10 +74,12 @@ import {
   faLeaf,
   faVolumeHigh,
   faPenToSquare,
+  faArrowRightLong,
+  faCalendarDays
 } from "@fortawesome/free-solid-svg-icons";
 
 // Add icons to the library
-library.add(faBars, faPlus, faArrowUp, faLeaf, faVolumeHigh, faPenToSquare);
+library.add(faBars, faPlus, faArrowUp, faLeaf, faVolumeHigh, faPenToSquare, faArrowRightLong, faCalendarDays);
 
 // Reactive state for message input
 const message = ref("");
@@ -81,6 +89,7 @@ const message = ref("");
 /* Optional: Additional styling for specific components */
 .container {
   max-width: 800px;
+  position: relative;
 }
 
 .custom-input {
@@ -119,13 +128,15 @@ const message = ref("");
   font-size: 1rem;
 }
 
-.origial-logo {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+  position: relative;
+}
+
+.original-logo {
   width: 50px;
   height: 50px;
 }
@@ -143,5 +154,48 @@ const message = ref("");
   display: flex;
   gap: 1rem;
   align-items: center;
+}
+
+.arrow-container {
+  position: absolute;
+  top: 43%; /* Adjust as needed */
+  left: 40%; /* Adjust as needed */
+  transform: translate(-50%, -50%); /* Adjust as needed */
+  display: flex;
+  align-items: center;
+}
+
+.arrow {
+  color: white;
+  font-size: 24px; /* Adjust as needed */
+  margin-right: 10px;
+  rotate: 45deg;
+}
+
+.arrow-text {
+  color: white;
+  font-size: 14px;
+  margin-top: -25px;
+  margin-right: 3px;
+}
+
+.pen-to-square {
+  font-size: 1.8rem;
+}
+
+.calendar-days {
+  font-size: 1.8rem;
+  color: #717171;
+}
+
+.calendar-days-background{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 5.5em;
+  height: 2.6em;
+  background: linear-gradient(90deg, white, #5b5b5b);
+  border-radius: 20px;
+  cursor: pointer;
 }
 </style>
