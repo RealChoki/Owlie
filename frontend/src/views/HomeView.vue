@@ -1,40 +1,51 @@
 <template>
   <div class="container">
+    <!-- Navbar and menu section (existing code) -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
       <div
         class="container-fluid d-flex justify-content-between align-items-center"
       >
-        <!-- Burger icon -->
         <img
           src="../components/icons/Menu.png"
           style="cursor: pointer"
+          ref="menuToggleRef"
           @click="toggleBurgerMenu"
         />
-
         <div class="calendar-days-background">
           <font-awesome-icon
             :icon="['fas', 'calendar-days']"
             class="calendar-days"
           />
         </div>
-
         <font-awesome-icon
           :icon="['fas', 'pen-to-square']"
           :class="{ 'pen-to-square': true, 'blur-effect': isOpenBurgerMenu }"
           style="color: #5b5b5b; cursor: pointer"
-          @click="reloadPage"
+          @click="isOpenBurgerMenu ? null : reloadPage"
         />
       </div>
     </nav>
 
-    <div class="container my-4 logo-container">
+    <!-- Logo section (existing code) -->
+    <div v-if="chatBubbles.length === 0" class="container my-4 logo-container">
       <img class="" src="../components/icons/dontSueChatGPT.png" />
+    </div>
+
+    <!-- Chat bubble container (new addition) -->
+    <div class="chat-bubble-container">
+      <div
+        v-for="(bubble, index) in chatBubbles"
+        :key="index"
+        class="chat-bubble"
+      >
+        {{ bubble }}
+      </div>
     </div>
 
     <!-- Sticky input bar at the bottom -->
     <div class="sticky-footer navbar navbar-expand-lg navbar-light">
       <div
-        class="container-fluid d-flex justify-content-center align-items-start gap-2"
+        class="container-fluid d-flex justify-content-center align-items-center gap-2"
       >
         <font-awesome-icon
           :icon="['fas', 'plus']"
@@ -42,19 +53,28 @@
           style="background-color: #5b5b5b"
         />
 
-        <textarea
-          :class="{ 'custom-input': true, 'blur-effect': isOpenBurgerMenu }"
-          placeholder="Type a message..."
-          aria-label="Message input"
-          v-model="message"
-          @input="resizeTextarea"
-        ></textarea>
+        <div class="textarea-container">
+          <textarea
+            :class="{ 'custom-input': true, 'blur-effect': isOpenBurgerMenu }"
+            placeholder="Type a message..."
+            aria-label="Message input"
+            v-model="message"
+            @input="resizeTextarea"
+          ></textarea>
+          <font-awesome-icon
+            v-if="lineCount >= 3"
+            :icon="['fas', 'up-right-and-down-left-from-center']"
+            class="top-right-icon"
+            @click="toggleOverlay"
+          />
+        </div>
 
         <div class="input-actions align-bottom">
           <font-awesome-icon
             v-if="message"
             :icon="['fas', 'arrow-up']"
             class="cursor-pointer btn-circle bg-light align-bottom"
+            @click="sendMessage"
           />
           <font-awesome-icon
             v-else
@@ -63,17 +83,13 @@
               'cursor-pointer btn-circle bg-light align-bottom': true,
               'blur-effect': isOpenBurgerMenu,
             }"
-          />
-          <font-awesome-icon
-            v-if="lineCount >= 3"
-            :icon="['fas', 'up-right-and-down-left-from-center']"
-            class="align-bottom custom-expand-btn"
-            @click="toggleOverlay"
+            @click="isOpenBurgerMenu ? null : null"
           />
         </div>
       </div>
     </div>
   </div>
+
   <!-- Full-screen overlay -->
   <div v-if="isOverlayVisible" class="full-screen-overlay">
     <div class="height-100 p-2" style="background-color: #232323">
@@ -85,7 +101,6 @@
             class="collapse-icon"
           />
         </div>
-
         <textarea
           class="full-screen-textarea"
           style="background-color: #232323"
@@ -96,9 +111,13 @@
       </div>
     </div>
   </div>
+
+  <!-- Burger menu (existing code) -->
   <div
     v-if="isOpenBurgerMenu"
-    class="burger-menu-open p-3 bg-black rounded shadow-sm">
+    ref="burgerMenuRef"
+    class="burger-menu-open p-3 bg-black rounded shadow-sm"
+  >
     <div class="search-container">
       <input
         type="text"
@@ -134,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -167,11 +186,12 @@ library.add(
 );
 // Reactive state for message input
 const message = ref("");
-
+const chatBubbles = ref<string[]>([]);
 const isOverlayVisible = ref(false);
 const isOpenBurgerMenu = ref(false);
 const isSearchFocused = ref(false);
-
+const burgerMenuRef = ref(null);
+const menuToggleRef = ref(null);
 const searchQuery = ref("");
 
 // List of modules
@@ -184,7 +204,13 @@ const modules = ref([
   "Betriebssysteme",
 ]);
 
-// Computed property to filter modules based on search query
+const sendMessage = () => {
+  if (message.value.trim()) {
+    chatBubbles.value.push(message.value);
+    message.value = "";
+  }
+};
+
 const filteredModules = computed(() => {
   return modules.value.filter((module) =>
     module.toLowerCase().includes(searchQuery.value.toLowerCase())
@@ -198,6 +224,28 @@ const toggleOverlay = () => {
 const toggleBurgerMenu = () => {
   isOpenBurgerMenu.value = !isOpenBurgerMenu.value;
 };
+
+const handleClickOutside = (event: any) => {
+  const menu = burgerMenuRef.value as HTMLElement | null;
+  const toggleButton = menuToggleRef.value as HTMLElement | null;
+  if (
+    isOpenBurgerMenu.value &&
+    menu &&
+    toggleButton &&
+    !menu.contains(event.target) &&
+    !toggleButton.contains(event.target)
+  ) {
+    isOpenBurgerMenu.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 
 const lineCount = computed(() => {
   return message.value.split("\n").length;
@@ -215,6 +263,15 @@ const reloadPage = () => {
 </script>
 
 <style scoped>
+.container {
+  background-color: #131213;
+}
+
+.sticky-top,
+.sticky-footer {
+  background-color: #131213;
+}
+
 .custom-input::placeholder {
   color: white;
   padding: 0px;
@@ -261,8 +318,15 @@ const reloadPage = () => {
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 1rem;
+  padding-bottom: 1rem;
   z-index: 1000;
+}
+
+.textarea-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .sticky-footer .input-container {
@@ -285,7 +349,7 @@ const reloadPage = () => {
   justify-content: center;
   align-items: center;
   width: 5.5em;
-  height: 2.6em;
+  height: 2.3em;
   background: linear-gradient(90deg, white, #5b5b5b);
   border-radius: 20px;
   cursor: pointer;
@@ -304,12 +368,19 @@ const reloadPage = () => {
   height: 45px;
   max-height: 200px;
   resize: none;
-  padding-top: 8px;
+  padding-top: 9px;
+  padding-bottom: 9px;
   padding-left: 15px;
 }
 
-.input-actions {
-  position: relative;
+.top-right-icon {
+  position: absolute;
+  top: 15px; /* Adjust as needed */
+  right: 15px; /* Adjust as needed */
+  font-size: 1rem;
+  color: white; /* Icon color */
+  cursor: pointer;
+  z-index: 10; /* Ensure the icon is above the textarea */
 }
 
 .collapse-icon {
@@ -327,6 +398,10 @@ const reloadPage = () => {
   right: 14px;
   top: -27px;
   cursor: pointer;
+}
+
+.textarea-container {
+  position: relative;
 }
 
 .full-screen-textarea {
@@ -429,5 +504,26 @@ ul.p-0 {
 
 .blur-effect {
   filter: blur(1.5px);
+  cursor: default !important;
+  pointer-events: none;
+}
+
+.chat-bubble-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px;
+  padding-bottom: 80px; /* Space for input area */
+}
+
+.chat-bubble {
+  background-color: #1a1a1b;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 20px;
+  max-width: 85%;
+  word-wrap: break-word;
+  align-self: flex-end; /* Align to the right side for user messages */
+  box-shadow: 0 0px 10px #5b5b5b;
 }
 </style>
