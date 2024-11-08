@@ -5,10 +5,13 @@
         class="container-fluid d-flex justify-content-between align-items-center"
       >
         <!-- Burger icon -->
-        <img src="../components/icons/Menu.png"
-          style="cursor: pointer;" />
+        <img
+          src="../components/icons/Menu.png"
+          style="cursor: pointer"
+          @click="toggleBurgerMenu"
+        />
 
-        <div class="calendar-days-background glow-on-hover">
+        <div class="calendar-days-background">
           <font-awesome-icon
             :icon="['fas', 'calendar-days']"
             class="calendar-days"
@@ -17,8 +20,8 @@
 
         <font-awesome-icon
           :icon="['fas', 'pen-to-square']"
-          class="pen-to-square"
-          style="color: #5b5b5b; cursor: pointer;"
+          :class="{ 'pen-to-square': true, 'blur-effect': isOpenBurgerMenu }"
+          style="color: #5b5b5b; cursor: pointer"
           @click="reloadPage"
         />
       </div>
@@ -40,7 +43,7 @@
         />
 
         <textarea
-          class="custom-input"
+          :class="{ 'custom-input': true, 'blur-effect': isOpenBurgerMenu }"
           placeholder="Type a message..."
           aria-label="Message input"
           v-model="message"
@@ -56,9 +59,11 @@
           <font-awesome-icon
             v-else
             :icon="['fas', 'volume-high']"
-            class="cursor-pointer btn-circle bg-light align-bottom"
+            :class="{
+              'cursor-pointer btn-circle bg-light align-bottom': true,
+              'blur-effect': isOpenBurgerMenu,
+            }"
           />
-          <!-- </transition> -->
           <font-awesome-icon
             v-if="lineCount >= 3"
             :icon="['fas', 'up-right-and-down-left-from-center']"
@@ -91,6 +96,41 @@
       </div>
     </div>
   </div>
+  <div
+    v-if="isOpenBurgerMenu"
+    class="burger-menu-open p-3 bg-black rounded shadow-sm">
+    <div class="search-container">
+      <input
+        type="text"
+        v-model="searchQuery"
+        class="burger-menu-search-bar w-100"
+        placeholder="Search modules..."
+        @focus="isSearchFocused = true"
+        @blur="isSearchFocused = false"
+      />
+      <font-awesome-icon
+        :icon="['fas', 'magnifying-glass']"
+        class="magnifying-glass"
+        style="color: #5b5b5b"
+        :class="{ 'text-white': isSearchFocused }"
+      />
+      <img
+        src="../components/icons/Menu gray.png"
+        style="cursor: pointer"
+        class="ms-3"
+        @click="toggleBurgerMenu"
+      />
+    </div>
+    <ul class="p-0 mt-3">
+      <li
+        v-for="(module, index) in filteredModules"
+        :key="index"
+        class="list-item-hover rounded text-white py-1"
+      >
+        <p class="m-0 py-2 px-2">{{ module }}</p>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -108,6 +148,7 @@ import {
   faCalendarDays,
   faUpRightAndDownLeftFromCenter,
   faDownLeftAndUpRightToCenter,
+  faMagnifyingGlass,
 } from "@fortawesome/free-solid-svg-icons";
 
 // Add icons to the library
@@ -121,16 +162,41 @@ library.add(
   faArrowRightLong,
   faCalendarDays,
   faUpRightAndDownLeftFromCenter,
-  faDownLeftAndUpRightToCenter
+  faDownLeftAndUpRightToCenter,
+  faMagnifyingGlass
 );
 // Reactive state for message input
 const message = ref("");
 
 const isOverlayVisible = ref(false);
+const isOpenBurgerMenu = ref(false);
+const isSearchFocused = ref(false);
+
+const searchQuery = ref("");
+
+// List of modules
+const modules = ref([
+  "Grundlagen der Programmierung",
+  "Statistik",
+  "Unternehmenssoftware",
+  "Datenbanktechnologien",
+  "Webentwicklung",
+  "Betriebssysteme",
+]);
+
+// Computed property to filter modules based on search query
+const filteredModules = computed(() => {
+  return modules.value.filter((module) =>
+    module.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
 
 const toggleOverlay = () => {
   isOverlayVisible.value = !isOverlayVisible.value;
-  console.log(isOverlayVisible.value);
+};
+
+const toggleBurgerMenu = () => {
+  isOpenBurgerMenu.value = !isOpenBurgerMenu.value;
 };
 
 const lineCount = computed(() => {
@@ -298,8 +364,70 @@ const reloadPage = () => {
   z-index: 9999;
 }
 
+.burger-menu-open {
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 80vw;
+  z-index: 9999;
+}
+
+.burger-menu-search-bar {
+  background-color: #232323;
+  border: none;
+  color: white;
+  border-radius: 25px;
+  height: 45px;
+  max-height: 200px;
+  padding-left: 40px;
+}
+
+.burger-menu-search-bar::placeholder {
+  padding: 0px;
+  margin: 0px;
+}
+
+.burger-menu-search-bar:focus::placeholder {
+  color: white;
+}
+
+.burger-menu-search-bar:focus {
+  outline: none;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.magnifying-glass {
+  position: absolute;
+  left: 15px;
+  top: 15px;
+}
+
+.list-item-hover {
+  list-style-type: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.list-item-hover:hover {
+  background-color: #444;
+  cursor: pointer;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
 
+ul.p-0 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.blur-effect {
+  filter: blur(1.5px);
+}
 </style>
