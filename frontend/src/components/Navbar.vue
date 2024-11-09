@@ -20,26 +20,17 @@ import { ref, defineEmits } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPenToSquare, faCalendarDays } from '@fortawesome/free-solid-svg-icons'
+library.add(faPenToSquare, faCalendarDays)
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean
 })
-// Add icons to the library
-library.add(faPenToSquare, faCalendarDays)
-// Props or References
 const menuToggleRef = ref(null)
 const isOpenBurgerMenu = ref(false)
-
-// Methods
-// const toggleBurgerMenu = () => {
-//   isOpenBurgerMenu.value = !isOpenBurgerMenu.value
-//   console.log('toggleBurgerMenu', isOpenBurgerMenu.value)
-// }
 
 const emit = defineEmits(['toggleBurgerMenu'])
 
 const toggleBurgerMenu = () => {
-  // Emit the event to the parent, toggling the burger menu
   emit('toggleBurgerMenu', !props.isOpenBurgerMenu)
 }
 

@@ -15,7 +15,13 @@
         style="color: #5b5b5b"
         :class="{ 'text-white': isSearchFocused }"
       />
-      <img src="../components/icons/Menu gray.png" style="cursor: pointer" class="ms-3" @click="toggleBurgerMenu" />
+      <!-- Add event to close the burger menu -->
+      <img 
+        src="../components/icons/Menu gray.png" 
+        style="cursor: pointer" 
+        class="ms-3" 
+        @click="closeBurgerMenu" 
+      />
     </div>
     <ul class="p-0 mt-3">
       <li v-for="(module, index) in filteredModules" :key="index" class="list-item-hover rounded text-white py-1">
@@ -32,24 +38,34 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 library.add(faMagnifyingGlass)
 
-// State
-const isOpenBurgerMenu = ref(false)
+// Props for burger menu visibility (received from the parent)
+const props = defineProps({
+  isOpenBurgerMenu: Boolean
+})
+
+const emit = defineEmits(['closeBurgerMenu'])
+
 const searchQuery = ref('')
 const isSearchFocused = ref(false)
 
-// Mock data for modules
-const modules = ref(['Module 1', 'Module 2', 'Module 3'])
+const modules = ref([
+  'Grundlagen der Programmierung',
+  'Statistik',
+  'Unternehmenssoftware',
+  'Datenbanktechnologien',
+  'Webentwicklung',
+  'Betriebssysteme'
+])
 
-// Computed property for filtered module list
 const filteredModules = computed(() =>
   modules.value.filter((module) => module.toLowerCase().includes(searchQuery.value.toLowerCase()))
 )
 
-// Method to toggle burger menu
-function toggleBurgerMenu() {
-  isOpenBurgerMenu.value = !isOpenBurgerMenu.value
+function closeBurgerMenu() {
+  emit('closeBurgerMenu')
 }
 </script>
+
 <style scoped>
 .burger-menu-open {
   height: 100vh;

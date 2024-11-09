@@ -44,8 +44,9 @@
 import { ref, computed, defineEmits } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUpRightAndDownLeftFromCenter, faArrowUp, faVolumeHigh } from '@fortawesome/free-solid-svg-icons'
-library.add(faUpRightAndDownLeftFromCenter, faArrowUp, faVolumeHigh)
+import { faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh } from '@fortawesome/free-solid-svg-icons'
+  
+library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh)
 
 const emit = defineEmits(['toggle-overlay', 'send-message'])
 const message = ref('')
