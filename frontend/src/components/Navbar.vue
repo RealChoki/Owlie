@@ -2,8 +2,11 @@
   <nav class="navbar navbar-expand-lg navbar-light sticky-top">
     <div class="container-fluid d-flex justify-content-between align-items-center">
       <img src="../components/icons/Menu.png" style="cursor: pointer" ref="menuToggleRef" @click="toggleBurgerMenu" />
-      <div class="calendar-days-background">
-        <font-awesome-icon :icon="['fas', 'calendar-days']" class="calendar-days" />
+      <div class="d-flex flex-column align-items-center position-relative w-50">
+        <div class="calendar-days-background">
+          <font-awesome-icon :icon="['fas', 'calendar-days']" class="calendar-days" />
+        </div>
+        <p class="assistant-title">{{ props.selectedModule }}</p>
       </div>
       <font-awesome-icon
         :icon="['fas', 'pen-to-square']"
@@ -23,11 +26,11 @@ import { faPenToSquare, faCalendarDays } from '@fortawesome/free-solid-svg-icons
 library.add(faPenToSquare, faCalendarDays)
 
 const props = defineProps({
-  isOpenBurgerMenu: Boolean
+  isOpenBurgerMenu: Boolean,
+  selectedModule: String  // Add selectedModule prop
 })
-const menuToggleRef = ref(null)
-const isOpenBurgerMenu = ref(false)
 
+const menuToggleRef = ref(null)
 const emit = defineEmits(['toggleBurgerMenu'])
 
 const toggleBurgerMenu = () => {
@@ -68,5 +71,17 @@ const reloadPage = () => {
   filter: blur(1.5px);
   cursor: default !important;
   pointer-events: none;
+}
+
+.assistant-title {
+  background: linear-gradient(90deg, white, #5b5b5b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 12px;
+  margin: 0;
+  position: absolute;
+  bottom: -23px;
+  font-weight: bold;
+  white-space: nowrap;
 }
 </style>

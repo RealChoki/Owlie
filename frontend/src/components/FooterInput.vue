@@ -32,7 +32,7 @@
         :icon="['fas', 'volume-high']"
         :class="{
           'cursor-pointer btn-circle bg-light align-bottom': true,
-          'blur-effect': isOpenBurgerMenu
+          'blur-effect': isOpenBurgerMenu,
         }"
         @click="isOpenBurgerMenu ? null : null"
       />
@@ -41,107 +41,121 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineEmits } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh } from '@fortawesome/free-solid-svg-icons'
-  
-library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh)
+import { ref, defineEmits, computed } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faUpRightAndDownLeftFromCenter,
+  faPlus,
+  faArrowUp,
+  faVolumeHigh,
+} from "@fortawesome/free-solid-svg-icons";
 
-const emit = defineEmits(['toggle-overlay', 'send-message'])
-const message = ref('')
-const isOpenBurgerMenu = ref(false)
-const lineCount = computed(() => message.value.split('\n').length)
+import { sendMessage as sendChatMessage, getMessage, clearMessage } from '../services/chatService'; // Use the service directly
+
+library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh);
+
+const props = defineProps({
+  isExpandedInput: Boolean,
+  isOpenBurgerMenu: Boolean,
+});
+
+const emit = defineEmits(["toggle-overlay", "send-message"]);
+const message = ref('');
+
+const lineCount = computed(() => message.value.split("\n").length);
 
 function resizeTextarea(event: Event) {
-  const target = event.target as HTMLTextAreaElement
-  target.style.height = '45px'
-  target.style.height = `${Math.min(target.scrollHeight, 200)}px`
+  const target = event.target as HTMLTextAreaElement;
+  target.style.height = "45px";
+  target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
 }
 
-function toggleOverlay() {
-  // Emit an event to toggle overlay in the parent component
-  emit('toggle-overlay')
-}
+const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
 
 function sendMessage() {
   if (message.value.trim()) {
-    // Emit an event to send a message to the parent component
-    emit('send-message', message.value)
-    message.value = ''
+    sendChatMessage(message.value);
+    message.value = '';
   }
 }
 </script>
 
 <style scoped>
 .sticky-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding-bottom: 1rem;
-    background-color: #131213;
-    z-index: 1000;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding-bottom: 1rem;
+  background-color: #131213;
+  z-index: 1000;
 }
 
 .btn-circle {
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    max-width: 25px;
-    max-height: 25px;
-    min-width: 25px;
-    min-height: 25px;
-    padding: 0.5em;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  max-width: 25px;
+  max-height: 25px;
+  min-width: 25px;
+  min-height: 25px;
+  padding: 0.5em;
 }
 
 .textarea-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
 }
 
 .custom-input {
-    flex: 1;
-    background-color: #232323;
-    border: none;
-    color: white;
-    border-radius: 25px;
-    height: 45px;
-    max-height: 200px;
-    resize: none;
-    padding-top: 9px;
-    padding-bottom: 9px;
-    padding-left: 15px;
-    width: 100%;
+  flex: 1;
+  background-color: #232323;
+  border: none;
+  color: white;
+  border-radius: 25px;
+  height: 45px;
+  max-height: 200px;
+  resize: none;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  padding-left: 15px;
+  width: 100%;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.custom-input::-webkit-scrollbar {
+  display: none;
 }
 
 .custom-input::placeholder {
-    color: white;
+  color: white;
 }
 
 .custom-input:focus {
-    outline: none;
+  outline: none;
 }
 
 .top-right-icon {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 1rem;
-    color: white;
-    cursor: pointer;
-    z-index: 10;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 1rem;
+  color: white;
+  cursor: pointer;
+  z-index: 10;
 }
 
 .align-bottom {
-    align-self: flex-end;
+  align-self: flex-end;
 }
 
 .blur-effect {
-    filter: blur(1.5px);
-    cursor: default !important;
-    pointer-events: none;
+  filter: blur(1.5px);
+  cursor: default !important;
+  pointer-events: none;
 }
 </style>

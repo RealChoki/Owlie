@@ -5,7 +5,7 @@
         <div class="d-flex justify-content-end mt-2 mb-3">
           <font-awesome-icon
             :icon="['fas', 'down-left-and-up-right-to-center']"
-            @click.stop="toggleOverlay"
+            @click.stop="closeExpandedInput"
             class="collapse-icon"
           />
         </div>
@@ -28,13 +28,16 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faDownLeftAndUpRightToCenter } from '@fortawesome/free-solid-svg-icons'
 library.add(faDownLeftAndUpRightToCenter)
 
-// Props or Local State
-const isExpandedInputVisible = ref(false)
+const props = defineProps({
+  isExpandedInput: Boolean
+})
+
+const emit = defineEmits(['closeExpandedInput'])
+
 const message = ref('')
 
-// Method to toggle the overlay
-function toggleOverlay() {
-  isExpandedInputVisible.value = !isExpandedInputVisible.value
+function closeExpandedInput() {
+  emit('closeExpandedInput')
 }
 </script>
 
@@ -46,7 +49,7 @@ function toggleOverlay() {
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.8);
-  z-index: 1000;
+  z-index: 1020;
 }
 
 .collapse-icon {
@@ -65,6 +68,13 @@ function toggleOverlay() {
   padding: 1rem;
   font-size: 1rem;
   resize: none;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.full-screen-textarea::-webkit-scrollbar {
+  display: none;
 }
 
 </style>

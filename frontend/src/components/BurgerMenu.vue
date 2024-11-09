@@ -8,12 +8,15 @@
         placeholder="Search modules..."
         @focus="isSearchFocused = true"
         @blur="isSearchFocused = false"
+        :class="{ 'input-focused': isSearchFocused }"
+        ref="searchInput"
       />
       <font-awesome-icon
         :icon="['fas', 'magnifying-glass']"
         class="magnifying-glass"
-        style="color: #5b5b5b"
         :class="{ 'text-white': isSearchFocused }"
+        @click="focusInput"
+        style="cursor: pointer" 
       />
       <!-- Add event to close the burger menu -->
       <img 
@@ -23,11 +26,16 @@
         @click="closeBurgerMenu" 
       />
     </div>
-    <ul class="p-0 mt-3">
-      <li v-for="(module, index) in filteredModules" :key="index" class="list-item-hover rounded text-white py-1">
+    <ul class="p-0 mt-3" style="cursor: pointer">
+      <li
+        v-for="(module, index) in filteredModules"
+        :key="index"
+        class="list-item-hover rounded text-white py-1"
+        @click="selectModule(module)"
+        >
         <p class="m-0 py-2 px-2">{{ module }}</p>
       </li>
-    </ul>
+  </ul>
   </div>
 </template>
 
@@ -47,6 +55,7 @@ const emit = defineEmits(['closeBurgerMenu'])
 
 const searchQuery = ref('')
 const isSearchFocused = ref(false)
+const searchInput = ref<HTMLInputElement | null>(null)
 
 const modules = ref([
   'Grundlagen der Programmierung',
@@ -57,12 +66,23 @@ const modules = ref([
   'Betriebssysteme'
 ])
 
+function selectModule(module: string) {
+  emit('moduleSelected', module)  // Emit the selected module to the parent
+  closeBurgerMenu()  // Close the menu after selecting the module
+}
+
 const filteredModules = computed(() =>
   modules.value.filter((module) => module.toLowerCase().includes(searchQuery.value.toLowerCase()))
 )
 
 function closeBurgerMenu() {
   emit('closeBurgerMenu')
+}
+
+function focusInput() {
+  if (searchInput.value) {
+    searchInput.value.focus()
+  }
 }
 </script>
 
@@ -82,13 +102,37 @@ function closeBurgerMenu() {
   border: none;
   border-radius: 20px;
   padding: 0.5rem;
+  padding-left: 2.6rem;
+}
+
+.burger-menu-search-bar:focus {
+  outline: none;
+}
+
+.burger-menu-search-bar::placeholder {
+  transition: color 0.1s ease; /* Smooth transition */
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
 .magnifying-glass {
   position: absolute;
-  right: 20px;
-  top: 13px;
   font-size: 1.2rem;
+  left: 15px;
+  color: #5b5b5b; /* Default color */
+  transition: color 0.1s ease; /* Smooth transition */
+}
+
+.text-white {
+  color: white !important;
+}
+
+.input-focused::placeholder {
+  color: white !important;
 }
 
 .list-item-hover {
@@ -98,12 +142,6 @@ function closeBurgerMenu() {
 
 .list-item-hover:hover {
   background-color: #414141;
-}
-
-.search-container {
-  display: flex;
-  align-items: center;
-  position: relative;
 }
 
 ul.p-0 {
