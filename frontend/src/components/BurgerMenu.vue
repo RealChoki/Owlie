@@ -48,11 +48,12 @@ function toggleBurgerMenu() {
 </script>
 <style scoped>
 .burger-menu-open {
+  height: 100vh;
   position: fixed;
-  top: 50px;
-  right: 20px;
-  width: 250px;
-  z-index: 1050;
+  top: 0;
+  left: 0;
+  width: 80vw;
+  z-index: 9999;
 }
 
 .burger-menu-search-bar {

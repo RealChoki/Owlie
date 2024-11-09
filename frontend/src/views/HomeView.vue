@@ -1,6 +1,6 @@
 <template>
   <div class="container d-flex flex-column min-vh-100">
-    <Navbar />
+    <Navbar :isOpenBurgerMenu="isOpenBurgerMenu" @toggleBurgerMenu="toggleBurgerMenu" />
     <!-- need to implement ai bubble first -->
     <ChatBubbleContainer />
     <div v-if="chatBubbles.length === 0" class="container my-4 logo-container">
@@ -58,6 +58,13 @@ const burgerMenuRef = ref(null)
 const menuToggleRef = ref(null)
 const searchQuery = ref('')
 
+
+// Toggle burger menu
+const toggleBurgerMenu = (newState: boolean) => {
+  isOpenBurgerMenu.value = newState
+  console.log('toggleBurgerMenu', isOpenBurgerMenu.value)
+}
+
 // List of modules
 const modules = ref([
   'Grundlagen der Programmierung',
@@ -83,9 +90,9 @@ const toggleOverlay = () => {
   isExpandedInputVisible.value = !isExpandedInputVisible.value
 }
 
-const toggleBurgerMenu = () => {
-  isOpenBurgerMenu.value = !isOpenBurgerMenu.value
-}
+// const toggleBurgerMenu = () => {
+//   isOpenBurgerMenu.value = !isOpenBurgerMenu.value
+// }
 
 const handleClickOutside = (event: any) => {
   const menu = burgerMenuRef.value as HTMLElement | null
