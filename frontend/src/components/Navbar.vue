@@ -61,4 +61,10 @@ const reloadPage = () => {
 .pen-to-square {
   font-size: 1.8rem;
 }
+
+.blur-effect {
+  filter: blur(1.5px);
+  cursor: default !important;
+  pointer-events: none;
+}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isOpenBurgerMenu" ref="burgerMenuRef" class="burger-menu-open p-3 bg-black rounded shadow-sm">
+  <div ref="burgerMenuRef" class="burger-menu-open p-3 bg-black rounded shadow-sm">
     <div class="search-container">
       <input
         type="text"
@@ -15,19 +15,10 @@
         style="color: #5b5b5b"
         :class="{ 'text-white': isSearchFocused }"
       />
-      <img
-        src="../components/icons/Menu gray.png"
-        style="cursor: pointer"
-        class="ms-3"
-        @click="toggleBurgerMenu"
-      />
+      <img src="../components/icons/Menu gray.png" style="cursor: pointer" class="ms-3" @click="toggleBurgerMenu" />
     </div>
     <ul class="p-0 mt-3">
-      <li
-        v-for="(module, index) in filteredModules"
-        :key="index"
-        class="list-item-hover rounded text-white py-1"
-      >
+      <li v-for="(module, index) in filteredModules" :key="index" class="list-item-hover rounded text-white py-1">
         <p class="m-0 py-2 px-2">{{ module }}</p>
       </li>
     </ul>
@@ -47,9 +38,7 @@ const modules = ref(['Module 1', 'Module 2', 'Module 3'])
 
 // Computed property for filtered module list
 const filteredModules = computed(() =>
-  modules.value.filter((module) =>
-    module.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
+  modules.value.filter((module) => module.toLowerCase().includes(searchQuery.value.toLowerCase()))
 )
 
 // Method to toggle burger menu
@@ -57,7 +46,6 @@ function toggleBurgerMenu() {
   isOpenBurgerMenu.value = !isOpenBurgerMenu.value
 }
 </script>
-
 <style scoped>
 .burger-menu-open {
   position: fixed;
@@ -82,7 +70,23 @@ function toggleBurgerMenu() {
   font-size: 1.2rem;
 }
 
+.list-item-hover {
+  list-style-type: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 .list-item-hover:hover {
   background-color: #414141;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+ul.p-0 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 </style>

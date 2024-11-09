@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isExpandedInputVisible" class="full-screen-overlay">
-    <div class="height-100 p-2" style="background-color: #232323">
+  <div class="full-screen-overlay">
+    <div class="h-100 p-2" style="background-color: #232323">
       <div class="container h-100 d-flex flex-column">
         <div class="d-flex justify-content-end mt-2 mb-3">
           <font-awesome-icon
@@ -23,6 +23,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faDownLeftAndUpRightToCenter } from '@fortawesome/free-solid-svg-icons'
+library.add(faDownLeftAndUpRightToCenter)
 
 // Props or Local State
 const isExpandedInputVisible = ref(false)
@@ -43,10 +47,6 @@ function toggleOverlay() {
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.8);
   z-index: 1000;
-}
-
-.height-100 {
-  height: 100%;
 }
 
 .collapse-icon {
