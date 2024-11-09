@@ -1,21 +1,10 @@
 <template>
-  <div class="container">
-    <!-- Navbar and menu section (existing code) -->
+  <div class="container d-flex flex-column min-vh-100">
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
-      <div
-        class="container-fluid d-flex justify-content-between align-items-center"
-      >
-        <img
-          src="../components/icons/Menu.png"
-          style="cursor: pointer"
-          ref="menuToggleRef"
-          @click="toggleBurgerMenu"
-        />
+      <div class="container-fluid d-flex justify-content-between align-items-center">
+        <img src="../components/icons/Menu.png" style="cursor: pointer" ref="menuToggleRef" @click="toggleBurgerMenu" />
         <div class="calendar-days-background">
-          <font-awesome-icon
-            :icon="['fas', 'calendar-days']"
-            class="calendar-days"
-          />
+          <font-awesome-icon :icon="['fas', 'calendar-days']" class="calendar-days" />
         </div>
         <font-awesome-icon
           :icon="['fas', 'pen-to-square']"
@@ -26,70 +15,59 @@
       </div>
     </nav>
 
-    <!-- Logo section (existing code) -->
     <div v-if="chatBubbles.length === 0" class="container my-4 logo-container">
       <img class="" src="../components/icons/dontSueChatGPT.png" />
     </div>
 
     <!-- Chat bubble container (new addition) -->
     <div class="chat-bubble-container">
-      <div
-        v-for="(bubble, index) in chatBubbles"
-        :key="index"
-        class="chat-bubble"
-      >
+      <div v-for="(bubble, index) in chatBubbles" :key="index" class="chat-bubble">
         {{ bubble }}
       </div>
     </div>
 
     <!-- Sticky input bar at the bottom -->
-    <div class="sticky-footer navbar navbar-expand-lg navbar-light">
-      <div
-        class="container-fluid d-flex justify-content-center align-items-center gap-2"
-      >
+    <div class="sticky-footer container-fluid d-flex align-items-end gap-2">
+      <font-awesome-icon
+        :icon="['fas', 'plus']"
+        class="cursor-pointer btn-circle align-bottom"
+        style="background-color: #5b5b5b"
+      />
+      <div class="textarea-container flex-grow-1">
+        <textarea
+          :class="{ 'custom-input': true, 'blur-effect': isOpenBurgerMenu }"
+          placeholder="Type a message..."
+          aria-label="Message input"
+          v-model="message"
+          @input="resizeTextarea"
+        ></textarea>
         <font-awesome-icon
-          :icon="['fas', 'plus']"
-          class="cursor-pointer btn-circle align-bottom"
-          style="background-color: #5b5b5b"
+          v-if="lineCount >= 3"
+          :icon="['fas', 'up-right-and-down-left-from-center']"
+          class="top-right-icon"
+          @click="toggleOverlay"
         />
-
-        <div class="textarea-container">
-          <textarea
-            :class="{ 'custom-input': true, 'blur-effect': isOpenBurgerMenu }"
-            placeholder="Type a message..."
-            aria-label="Message input"
-            v-model="message"
-            @input="resizeTextarea"
-          ></textarea>
-          <font-awesome-icon
-            v-if="lineCount >= 3"
-            :icon="['fas', 'up-right-and-down-left-from-center']"
-            class="top-right-icon"
-            @click="toggleOverlay"
-          />
-        </div>
-
-        <div class="input-actions align-bottom">
-          <font-awesome-icon
-            v-if="message"
-            :icon="['fas', 'arrow-up']"
-            class="cursor-pointer btn-circle bg-light align-bottom"
-            @click="sendMessage"
-          />
-          <font-awesome-icon
-            v-else
-            :icon="['fas', 'volume-high']"
-            :class="{
-              'cursor-pointer btn-circle bg-light align-bottom': true,
-              'blur-effect': isOpenBurgerMenu,
-            }"
-            @click="isOpenBurgerMenu ? null : null"
-          />
-        </div>
+      </div>
+      <div class="input-actions align-bottom d-flex gap-2">
+        <font-awesome-icon
+          v-if="message"
+          :icon="['fas', 'arrow-up']"
+          class="cursor-pointer btn-circle bg-light align-bottom"
+          @click="sendMessage"
+        />
+        <font-awesome-icon
+          v-else
+          :icon="['fas', 'volume-high']"
+          :class="{
+            'cursor-pointer btn-circle bg-light align-bottom': true,
+            'blur-effect': isOpenBurgerMenu
+          }"
+          @click="isOpenBurgerMenu ? null : null"
+        />
       </div>
     </div>
   </div>
-
+  
   <!-- Full-screen overlay -->
   <div v-if="isOverlayVisible" class="full-screen-overlay">
     <div class="height-100 p-2" style="background-color: #232323">
@@ -113,11 +91,7 @@
   </div>
 
   <!-- Burger menu (existing code) -->
-  <div
-    v-if="isOpenBurgerMenu"
-    ref="burgerMenuRef"
-    class="burger-menu-open p-3 bg-black rounded shadow-sm"
-  >
+  <div v-if="isOpenBurgerMenu" ref="burgerMenuRef" class="burger-menu-open p-3 bg-black rounded shadow-sm">
     <div class="search-container">
       <input
         type="text"
@@ -133,19 +107,10 @@
         style="color: #5b5b5b"
         :class="{ 'text-white': isSearchFocused }"
       />
-      <img
-        src="../components/icons/Menu gray.png"
-        style="cursor: pointer"
-        class="ms-3"
-        @click="toggleBurgerMenu"
-      />
+      <img src="../components/icons/Menu gray.png" style="cursor: pointer" class="ms-3" @click="toggleBurgerMenu" />
     </div>
     <ul class="p-0 mt-3">
-      <li
-        v-for="(module, index) in filteredModules"
-        :key="index"
-        class="list-item-hover rounded text-white py-1"
-      >
+      <li v-for="(module, index) in filteredModules" :key="index" class="list-item-hover rounded text-white py-1">
         <p class="m-0 py-2 px-2">{{ module }}</p>
       </li>
     </ul>
@@ -153,9 +118,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faBars,
   faPlus,
@@ -167,8 +132,8 @@ import {
   faCalendarDays,
   faUpRightAndDownLeftFromCenter,
   faDownLeftAndUpRightToCenter,
-  faMagnifyingGlass,
-} from "@fortawesome/free-solid-svg-icons";
+  faMagnifyingGlass
+} from '@fortawesome/free-solid-svg-icons'
 
 // Add icons to the library
 library.add(
@@ -183,51 +148,49 @@ library.add(
   faUpRightAndDownLeftFromCenter,
   faDownLeftAndUpRightToCenter,
   faMagnifyingGlass
-);
+)
 // Reactive state for message input
-const message = ref("");
-const chatBubbles = ref<string[]>([]);
-const isOverlayVisible = ref(false);
-const isOpenBurgerMenu = ref(false);
-const isSearchFocused = ref(false);
-const burgerMenuRef = ref(null);
-const menuToggleRef = ref(null);
-const searchQuery = ref("");
+const message = ref('')
+const chatBubbles = ref<string[]>([])
+const isOverlayVisible = ref(false)
+const isOpenBurgerMenu = ref(false)
+const isSearchFocused = ref(false)
+const burgerMenuRef = ref(null)
+const menuToggleRef = ref(null)
+const searchQuery = ref('')
 
 // List of modules
 const modules = ref([
-  "Grundlagen der Programmierung",
-  "Statistik",
-  "Unternehmenssoftware",
-  "Datenbanktechnologien",
-  "Webentwicklung",
-  "Betriebssysteme",
-]);
+  'Grundlagen der Programmierung',
+  'Statistik',
+  'Unternehmenssoftware',
+  'Datenbanktechnologien',
+  'Webentwicklung',
+  'Betriebssysteme'
+])
 
 const sendMessage = () => {
   if (message.value.trim()) {
-    chatBubbles.value.push(message.value);
-    message.value = "";
+    chatBubbles.value.push(message.value)
+    message.value = ''
   }
-};
+}
 
 const filteredModules = computed(() => {
-  return modules.value.filter((module) =>
-    module.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
-});
+  return modules.value.filter((module) => module.toLowerCase().includes(searchQuery.value.toLowerCase()))
+})
 
 const toggleOverlay = () => {
-  isOverlayVisible.value = !isOverlayVisible.value;
-};
+  isOverlayVisible.value = !isOverlayVisible.value
+}
 
 const toggleBurgerMenu = () => {
-  isOpenBurgerMenu.value = !isOpenBurgerMenu.value;
-};
+  isOpenBurgerMenu.value = !isOpenBurgerMenu.value
+}
 
 const handleClickOutside = (event: any) => {
-  const menu = burgerMenuRef.value as HTMLElement | null;
-  const toggleButton = menuToggleRef.value as HTMLElement | null;
+  const menu = burgerMenuRef.value as HTMLElement | null
+  const toggleButton = menuToggleRef.value as HTMLElement | null
   if (
     isOpenBurgerMenu.value &&
     menu &&
@@ -235,31 +198,31 @@ const handleClickOutside = (event: any) => {
     !menu.contains(event.target) &&
     !toggleButton.contains(event.target)
   ) {
-    isOpenBurgerMenu.value = false;
+    isOpenBurgerMenu.value = false
   }
-};
+}
 
 onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
+  document.addEventListener('click', handleClickOutside)
+})
 
 onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
+  document.removeEventListener('click', handleClickOutside)
+})
 
 const lineCount = computed(() => {
-  return message.value.split("\n").length;
-});
+  return message.value.split('\n').length
+})
 
 const resizeTextarea = (event: any) => {
-  const target = event.target;
-  target.style.height = "45px";
-  target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
-};
+  const target = event.target
+  target.style.height = '45px'
+  target.style.height = `${Math.min(target.scrollHeight, 200)}px`
+}
 
 const reloadPage = () => {
-  location.reload();
-};
+  location.reload()
+}
 </script>
 
 <style scoped>
@@ -322,6 +285,16 @@ const reloadPage = () => {
   z-index: 1000;
 }
 
+.sticky-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding-bottom: 1rem;
+  background-color: #131213;
+  z-index: 1000;
+}
+
 .textarea-container {
   position: relative;
   display: flex;
@@ -371,6 +344,7 @@ const reloadPage = () => {
   padding-top: 9px;
   padding-bottom: 9px;
   padding-left: 15px;
+  width: 100%;
 }
 
 .top-right-icon {
@@ -523,7 +497,7 @@ ul.p-0 {
   border-radius: 20px;
   max-width: 85%;
   word-wrap: break-word;
-  align-self: flex-end; /* Align to the right side for user messages */
+  align-self: flex-end;
   box-shadow: 0 0px 10px #5b5b5b;
 }
 </style>
