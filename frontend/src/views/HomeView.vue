@@ -1,5 +1,10 @@
 <template>
   <div class="container d-flex flex-column min-vh-100">
+    <!-- <Navbar />
+    <ChatBubbleContainer /> need to implement ai bubble first
+    <FooterInput />
+    <ExpandedInput v-if="isExpandedInputVisible" />
+    <BurgerMenu v-if="isOpenBurgerMenu" /> -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
       <div class="container-fluid d-flex justify-content-between align-items-center">
         <img src="../components/icons/Menu.png" style="cursor: pointer" ref="menuToggleRef" @click="toggleBurgerMenu" />
@@ -14,7 +19,6 @@
         />
       </div>
     </nav>
-
     <div v-if="chatBubbles.length === 0" class="container my-4 logo-container">
       <img class="" src="../components/icons/dontSueChatGPT.png" />
     </div>
@@ -67,9 +71,9 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Full-screen overlay -->
-  <div v-if="isOverlayVisible" class="full-screen-overlay">
+  <div v-if="isExpandedInputVisible" class="full-screen-overlay">
     <div class="height-100 p-2" style="background-color: #232323">
       <div class="container h-100 d-flex flex-column">
         <div class="d-flex justify-content-end mt-2 mb-3">
@@ -118,6 +122,10 @@
 </template>
 
 <script setup lang="ts">
+import Navbar from '../components/Navbar.vue'
+import FooterInput from '../components/FooterInput.vue'
+import ExpandedInput from '../components/ExpandedInput.vue'
+import BurgerMenu from '../components/BurgerMenu.vue'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -152,7 +160,7 @@ library.add(
 // Reactive state for message input
 const message = ref('')
 const chatBubbles = ref<string[]>([])
-const isOverlayVisible = ref(false)
+const isExpandedInputVisible = ref(false)
 const isOpenBurgerMenu = ref(false)
 const isSearchFocused = ref(false)
 const burgerMenuRef = ref(null)
@@ -181,7 +189,7 @@ const filteredModules = computed(() => {
 })
 
 const toggleOverlay = () => {
-  isOverlayVisible.value = !isOverlayVisible.value
+  isExpandedInputVisible.value = !isExpandedInputVisible.value
 }
 
 const toggleBurgerMenu = () => {

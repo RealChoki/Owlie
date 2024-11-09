@@ -1,0 +1,69 @@
+<template>
+  <div v-if="isExpandedInputVisible" class="full-screen-overlay">
+    <div class="height-100 p-2" style="background-color: #232323">
+      <div class="container h-100 d-flex flex-column">
+        <div class="d-flex justify-content-end mt-2 mb-3">
+          <font-awesome-icon
+            :icon="['fas', 'down-left-and-up-right-to-center']"
+            @click.stop="toggleOverlay"
+            class="collapse-icon"
+          />
+        </div>
+        <textarea
+          class="full-screen-textarea"
+          style="background-color: #232323"
+          placeholder="Type a message..."
+          aria-label="Message input"
+          v-model="message"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+// Props or Local State
+const isExpandedInputVisible = ref(false)
+const message = ref('')
+
+// Method to toggle the overlay
+function toggleOverlay() {
+  isExpandedInputVisible.value = !isExpandedInputVisible.value
+}
+</script>
+
+<style scoped>
+.full-screen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+}
+
+.height-100 {
+  height: 100%;
+}
+
+.collapse-icon {
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.full-screen-textarea {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  padding: 1rem;
+  font-size: 1rem;
+  resize: none;
+}
+</style>
