@@ -22,7 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import chatService from '../services/chatService'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faDownLeftAndUpRightToCenter } from '@fortawesome/free-solid-svg-icons'
@@ -34,7 +35,10 @@ const props = defineProps({
 
 const emit = defineEmits(['closeExpandedInput'])
 
-const message = ref('')
+const message = computed({
+  get: () => chatService.getCurrentMessage(),
+  set: (newMessage) => chatService.setCurrentMessage(newMessage)
+})
 
 function closeExpandedInput() {
   emit('closeExpandedInput')
@@ -68,11 +72,10 @@ function closeExpandedInput() {
   padding: 1rem;
   font-size: 1rem;
   resize: none;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
 .full-screen-textarea::-webkit-scrollbar {
   display: none;
 }

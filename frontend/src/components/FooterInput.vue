@@ -8,6 +8,7 @@
     <div class="textarea-container flex-grow-1">
       <textarea
         :class="{ 'custom-input': true, 'blur-effect': isOpenBurgerMenu }"
+        :style="inputPaddingStyle"
         placeholder="Type a message..."
         aria-label="Message input"
         v-model="message"
@@ -32,7 +33,7 @@
         :icon="['fas', 'volume-high']"
         :class="{
           'cursor-pointer btn-circle bg-light align-bottom': true,
-          'blur-effect': isOpenBurgerMenu,
+          'blur-effect': isOpenBurgerMenu
         }"
         @click="isOpenBurgerMenu ? null : null"
       />
@@ -41,44 +42,48 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, computed } from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-  faUpRightAndDownLeftFromCenter,
-  faPlus,
-  faArrowUp,
-  faVolumeHigh,
-} from "@fortawesome/free-solid-svg-icons";
+import { ref, defineEmits, computed } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh } from '@fortawesome/free-solid-svg-icons'
 
-import { sendMessage as sendChatMessage, getMessage, clearMessage } from '../services/chatService'; // Use the service directly
-
-library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh);
+import { sendMessage as sendChatMessage } from '../services/chatService'
+import messageService from '../services/chatService'
+library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh)
 
 const props = defineProps({
   isExpandedInput: Boolean,
-  isOpenBurgerMenu: Boolean,
-});
+  isOpenBurgerMenu: Boolean
+})
 
-const emit = defineEmits(["toggle-overlay", "send-message"]);
-const message = ref('');
+const emit = defineEmits(['toggle-overlay', 'send-message'])
 
-const lineCount = computed(() => message.value.split("\n").length);
+const message = computed({
+  get: () => messageService.getCurrentMessage(),
+  set: (newMessage) => messageService.setCurrentMessage(newMessage)
+})
 
 function resizeTextarea(event: Event) {
-  const target = event.target as HTMLTextAreaElement;
-  target.style.height = "45px";
-  target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
+  const target = event.target as HTMLTextAreaElement
+  target.style.height = '45px'
+  target.style.height = `${Math.min(target.scrollHeight, 200)}px`
 }
 
-const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
+const toggleOverlay = () => emit('toggle-overlay', !props.isExpandedInput)
 
 function sendMessage() {
   if (message.value.trim()) {
-    sendChatMessage(message.value);
-    message.value = '';
+    sendChatMessage(message.value)
+    message.value = ''
   }
 }
+
+const lineCount = computed(() => message.value.split('\n').length)
+const inputPaddingStyle = computed(() => {
+  return {
+    paddingTop: lineCount.value >= 3 ? '35px' : '9px'
+  }
+})
 </script>
 
 <style scoped>
@@ -122,9 +127,10 @@ function sendMessage() {
   padding-top: 9px;
   padding-bottom: 9px;
   padding-left: 15px;
+  padding-right: 10px;
   width: 100%;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .custom-input::-webkit-scrollbar {

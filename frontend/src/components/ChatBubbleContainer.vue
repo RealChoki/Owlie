@@ -40,7 +40,7 @@ const messages = computed(() => getMessages());
   flex-direction: column;
   gap: 10px;
   margin: 10px;
-  padding-bottom: 80px; /* Space for input area */
+  padding-bottom: 80px;
 }
 .chat-bubble {
   background-color: #1a1a1b;
@@ -49,7 +49,7 @@ const messages = computed(() => getMessages());
   border-radius: 20px;
   max-width: 85%;
   word-wrap: break-word;
-  align-self: flex-end; /* Align to the right side for user messages */
+  align-self: flex-end;
   box-shadow: 0 0px 10px #5b5b5b;
 }
 </style>

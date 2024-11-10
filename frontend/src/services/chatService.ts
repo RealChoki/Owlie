@@ -1,49 +1,37 @@
-import { reactive, ref } from "vue";
+import { reactive } from 'vue'
 
-// Define the chat service's state
 const chatState = reactive({
   messages: [] as string[],
-});
+  currentMessage: '' as string
+})
 
-// Make message a reactive ref
-const message = ref('');
-
-// Function to add a message (sendMessage)
 export function sendMessage(messageToSend: string) {
   if (messageToSend.trim()) {
-    chatState.messages.push(messageToSend); // Add the message to chatState.messages
-    message.value = ""; // Clear the message input (reactively clear the ref)
+    chatState.messages.push(messageToSend)
+    chatState.currentMessage = ''
   }
 }
 
-// Function to update the message state
-export function setMessage(newMessage: string) {
-  message.value = newMessage; // Set the reactive message value
-}
-
-// Function to get the chat messages
 export function getMessages() {
-  return chatState.messages; // Return the list of messages
+  return chatState.messages
 }
 
-// Function to get the current input message
-export function getMessage() {
-  return message.value; // Return the reactive message value
+export function getCurrentMessage() {
+  return chatState.currentMessage
 }
 
-// Optional function to clear messages (if needed)
+export function setCurrentMessage(newMessage: string) {
+  chatState.currentMessage = newMessage
+}
+
 export function clearMessages() {
-  chatState.messages.length = 0; // Clear the messages array
-}
-
-export function clearMessage() {
-  message.value = ""; // Clear the message input (reactively clear the ref)
+  chatState.messages.length = 0
 }
 
 export default {
   sendMessage,
-  setMessage,
   getMessages,
-  getMessage,
-  clearMessages,
-};
+  getCurrentMessage,
+  setCurrentMessage,
+  clearMessages
+}
