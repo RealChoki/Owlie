@@ -110,7 +110,7 @@ function focusInput() {
 }
 
 .burger-menu-search-bar::placeholder {
-  transition: color 0.1s ease; /* Smooth transition */
+  transition: color 0.1s ease;
 }
 
 .search-container {
@@ -123,12 +123,8 @@ function focusInput() {
   position: absolute;
   font-size: 1.2rem;
   left: 15px;
-  color: #5b5b5b; /* Default color */
-  transition: color 0.1s ease; /* Smooth transition */
-}
-
-.text-white {
-  color: white !important;
+  color: #5b5b5b;
+  transition: color 0.1s ease;
 }
 
 .input-focused::placeholder {

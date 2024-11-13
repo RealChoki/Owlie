@@ -7,12 +7,14 @@
     />
     <div class="textarea-container flex-grow-1">
       <textarea
-        :class="{ 'custom-input': true, 'blur-effect': isOpenBurgerMenu }"
         :style="inputPaddingStyle"
         placeholder="Type a message..."
         aria-label="Message input"
         v-model="message"
         @input="resizeTextarea"
+        @focus="isSearchFocused = true"
+        @blur="isSearchFocused = false"
+        :class="{ 'input-focused': isSearchFocused, 'custom-input': true, 'blur-effect': isOpenBurgerMenu }"
       ></textarea>
       <font-awesome-icon
         v-if="lineCount >= 3"
@@ -56,6 +58,7 @@ const props = defineProps({
   isOpenBurgerMenu: Boolean
 })
 
+const isSearchFocused = ref(false)
 const emit = defineEmits(['toggle-overlay', 'send-message'])
 
 const message = computed({
@@ -137,10 +140,6 @@ const inputPaddingStyle = computed(() => {
   display: none;
 }
 
-.custom-input::placeholder {
-  color: white;
-}
-
 .custom-input:focus {
   outline: none;
 }
@@ -163,5 +162,9 @@ const inputPaddingStyle = computed(() => {
   filter: blur(1.5px);
   cursor: default !important;
   pointer-events: none;
+}
+
+.input-focused::placeholder {
+  color: white !important;
 }
 </style>
