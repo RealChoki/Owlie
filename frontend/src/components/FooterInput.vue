@@ -6,18 +6,22 @@
       style="background-color: #5b5b5b"
     />
     <div class="textarea-container flex-grow-1">
+        <!-- @input="resizeTextarea" -->
+
       <textarea
+
+      ref="textarea"
+        @input="handleInput"
         :style="inputPaddingStyle"
         placeholder="Type a message..."
         aria-label="Message input"
         v-model="message"
-        @input="resizeTextarea"
         @focus="isSearchFocused = true"
         @blur="isSearchFocused = false"
         :class="{ 'input-focused': isSearchFocused, 'custom-input': true, 'blur-effect': isOpenBurgerMenu }"
       ></textarea>
       <font-awesome-icon
-        v-if="lineCount >= 3"
+
         :icon="['fas', 'up-right-and-down-left-from-center']"
         class="top-right-icon"
         @click="toggleOverlay"
@@ -25,11 +29,17 @@
     </div>
     <div class="input-actions align-bottom d-flex gap-2">
       <font-awesome-icon
-        v-if="message"
+        class="btn-circle bg-white"
         :icon="['fas', 'arrow-up']"
-        class="cursor-pointer btn-circle bg-light align-bottom"
+        :class="{
+          'cursor-pointer': message,
+          'btn-disabled': !message,
+          'blur-effect': isOpenBurgerMenu
+        }"
         @click="sendMessage"
+        v-if="message"
       />
+      <!-- not used yet, text to speech when theres chat && !message -->
       <font-awesome-icon
         v-else
         :icon="['fas', 'volume-high']"
@@ -66,11 +76,7 @@ const message = computed({
   set: (newMessage) => messageService.setCurrentMessage(newMessage)
 })
 
-function resizeTextarea(event: Event) {
-  const target = event.target as HTMLTextAreaElement
-  target.style.height = '45px'
-  target.style.height = `${Math.min(target.scrollHeight, 200)}px`
-}
+
 
 const toggleOverlay = () => emit('toggle-overlay', !props.isExpandedInput)
 
@@ -80,13 +86,34 @@ function sendMessage() {
     message.value = ''
   }
 }
+const textareaHeight = ref(0);
+const textarea = ref(null);
 
-const lineCount = computed(() => message.value.split('\n').length)
+function resizeTextarea(event: Event) {
+  console.log('triggered resizeTextarea');
+  const target = event.target as HTMLTextAreaElement
+  target.style.height = '45px'
+  target.style.height = `${Math.min(target.scrollHeight, 200)}px`
+}
+
 const inputPaddingStyle = computed(() => {
+  console.log('triggered inputPaddingStyle', textareaHeight.value);
   return {
-    paddingTop: lineCount.value >= 3 ? '35px' : '9px'
+    paddingTop: textareaHeight.value >= 80 ? '35px' : '9px'
   }
 })
+
+const trackHeight = () => {
+  console.log('triggered trackHeight', textarea.value.scrollHeight);
+  if (textarea.value) {
+    textareaHeight.value = textarea.value.scrollHeight;
+  }
+};
+
+const handleInput = (event: any) => {
+  trackHeight();
+  resizeTextarea(event);
+};
 </script>
 
 <style scoped>
@@ -111,6 +138,11 @@ const inputPaddingStyle = computed(() => {
   padding: 0.5em;
 }
 
+.btn-disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
 .textarea-container {
   position: relative;
   display: flex;
@@ -127,8 +159,8 @@ const inputPaddingStyle = computed(() => {
   height: 45px;
   max-height: 200px;
   resize: none;
-  padding-top: 9px;
-  padding-bottom: 9px;
+  padding-top: 8px;
+  padding-bottom: 8px;
   padding-left: 15px;
   padding-right: 10px;
   width: 100%;
@@ -155,7 +187,7 @@ const inputPaddingStyle = computed(() => {
 }
 
 .align-bottom {
-  align-self: flex-end;
+  align-self: flex;
 }
 
 .blur-effect {

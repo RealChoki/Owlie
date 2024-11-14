@@ -12,7 +12,7 @@
         :icon="['fas', 'pen-to-square']"
         :class="{ 'pen-to-square': true, 'blur-effect': isOpenBurgerMenu }"
         style="color: #5b5b5b; cursor: pointer"
-        @click="isOpenBurgerMenu ? null : reloadPage"
+        @click="handlePenClick"
       />
     </div>
   </nav>
@@ -37,9 +37,12 @@ const toggleBurgerMenu = () => {
   emit('toggleBurgerMenu', !props.isOpenBurgerMenu)
 }
 
-const reloadPage = () => {
-  location.reload()
+const handlePenClick = () => {
+  if (!props.isOpenBurgerMenu) {
+    location.reload()
+  }
 }
+
 </script>
 
 <style scoped>
@@ -60,7 +63,7 @@ const reloadPage = () => {
 
 .calendar-days {
   font-size: 1.8rem;
-  color: #717171;
+  color: #4f4f4f;
 }
 
 .pen-to-square {
