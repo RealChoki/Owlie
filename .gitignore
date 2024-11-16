@@ -2,3 +2,4 @@
 *.jsonl
 *.vsix
 demo/
+node_modules

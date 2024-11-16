@@ -51,7 +51,7 @@ const props = defineProps({
   isOpenBurgerMenu: Boolean
 })
 
-const emit = defineEmits(['closeBurgerMenu'])
+const emit = defineEmits(['closeBurgerMenu', 'moduleSelected'])
 
 const searchQuery = ref('')
 const isSearchFocused = ref(false)
@@ -66,14 +66,15 @@ const modules = ref([
   'Betriebssysteme'
 ])
 
-function selectModule(module: string) {
-  emit('moduleSelected', module)  // Emit the selected module to the parent
-  closeBurgerMenu()  // Close the menu after selecting the module
-}
 
 const filteredModules = computed(() =>
   modules.value.filter((module) => module.toLowerCase().includes(searchQuery.value.toLowerCase()))
 )
+
+function selectModule(module: string) {
+  emit('moduleSelected', module)  // Emit the selected module to the parent
+  closeBurgerMenu()  // Close the menu after selecting the module
+}
 
 function closeBurgerMenu() {
   emit('closeBurgerMenu')

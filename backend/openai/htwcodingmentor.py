@@ -1,3 +1,4 @@
+import sys
 import os
 import json
 from dotenv import load_dotenv
@@ -5,8 +6,16 @@ from openai import OpenAI, AssistantEventHandler
 from typing_extensions import override
 from function_calling import get_moodle_course_content  # Ensure this function is available
 
+# Load environment variables
 load_dotenv()
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+# Ensure user input is passed as a command-line argument
+if len(sys.argv) < 2:
+    print("No input provided")
+    sys.exit(1)
+
+user_input = sys.argv[1]  # The input passed by the Fastify server
 
 # Define the assistant's event handler
 class EventHandler(AssistantEventHandler):
@@ -26,24 +35,6 @@ class EventHandler(AssistantEventHandler):
     def on_text_delta(self, delta, snapshot):
         """Handles real-time updates from the assistant's response (delta)."""
         print(delta.value, end="", flush=True)
-
-    @override
-    def on_tool_call_created(self, tool_call):
-        """Handles the creation of tool calls, such as the Moodle content fetch."""
-        print(f"\nTool call created: {tool_call}")
-
-    @override
-    def on_tool_call_delta(self, delta, snapshot):
-        """Handles updates from tool calls, including code interpreter outputs."""
-        print(f"\nTool call delta: {delta}")
-        if delta.type == 'code_interpreter':
-            if delta.code_interpreter.input:
-                print(delta.code_interpreter.input, end="", flush=True)
-            if delta.code_interpreter.outputs:
-                print(f"\n\noutput >", flush=True)
-                for output in delta.code_interpreter.outputs:
-                    if output.type == "logs":
-                        print(f"\n{output.logs}", flush=True)
 
     def handle_requires_action(self, data, run_id):
         tool_outputs = []
@@ -70,8 +61,7 @@ class EventHandler(AssistantEventHandler):
                 print(text, end="", flush=True)
             print()  # Print a newline after the tool output
 
-
-
+# Function to clean up resources (optional, depending on your use case)
 def clean_up(assistant_id, thread_id, vector_store_id, file_ids):
     """Delete the assistant, thread, vector store, and uploaded files."""
     client.beta.assistants.delete(assistant_id)
@@ -79,6 +69,7 @@ def clean_up(assistant_id, thread_id, vector_store_id, file_ids):
     client.beta.vector_stores.delete(vector_store_id)
     [client.files.delete(file_id) for file_id in file_ids]
 
+# Directory containing files to upload
 FILES_DIR = "../data/"
 file_ids = []
 
@@ -95,6 +86,7 @@ vector_store = client.beta.vector_stores.create(
 )
 print(f"Created vector store: {vector_store.id} - {vector_store.name}")
 
+# Instructions for the assistant
 instructions = (
     " Du bist ein freundlicher und unterstützender Lehrassistent für das Modul Grundlagen der Programmierung"
     " Deine Aufgabe ist es Erstsemester-Studierende zur Lösung zu führen ohne jedoch vollständige Lösungen zu" 
@@ -114,26 +106,32 @@ instructions = (
 assistant = client.beta.assistants.create(
     instructions=instructions,
     name="HTWCodingMentor",
-    tools=[{
-        "type": "function",
-        "function": {
-            "name": "get_moodle_course_content",
-            "description": "Fetches Moodle course content based on course ID When the user asks a course releated.",
-            "parameters": {
-                "type": "object",
-                "required": [
-                "courseid"
-                ],
-                "properties": {
-                "courseid": {
-                    "type": "string",
-                    "description": "The Moodle course ID, e.g., '51589'."
+    tools=[
+        {
+            "type": "function",
+            "function": {
+                "name": "get_moodle_course_content",
+                "description": "Fetches Moodle course content based on course ID When the user asks a course related.",
+                "parameters": {
+                    "type": "object",
+                    "required": [
+                        "courseid"
+                    ],
+                    "properties": {
+                        "courseid": {
+                            "type": "string",
+                            "description": "The Moodle course ID, e.g., '51589'."
+                        }
+                    },
+                    "additionalProperties": False
                 }
-                },
-                "additionalProperties": False
             }
+        },
+        {
+            "type": "file_search",
         }
-    }],
+    ],
+    tool_resources={"file_search": {"vector_store_ids": [vector_store.id]}},
     model="gpt-4o-mini",
 )
 print(f"Created assistant: {assistant.id} - {assistant.name}")
@@ -141,27 +139,21 @@ print(f"Created assistant: {assistant.id} - {assistant.name}")
 # Start a conversation thread
 thread = client.beta.threads.create()
 
-while True:
-    user_input = input("User: ")
-    if user_input.lower() in ["exit", "quit"]:
-        print("Conversation ended.")
-        break
+# Process the input from sys.argv (passed from Fastify server)
+thread_message = client.beta.threads.messages.create(
+    thread.id,
+    role="user",
+    content=user_input  # Using the user input passed via Fastify
+)
 
-    # Process the user input with the assistant
-    thread_message = client.beta.threads.messages.create(
-        thread.id,
-        role="user",
-        content=user_input
-    )
-
-    print(f"Running HTWCodingMentor: {assistant.id} in thread: {thread.id}")
-    with client.beta.threads.runs.stream(
-        thread_id=thread.id,
-        assistant_id=assistant.id,
-        event_handler=EventHandler()
-    ) as stream:
-        stream.until_done()
-        print()
+print(f"Running HTWCodingMentor: {assistant.id} in thread: {thread.id}")
+with client.beta.threads.runs.stream(
+    thread_id=thread.id,
+    assistant_id=assistant.id,
+    event_handler=EventHandler()
+) as stream:
+    stream.until_done()
+    print()
 
 # Clean up resources after the conversation ends
 clean_up(assistant.id, thread.id, vector_store.id, file_ids)

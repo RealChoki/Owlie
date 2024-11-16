@@ -1,14 +1,31 @@
 import { reactive } from 'vue'
+import axios from 'axios'
 
 const chatState = reactive({
   messages: [] as string[],
   currentMessage: '' as string
 })
 
-export function sendMessage(messageToSend: string) {
+export async function sendMessage(messageToSend: string) {
   if (messageToSend.trim()) {
-    chatState.messages.push(messageToSend)
-    chatState.currentMessage = ''
+    try {
+      // Save the user's message in the chat state
+      chatState.messages.push(messageToSend);
+      chatState.currentMessage = '';
+
+      // Send the message to the Fastify backend
+      const response = await axios.post('http://localhost:3000/chat', {
+        message: messageToSend,
+      });
+
+      // Save the assistant's response in the chat state
+      chatState.messages.push(response.data.response);
+
+      // Log the assistant response
+      console.log('Assistant response:', response.data.response);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   }
 }
 
