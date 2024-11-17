@@ -1,54 +1,36 @@
-const path = require('path');
-const { PythonShell } = require('python-shell');
-const Fastify = require('fastify');
-const fastify = Fastify({ logger: true });
+const express = require('express');
+const { exec } = require('child_process');
 
-// Use `path.resolve` to create an absolute path to the Python script
-const scriptPath = path.resolve(__dirname, '../openai/htwcodingmentor.py');
+const app = express();
+const port = 3000;
 
-fastify.post('/chat', async (request, reply) => {
-  const { message } = request.body;  // Get the message from the request body
+// Route to execute Python script
+app.get('/run-python', (req, res) => {
+  console.log('Route hit: /run-python'); // Log when the route is hit
 
-  if (!message) {
-    return reply.status(400).send({ error: 'Message is required' });
-  }
+  // Run the Python script
+  exec('python ../openai/htwcodingmentor.py "beschreibe mir java in 3 worten"', (error, stdout, stderr) => {
+    console.log('Execution started');
 
-  console.log("Received message:", message);
+    // Check for errors during the execution
+    if (error) {
+      console.error('Execution error:', error.message);
+      return res.status(500).json({ error: 'Failed to execute Python script', details: error.message });
+    }
 
-  // Pass the message to Python script
-  const options = {
-    args: [message]
-  };
-  
+    // Check for errors from the Python script (stderr)
+    if (stderr) {
+      console.error('Python error:', stderr);
+      return res.status(500).json({ error: 'Error in Python script', details: stderr });
+    }
 
-  try {
-    const result = await new Promise((resolve, reject) => {
-      console.log("Executing Python script...");
-      PythonShell.run(scriptPath, options, (err, results) => {
-        console.log("Python script executed");
-        console.log(scriptPath, options);
-        if (err) {
-          reject(err);
-        } else {
-          resolve(results);
-        }
-      });
-    });
-
-    // Log and send the Python script result back to the client
-    console.log("Python script response:", result);  // Log the result from the Python script
-    reply.send({ response: result.join(' ') });
-  } catch (error) {
-    console.error('Error executing Python script:', error);
-    reply.status(500).send({ error: 'Internal server error' });
-  }
+    // If everything is fine, send the Python script output
+    console.log('Python script output:', stdout.trim());
+    return res.json({ output: stdout.trim() });
+  });
 });
 
-// Start the Fastify server
-fastify.listen({ port: 3000, host: '0.0.0.0' }, (err, address) => {
-  if (err) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-  fastify.log.info(`Server listening at ${address}`);
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
 });

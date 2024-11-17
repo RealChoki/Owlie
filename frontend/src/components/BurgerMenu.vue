@@ -1,8 +1,5 @@
 <template>
-  <div
-    ref="burgerMenuRef"
-    class="burger-menu-open p-3 bg-black rounded shadow-sm"
-  >
+    <div ref="burgerMenuRef" class="burger-menu-open p-3 bg-black rounded shadow-sm">
     <div class="search-container">
       <input
         type="text"
@@ -21,7 +18,6 @@
         @click="focusInput"
         style="cursor: pointer"
       />
-      <!-- Add event to close the burger menu -->
       <img
         src="../components/icons/Menu gray.png"
         style="cursor: pointer"
@@ -29,21 +25,42 @@
         @click="closeBurgerMenu"
       />
     </div>
-    <ul class="p-0 mt-3" style="cursor: pointer">
-      <li
-        v-for="(module, index) in filteredModules"
-        :key="index"
-        class="list-item-hover rounded text-white py-1"
-        @click="selectModule(module)"
-      >
-        <p class="m-0 py-2 px-2">{{ module }}</p>
-      </li>
-    </ul>
-    <div class="mode-toggle d-flex flex-column align-items-center">
+
+    <!-- Scrollable Module List -->
+    <div class="module-list-container">
+      <ul class="p-0 mt-1">
+        <li
+          v-for="(module, index) in filteredModules"
+          :key="index"
+          :class="[ 
+            'list-item-hover', 
+            'rounded', 
+            'text-white', 
+            'py-1', 
+            { 'inactive': !isModuleActive(module) }, 
+            { 'cursor-pointer': isModuleActive(module) }
+          ]"
+          @click="isModuleActive(module) ? selectModule(module) : null"
+        >
+        <p class="m-0 py-2 px-2 d-flex align-items-start position-relative">
+          <span class="module-name position-relative">
+            {{ module }}
+            <span
+              v-if="selectedMode === 'testing'"
+              class="test-mode-text text-secondary small position-absolute top-0 end-0"
+            >
+              (Test)
+            </span>
+          </span>
+        </p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="mode-toggle d-flex flex-column align-items-center modes_container">
       <div class="d-flex align-items-center gap-2">
         <h6 class="m-0 text-center">
           Which mode do you want to use?
-
           <font-awesome-icon
             :icon="['fas', 'circle-info']"
             class="circle-info"
@@ -52,7 +69,7 @@
         </h6>
       </div>
       <div v-if="showInfo" class="small mt-1 text-warning text-center">
-        Test mode: A quiz feature that evaluates students' knowledge, tracks
+        Testing mode: A quiz feature that evaluates student's knowledge, tracks
         their performance, and offers personalized feedback based on their
         answers.
       </div>
@@ -73,14 +90,15 @@
   </div>
 </template>
 
+
+
+
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
-
-// Import necessary Vuetify components
 import { VBtn, VBtnToggle } from "vuetify/components"; // Import Vuetify components
 
 library.add(faMagnifyingGlass, faCircleInfo);
@@ -100,7 +118,6 @@ const infoMessage = ref(
 const toggleInfo = () => {
   showInfo.value = !showInfo.value;
 };
-("general");
 
 const emit = defineEmits(["closeBurgerMenu", "moduleSelected"]);
 
@@ -115,16 +132,50 @@ const modules = ref([
   "Datenbanktechnologien",
   "Webentwicklung",
   "Betriebssysteme",
+  "asometing ool",
+  "bsdsasad",
+  "cbisdsa",
+  "boob",
+  "eerrrr",
+  "ffammm",
+  "google",
+  "habibi",
+  "islam",
+  "justin bieber",
+  "kill me",
 ]);
 
-const filteredModules = computed(() =>
-  modules.value.filter((module) =>
+const activeModules = ref([
+  "Grundlagen der Programmierung",
+  "Webentwicklung", 
+]);
+
+// Sorting the modules to prioritize active ones, then sorting alphabetically
+const filteredModules = computed(() => {
+  // Filter the modules based on search query
+  const filtered = modules.value.filter((module) =>
     module.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
-);
+  );
+
+  // Split into active and inactive modules
+  const active = filtered.filter((module) => activeModules.value.includes(module));
+  const inactive = filtered.filter((module) => !activeModules.value.includes(module));
+
+  // Sort inactive modules alphabetically
+  inactive.sort();
+
+  // Combine active modules (in original order) and sorted inactive modules
+  return [...active, ...inactive];
+});
+
+function isModuleActive(module: string): boolean {
+  return activeModules.value.includes(module);
+}
 
 function selectModule(module: string) {
-  emit("moduleSelected", module); // Emit the selected module to the parent
+  // Append (Test) if the selected mode is 'testing'
+  const moduleNameWithMode = selectedMode.value === 'testing' ? `${module} (Test)` : module;
+  emit("moduleSelected", moduleNameWithMode); // Emit the selected module with mode
   closeBurgerMenu(); // Close the menu after selecting the module
 }
 
@@ -137,7 +188,15 @@ function focusInput() {
     searchInput.value.focus();
   }
 }
+
+// Display module names based on the selected mode
+function displayModuleName(module: string): string {
+  return module; // Return only the module name
+}
+
 </script>
+
+
 
 <style scoped>
 .burger-menu-open {
@@ -147,6 +206,12 @@ function focusInput() {
   left: 0;
   width: 80vw;
   z-index: 9999;
+}
+
+.module-list-container {
+  max-height: 82vh;  /* Set the max height to control the scroll area */
+  overflow-y: auto;   /* Enable vertical scrolling */
+  scrollbar-width: none;
 }
 
 .burger-menu-search-bar {
@@ -170,6 +235,8 @@ function focusInput() {
   display: flex;
   align-items: center;
   position: relative;
+  background-color: #000000;
+  padding-bottom: 1em;
 }
 
 .magnifying-glass {
@@ -230,5 +297,48 @@ ul.p-0 {
 
 .circle-info {
   margin-bottom: -1.5px;
+  cursor: pointer;
+}
+
+/* Other styles remain the same */
+
+.inactive {
+  opacity: 0.5 !important;  /* Reduce opacity */
+  cursor: standard !important;  /* Make the cursor a "not-allowed" symbol */
+  pointer-events: none !important;  /* Make it unclickable */
+}
+
+.list-item-hover:hover {
+  background-color: #414141 !important;  /* Keep hover effect for active items only */
+}
+
+ul.p-0 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Optional: Styling for the inactive items on hover (optional as they are unclickable) */
+.inactive:hover {
+  background-color: transparent !important; /* No hover effect */
+}
+
+/* Style for active modules that are clickable */
+.cursor-pointer {
+  cursor: pointer !important;  /* Apply cursor pointer only for active modules */
+}
+
+.modes_container{
+  background-color: #000000;
+}
+
+::v-deep(.test-mode-text) {
+  position: relative;
+  top: -5px; /* Adjust to position it higher */
+  font-size: 0.8rem; /* Smaller font */
+}
+
+.test-mode-text {
+  transform: translate(28px, -5px); /* Adjust alignment relative to the module name */
+  font-size: 0.7rem; /* Make it smaller */
 }
 </style>

@@ -12,7 +12,7 @@
         @focus="isSearchFocused = true" @blur="isSearchFocused = false"
         :class="{ 'input-focused': isSearchFocused, 'custom-input': true, 'blur-effect': isOpenBurgerMenu }"></textarea>
       <font-awesome-icon v-if="showResizeIcon" :icon="['fas', 'up-right-and-down-left-from-center']"
-        class="top-right-icon" @click="toggleOverlay" />
+        class="top-right-icon" @click="toggleOverlay" :class="{ 'blur-effect': isOpenBurgerMenu }" />
     </div>
     <div class="input-actions align-bottom d-flex gap-2">
       <font-awesome-icon class="btn-circle bg-white" :icon="['fas', 'arrow-up']" :class="{
