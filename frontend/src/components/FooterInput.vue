@@ -172,7 +172,7 @@ function handleFileChange(event: Event) {
   top: 7px;
   right: 7px;
   font-size: 0.8rem;
-  color: white;
+  color: #232323;
   cursor: pointer;
   background-color: #5b5b5b;
   padding: 6px;
