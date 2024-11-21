@@ -33,13 +33,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import chatService from '../services/chatService'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faDownLeftAndUpRightToCenter } from '@fortawesome/free-solid-svg-icons'
 import { sendMessage as sendChatMessage } from '../services/chatService'
-import messageService from '../services/chatService'
 
 library.add(faDownLeftAndUpRightToCenter)
 

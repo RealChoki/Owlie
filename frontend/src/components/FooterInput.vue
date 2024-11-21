@@ -1,73 +1,122 @@
 <template>
   <div class="sticky-footer container-fluid d-flex align-items-end gap-2">
     <!-- Plus Icon for Upload -->
-    <font-awesome-icon :icon="['fas', 'plus']" class="cursor-pointer btn-circle align-bottom"
-      style="background-color: #5b5b5b" @click="triggerFileInput" />
+    <div class="position-relative">
+      <font-awesome-icon
+        :icon="['fas', 'plus']"
+        class="cursor-pointer btn-circle align-bottom"
+        style="background-color: #5b5b5b"
+        @click="triggerFileInput"
+      />
+      <span v-if="showFileCount" class="file-count-indicator bg-danger text-white">{{ fileCount }}</span>
+    </div>
 
     <!-- Hidden File Input -->
-    <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" multiple />
+    <input
+      type="file"
+      ref="fileInput"
+      @change="handleFileChange"
+      style="display: none"
+      multiple
+    />
 
     <div class="textarea-container flex-grow-1">
-      <textarea @input="resizeTextarea" placeholder="Type a message..." aria-label="Message input" v-model="message"
-        @focus="isSearchFocused = true" @blur="isSearchFocused = false"
-        :class="{ 'input-focused': isSearchFocused, 'custom-input': true, 'blur-effect': isOpenBurgerMenu }"></textarea>
-      <font-awesome-icon v-if="showResizeIcon" :icon="['fas', 'up-right-and-down-left-from-center']"
-        class="top-right-icon" @click="toggleOverlay" :class="{ 'blur-effect': isOpenBurgerMenu }" />
+      <textarea
+        ref="textarea"
+        @input="resizeTextarea"
+        placeholder="Type a message..."
+        aria-label="Message input"
+        v-model="message"
+        @focus="isSearchFocused = true"
+        @blur="isSearchFocused = false"
+        :class="{
+          'input-focused': isSearchFocused,
+          'custom-input': true,
+          'blur-effect': isOpenBurgerMenu,
+        }"
+      ></textarea>
+      <font-awesome-icon
+        v-if="showResizeIcon"
+        :icon="['fas', 'up-right-and-down-left-from-center']"
+        class="top-right-icon"
+        @click="toggleOverlay"
+        :class="{ 'blur-effect': isOpenBurgerMenu }"
+      />
     </div>
     <div class="input-actions align-bottom d-flex gap-2">
-      <font-awesome-icon class="btn-circle bg-white" :icon="['fas', 'arrow-up']" :class="{
-        'cursor-pointer': message,
-        'btn-disabled': !message,
-        'blur-effect': isOpenBurgerMenu
-      }" @click="sendMessage" v-if="message" />
+      <font-awesome-icon
+        class="btn-circle bg-white"
+        :icon="['fas', 'arrow-up']"
+        :class="{
+          'cursor-pointer': message || fileCount > 0,
+          'btn-disabled': !message && fileCount === 0,
+          'blur-effect': isOpenBurgerMenu,
+        }"
+        @click="sendMessage"
+        v-if="message || fileCount > 0"
+      />
       <!-- Text to speech when there's no message -->
-      <font-awesome-icon v-else :icon="['fas', 'volume-high']" :class="{
-        'cursor-pointer btn-circle bg-light align-bottom': true,
-        'blur-effect': isOpenBurgerMenu
-      }" @click="isOpenBurgerMenu ? null : null" />
+      <font-awesome-icon
+        v-else
+        :icon="['fas', 'volume-high']"
+        :class="{
+          'cursor-pointer btn-circle bg-light align-bottom': true,
+          'blur-effect': isOpenBurgerMenu,
+        }"
+        @click="isOpenBurgerMenu ? null : null"
+      />
     </div>
   </div>
 </template>
 
-
 <script setup lang="ts">
-import { ref, defineEmits, computed } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh } from '@fortawesome/free-solid-svg-icons'
+import { ref, defineEmits, computed, watch } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faUpRightAndDownLeftFromCenter,
+  faPlus,
+  faArrowUp,
+  faVolumeHigh,
+} from "@fortawesome/free-solid-svg-icons";
 
-import { sendMessage as sendChatMessage } from '../services/chatService'
-import messageService from '../services/chatService'
-library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh)
+import { sendMessage as sendChatMessage } from "../services/chatService";
+import messageService from "../services/chatService";
+import { uploadFiles as uploadChatFiles } from "../services/filesService";
+import fileService from "../services/filesService";
+library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh);
 
 const props = defineProps({
   isExpandedInput: Boolean,
-  isOpenBurgerMenu: Boolean
-})
+  isOpenBurgerMenu: Boolean,
+});
 
-const isSearchFocused = ref(false)
-const emit = defineEmits(['toggle-overlay', 'send-message'])
+const isSearchFocused = ref(false);
+const textarea = ref<HTMLTextAreaElement | null>(null)
+const emit = defineEmits(["toggle-overlay", "send-message"]);
 
 const message = computed({
   get: () => messageService.getCurrentMessage(),
-  set: (newMessage) => messageService.setCurrentMessage(newMessage)
-})
+  set: (newMessage) => messageService.setCurrentMessage(newMessage),
+});
 
-const toggleOverlay = () => emit('toggle-overlay', !props.isExpandedInput)
+const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
 
 function sendMessage() {
-  if (message.value.trim()) {
-    sendChatMessage(message.value)
-    message.value = ''
+  if (message.value.trim() || fileCount.value > 0) {
+    sendChatMessage(message.value);
+    message.value = "";
+    fileCount.value = 0; // Clear the file count
+    uploadedFiles.value.clear(); // Clear the uploaded files set
   }
 }
 
-const showResizeIcon = ref(false)
+const showResizeIcon = ref(false);
 
 function resizeTextarea(event: Event) {
-  const target = event.target as HTMLTextAreaElement
-  target.style.height = '45px'
-  target.style.height = `${Math.min(target.scrollHeight, 200)}px`
+  const target = event.target as HTMLTextAreaElement;
+  target.style.height = "45px";
+  target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
   if (parseInt(target.style.height) <= 91 || !message) {
     showResizeIcon.value = false;
   } else {
@@ -75,34 +124,46 @@ function resizeTextarea(event: Event) {
   }
 }
 
-const fileInput = ref<HTMLInputElement | null>(null)
-const uploadedFiles = ref<Set<string>>(new Set()) // Track already uploaded files by their names (and optionally size)
+const fileCount = ref(0);
+const fileInput = ref<HTMLInputElement | null>(null);
+const uploadedFiles = ref<Set<string>>(new Set());
 
 function triggerFileInput() {
   if (fileInput.value) {
-    fileInput.value.click()
+    fileInput.value.click();
   }
 }
 
 function handleFileChange(event: Event) {
-  const input = event.target as HTMLInputElement
+  const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
-    // Handle multiple files
-    const files = Array.from(input.files)
-    files.forEach(file => {
-      const fileKey = `${file.name}-${file.size}`  // Unique identifier for file based on name and size
+    const files = Array.from(input.files);
+    const newFiles = files.filter(file => {
+      const fileKey = `${file.name}-${file.size}`;
       if (!uploadedFiles.value.has(fileKey)) {
-        uploadedFiles.value.add(fileKey)  // Mark the file as uploaded
-        console.log(`Uploading file: ${file.name}`) // Here you would add your upload logic
-      } else {
-        console.log(`File ${file.name} is a duplicate and will not be uploaded again.`)
+        uploadedFiles.value.add(fileKey);
+        return true;
       }
-    })
-
-    // Reset the input after files are selected
-    input.value = ""
+      return false;
+    });
+    if (newFiles.length > 0) {
+      uploadChatFiles(newFiles);
+      fileCount.value += newFiles.length; // Increment the file count
+    }
+    input.value = ""; // Reset the input after files are selected
   }
 }
+
+const showFileCount = computed(() => fileCount.value > 0);
+
+watch(message, (newValue) => {
+  if (newValue === '') {
+    if (textarea.value) {
+      textarea.value.style.height = '45px'
+    }
+    showResizeIcon.value = false
+  }
+})
 </script>
 
 <style scoped>
@@ -191,5 +252,19 @@ function handleFileChange(event: Event) {
 
 .input-focused::placeholder {
   color: white !important;
+}
+
+.file-count-indicator {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  color: black;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
 }
 </style>
