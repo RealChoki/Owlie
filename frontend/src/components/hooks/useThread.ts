@@ -1,73 +1,110 @@
-import {useState, useEffect} from 'react';
-import {createNewThread, fetchThread} from "../services/api";
-import {runFinishedStates} from "./constants";
+import { ref, watch, type Ref } from 'vue';
+import { createNewThread, fetchThread } from "../../api/restService";
+import { runFinishedStates } from "./constants";
+import type { RunStatus, Thread, ThreadMessage, CreateThreadResponse } from "../../api/restService";
 
-export const useThread = (run, setRun) => {
-    const [threadId, setThreadId] = useState(undefined);
-    const [thread, setThread] = useState(undefined);
-    const [actionMessages, setActionMessages] = useState([]);
-    const [messages, setMessages] = useState([]);
+export const useThread = (
+  run: Ref<RunStatus | undefined>,
+  setRun: (data: RunStatus | undefined) => void
+) => {
+  const threadId = ref<string | undefined>(undefined);
+  const thread = ref<Thread | undefined>(undefined);
+  const actionMessages = ref<ThreadMessage[]>([]);
+  const messages = ref<ThreadMessage[]>([]);
 
-    // This hook is responsible for creating a new thread if one doesn't exist
-    useEffect(() => {
-        if (threadId === undefined) {
-            const localThreadId = localStorage.getItem("thread_id");
-            if (localThreadId) {
-                console.log(`Resuming thread ${localThreadId}`);
-                setThreadId(localThreadId);
-                fetchThread(localThreadId).then(setThread);
-            } else {
-                console.log("Creating new thread");
-                createNewThread().then((data) => {
-                    setRun(data);
-                    setThreadId(data.thread_id);
-                    localStorage.setItem("thread_id", data.thread_id);
-                    console.log(`Created new thread ${data.thread_id}`);
-                });
-            }
+  // onMounted(() => {
+  //   if (threadId.value === undefined) {
+  //     const localThreadId = localStorage.getItem("thread_id");
+  //     if (localThreadId) {
+  //       console.log(`Resuming thread ${localThreadId}`);
+  //       threadId.value = localThreadId;
+  //       fetchThread(localThreadId).then(data => {
+  //         if (data) {
+  //           thread.value = data;
+  //         }
+  //       });
+  //     } else {
+  //       console.log("Creating new thread");
+  //       createNewThread().then((data: CreateThreadResponse | undefined) => {
+  //         if (data) {
+  //           setRun(data);
+  //           threadId.value = data.thread_id;
+  //           localStorage.setItem("thread_id", data.thread_id);
+  //           console.log(`Created new thread ${data.thread_id}`);
+  //         }
+  //       });
+  //     }
+  //   }
+  // });
+
+  const initializeThread = async () => {
+    if (threadId.value === undefined) {
+      const localThreadId = localStorage.getItem("thread_id");
+      if (localThreadId) {
+        console.log(`Resuming thread ${localThreadId}`);
+        threadId.value = localThreadId;
+        const data = await fetchThread(localThreadId);
+        if (data) {
+          thread.value = data;
         }
-    }, [threadId, setThreadId, setThread, setRun]);
-
-    // This hook is responsible for fetching the thread when the run is finished
-    useEffect(() => {
-        if (!run || !runFinishedStates.includes(run.status)) {
-            return;
+      } else {
+        console.log("Creating new thread");
+        const data: CreateThreadResponse | undefined = await createNewThread();
+        if (data) {
+          setRun(data);
+          threadId.value = data.thread_id;
+          localStorage.setItem("thread_id", data.thread_id);
+          console.log(`Created new thread ${data.thread_id}`);
         }
+      }
+    }
+  };
 
-        console.log(`Retrieving thread ${run.thread_id}`);
-        fetchThread(run.thread_id)
-            .then((threadData) => {
-                setThread(threadData);
-            });
-    }, [run, runFinishedStates, setThread]);
-
-    // This hook is responsible for transforming the thread into a list of messages
-    useEffect(() => {
-        if (!thread) {
-            return;
-        }
-        console.log(`Transforming thread into messages`);
-
-        let newMessages = [...thread.messages, ...actionMessages]
-            .sort((a, b) => a.created_at - b.created_at)
-            .filter((message) => message.hidden !== true)
-        setMessages(newMessages);
-    }, [thread, actionMessages, setMessages]);
-
-    const clearThread = () => {
-        localStorage.removeItem("thread_id");
-        setThreadId(undefined);
-        setThread(undefined);
-        setRun(undefined);
-        setMessages([]);
-        setActionMessages([]);
+  watch(run, () => {
+    if (!run.value || !runFinishedStates.includes(run.value.status ?? "completed")) {
+      return;
     }
 
-    return {
-        threadId,
-        messages,
-        actionMessages,
-        setActionMessages,
-        clearThread
-    };
+    console.log(`Retrieving thread ${run.value.thread_id}`);
+    fetchThread(run.value.thread_id).then(threadData => {
+      if (threadData) {
+        thread.value = threadData;
+      }
+    });
+  });
+
+  watch([thread, actionMessages], () => {
+    if (!thread.value) {
+      return;
+    }
+    console.log(`Transforming thread into messages`);
+
+    let newMessages = [...thread.value.messages, ...actionMessages.value]
+      .sort((a, b) => a.created_at - b.created_at)
+      .filter(message => message.hidden !== true);
+    messages.value = newMessages;
+  });
+
+  const setActionMessages = (newMessages: ThreadMessage[]) => {
+    actionMessages.value = newMessages;
+  };
+
+  const clearThread = () => {
+    localStorage.removeItem("thread_id");
+    threadId.value = undefined;
+    thread.value = undefined;
+    setRun(undefined);
+    messages.value = [];
+    actionMessages.value = [];
+    console.log("Thread has been cleared");
+  };
+
+  return {
+    initializeThread,
+    threadId,
+    messages,
+    actionMessages,
+    setActionMessages,
+    clearThread
+  };
 };

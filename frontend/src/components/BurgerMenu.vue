@@ -99,11 +99,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from 'vue';
+import { ref, computed, defineProps, defineEmits, watch } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlass, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { VBtn, VBtnToggle } from 'vuetify/components';
+import { useThread } from './hooks/useThread';
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
@@ -148,6 +149,19 @@ const filteredModules = computed(() => {
   return [...active, ...inactive.sort()];
 });
 
+const { clearThread } = useThread(ref(undefined), () => {});
+
+const currentModule = ref<string | null>(null);
+const currentMode = ref<string>('general');
+
+watch([selectedMode], () => {
+  if (currentModule.value) {
+    const moduleNameWithMode =
+      selectedMode.value === 'testing' ? `${currentModule.value} (Test)` : currentModule.value;
+    emit('moduleSelected', moduleNameWithMode);
+  }
+});
+
 function isModuleActive(module: string): boolean {
   return activeModules.value.includes(module);
 }
@@ -155,7 +169,13 @@ function isModuleActive(module: string): boolean {
 function selectModule(module: string) {
   const moduleNameWithMode =
     selectedMode.value === 'testing' ? `${module} (Test)` : module;
-  emit('moduleSelected', moduleNameWithMode);
+
+  if (module !== currentModule.value || selectedMode.value !== currentMode.value) {
+    clearThread(); // Clear the thread when a different module or mode is selected
+    currentModule.value = module;
+    currentMode.value = selectedMode.value;
+    emit('moduleSelected', moduleNameWithMode);
+  }
   closeBurgerMenu();
 }
 

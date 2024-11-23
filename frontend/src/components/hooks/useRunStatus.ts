@@ -1,23 +1,22 @@
-import {useState, useEffect} from 'react';
-import {runFinishedStates} from "./constants";
+import { ref, watch, type Ref } from 'vue';
+import { runFinishedStates } from "./constants";
+import type { RunStatus } from "../../api/restService";
 
-export const useRunStatus = (run) => {
-    const [status, setStatus] = useState(undefined);
-    const [processing, setProcessing] = useState(false);
+export const useRunStatus = (run: Ref<RunStatus | undefined>) => {
+    const status = ref<string | undefined>(undefined);
+    const processing = ref(false);
 
-    useEffect(() => {
-        if (run?.status === "in_progress") {
-            setStatus("Thinking ...");
-        } else if (run?.status === "queued") {
-            setStatus("Queued ...");
+    watch(run, () => {
+        if (run.value?.status === "in_progress") {
+            status.value = "Thinking ...";
+        } else if (run.value?.status === "queued") {
+            status.value = "Queued ...";
         } else {
-            setStatus(undefined);
+            status.value = undefined;
         }
-    }, [run]);
 
-    useEffect(() => {
-        setProcessing(!runFinishedStates.includes(run?.status ?? "completed"));
-    }, [run]);
+        processing.value = !runFinishedStates.includes(run.value?.status ?? "completed");
+    });
 
-    return {status, processing};
+    return { status, processing };
 };

@@ -1,18 +1,27 @@
 // Core Interfaces
 
-interface RequiredAction {
+export interface RequiredAction {
     action: string;
     details?: string;
+    submit_tool_outputs?: {
+        tool_calls: {
+            id: string;
+            function: {
+                name: string;
+                arguments: string;
+            };
+        }[];
+    };
 }
 
-interface LastError {
+export interface LastError {
     code: string;
     message: string;
 }
 
 // Run Status Interfaces
 
-interface RunStatus {
+export interface RunStatus {
     run_id: string;
     thread_id: string;
     status?: string;
@@ -22,7 +31,7 @@ interface RunStatus {
 
 // Message and Thread Interfaces
 
-interface ThreadMessage {
+export interface ThreadMessage {
     id: string;
     content: string;
     role: string;
@@ -30,30 +39,32 @@ interface ThreadMessage {
     created_at: number;
 }
 
-interface Thread {
+export interface Thread {
     messages: ThreadMessage[];
 }
 
 // Tool Output Interface
 
-interface ToolOutput {
+export interface ToolOutput {
     tool_id: string;
     output: string;
 }
 
 // Response Interfaces
 
-interface PostToolResponse extends RunStatus {}
+export interface PostToolResponse extends RunStatus {}
 
-interface CreateThreadResponse extends RunStatus {}
+export interface CreateThreadResponse extends RunStatus {}
 
-interface FetchThreadResponse extends Thread {}
+export interface FetchThreadResponse extends Thread {}
 
-interface FetchRunResponse extends RunStatus {}
+export interface FetchRunResponse extends RunStatus {}
 
-interface PostMessageResponse extends RunStatus {}
+export interface PostMessageResponse extends RunStatus {}
 
 // REST Service functions
+
+// const storedData = localStorage.getItem('newThreadData');
 
 export const createNewThread = async (): Promise<CreateThreadResponse | undefined> => {
     try {
@@ -138,4 +149,29 @@ export const postToolResponse = async (
     } catch (err: any) {
         console.error(err.message);
     }
+};
+
+export const startWebSocket = (threadId: string, runId: string) => {
+    const socket = new WebSocket(`ws://localhost:8000/ws/${threadId}/${runId}`);
+
+    socket.onopen = () => {
+        console.log("WebSocket connection established.");
+    };
+
+    socket.onmessage = (event) => {
+        // Handle incoming messages (assistant's response)
+        console.log("WebSocket Message: ", event);
+        console.log("Assistant Response: ", event.data);
+        // Update your UI here, for example, appending the assistant's response to the chat.
+    };
+
+    socket.onerror = (error) => {
+        console.error("WebSocket Error: ", error);
+    };
+
+    socket.onclose = () => {
+        console.log("WebSocket connection closed.");
+    };
+
+    return socket;
 };

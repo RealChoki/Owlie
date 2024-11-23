@@ -23,6 +23,8 @@ import { ref, defineEmits } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPenToSquare, faCalendarDays } from '@fortawesome/free-solid-svg-icons'
+import { useThread } from './hooks/useThread' // Adjust the import path accordingly
+
 library.add(faPenToSquare, faCalendarDays)
 
 const props = defineProps({
@@ -33,13 +35,16 @@ const props = defineProps({
 const menuToggleRef = ref(null)
 const emit = defineEmits(['toggleBurgerMenu'])
 
+const { clearThread } = useThread(ref(undefined), () => {})
+
 const toggleBurgerMenu = () => {
   emit('toggleBurgerMenu', !props.isOpenBurgerMenu)
 }
 
 const handlePenClick = () => {
   if (!props.isOpenBurgerMenu) {
-    location.reload()
+    localStorage.removeItem('newThreadData')
+    clearThread()
   }
 }
 

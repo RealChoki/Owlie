@@ -175,6 +175,7 @@ watch(message, (newValue) => {
   padding-bottom: 1rem;
   background-color: #131213;
   z-index: 1000;
+  padding-top: 1em;
 }
 
 .btn-circle {
