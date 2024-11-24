@@ -57,7 +57,7 @@ export async function sendMessage(messageToSend: string) {
         content: messageToSend
       });
 
-      console.log(response.data.latest_message.content)
+      console.log(response)
       const assistantMessage = {
         content: response.data.latest_message.content,
         role: 'assistant',

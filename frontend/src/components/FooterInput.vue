@@ -1,5 +1,5 @@
 <template>
-  <div class="sticky-footer container-fluid d-flex align-items-end gap-2">
+  <div class="sticky-footer container-fluid d-flex align-items-end gap-2 py-2">
     <!-- Plus Icon for Upload -->
     <div class="position-relative">
       <font-awesome-icon
@@ -176,10 +176,8 @@ watch(message, (newValue) => {
   bottom: 0;
   left: 0;
   width: 100%;
-  padding-bottom: 1rem;
   background-color: #131213;
   z-index: 1000;
-  padding-top: 1em;
 }
 
 .btn-circle {

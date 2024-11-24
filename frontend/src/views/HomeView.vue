@@ -5,6 +5,7 @@
     <div v-if="chatMessages.length === 0" class="position-absolute start-50 translate-middle" style="top: 45%;">
       <img src="../components/icons/OwlLogo.png" style="width: 75px;" />
     </div>
+    
     <ChatBubbleContainer v-if="chatMessages.length > 0" :chatMessages="chatMessages" />
     <FooterInput :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
     <ExpandedInput v-if="isExpandedInput" @closeExpandedInput="closeExpandedInput" />
