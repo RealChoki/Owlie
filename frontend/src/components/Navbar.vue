@@ -3,8 +3,14 @@
     <div class="container-fluid d-flex justify-content-between align-items-center">
       <img src="../components/icons/Menu.png" style="cursor: pointer" ref="menuToggleRef" @click="toggleBurgerMenu" />
       <div class="d-flex flex-column align-items-center position-relative w-50">
-        <div class="calendar-days-background">
-          <font-awesome-icon :icon="['fas', 'calendar-days']" class="calendar-days" />
+        <div class="hearts-container">
+          <span
+            v-for="(heartClass, index) in heartClasses"
+            :key="index"
+            :class="['heart-icon', heartClass]"
+          >
+            ♥
+          </span>
         </div>
         <p class="assistant-title">{{ props.selectedModule }}</p>
       </div>
@@ -19,13 +25,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits } from 'vue'
+import { ref, defineEmits, computed, onMounted, onUnmounted, watch} from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPenToSquare, faCalendarDays } from '@fortawesome/free-solid-svg-icons'
+import { faPenToSquare, faCalendarDays, faHeart } from '@fortawesome/free-solid-svg-icons'
 import { useThread } from './hooks/useThread' // Adjust the import path accordingly
+import { messageCount } from '../services/chatService' // Adjust the import path accordingly
 
-library.add(faPenToSquare, faCalendarDays)
+library.add(faPenToSquare, faCalendarDays, faHeart)
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
@@ -48,6 +55,50 @@ const handlePenClick = () => {
   }
 }
 
+const totalHearts = 5;
+const messagesPerHalfHeart = 3;
+
+const storedMessageCount = localStorage.getItem('messageCount');
+if (storedMessageCount !== null) {
+  messageCount.value = parseInt(storedMessageCount, 10);
+}
+
+const heartClasses = computed(() => {
+  const totalHalves = totalHearts * 2;
+  const halvesRemaining = totalHalves - Math.floor(messageCount.value / messagesPerHalfHeart);
+  const classes = [];
+  for (let index = 1; index <= totalHearts; index++) {
+    const heartPosition = index * 2;
+    if (heartPosition - 1 < halvesRemaining) {
+      classes.push('heart-filled');
+    } else if (heartPosition - 2 < halvesRemaining) {
+      classes.push('heart-half-filled');
+    } else {
+      classes.push('heart-empty');
+    }
+  }
+  return classes;
+});
+
+// Watch for changes in messageCount and save to local storage
+watch(messageCount, (newValue) => {
+  localStorage.setItem('messageCount', newValue.toString());
+});
+
+// Regenerate half a heart every 5 minutes
+onMounted(() => {
+  const regenInterval = setInterval(() => {
+    if (messageCount.value > 0) {
+      messageCount.value -= messagesPerHalfHeart;
+    }
+  }, 3 * 60 * 1000);
+
+  // Clear interval on component unmount
+  onUnmounted(() => {
+    clearInterval(regenInterval);
+  });
+});
+
 </script>
 
 <style scoped>
@@ -55,15 +106,43 @@ const handlePenClick = () => {
   background-color: #131213;
 }
 
-.calendar-days-background {
+.hearts-container {
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: 5.5em;
-  height: 2.3em;
-  background: linear-gradient(90deg, white, #5b5b5b);
-  border-radius: 20px;
-  cursor: pointer;
+}
+
+.heart-icon {
+  font-size: 2rem;
+  padding: 0;
+  margin: 0 2px;
+  line-height: 1; /* Ensure no extra space around the icon */
+}
+
+.heart-filled {
+  background: linear-gradient(to right, white, #5b5b5b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heart-half-filled {
+  background: linear-gradient(to right, white, #5b5b5b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+}
+
+.heart-half-filled::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background-color: #131213; /* Match the background color */
+}
+
+.heart-empty {
+  color: #131213; 
 }
 
 .calendar-days {
@@ -88,7 +167,7 @@ const handlePenClick = () => {
   font-size: 12px;
   margin: 0;
   position: absolute;
-  bottom: -23px;
+  bottom: -18px;
   font-weight: bold;
   white-space: nowrap;
 }

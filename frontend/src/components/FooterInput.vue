@@ -80,8 +80,11 @@ import {
   faVolumeHigh,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { sendMessage as sendChatMessage } from "../services/chatService";
-import messageService from "../services/chatService";
+import {
+  sendMessage as sendChatMessage,
+  getCurrentMessage,
+  setCurrentMessage,
+} from "../services/chatService";
 import { uploadFiles as uploadChatFiles } from "../services/filesService";
 import fileService from "../services/filesService";
 library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh);
@@ -96,8 +99,8 @@ const textarea = ref<HTMLTextAreaElement | null>(null)
 const emit = defineEmits(["toggle-overlay", "send-message"]);
 
 const message = computed({
-  get: () => messageService.getCurrentMessage(),
-  set: (newMessage) => messageService.setCurrentMessage(newMessage),
+  get: () => getCurrentMessage(),
+  set: (newMessage) => setCurrentMessage(newMessage),
 });
 
 const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
@@ -108,6 +111,7 @@ function sendMessage() {
     message.value = "";
     fileCount.value = 0; // Clear the file count
     uploadedFiles.value.clear(); // Clear the uploaded files set
+    // messageCount is incremented in sendChatMessage
   }
 }
 

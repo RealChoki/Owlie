@@ -1,7 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
@@ -270,24 +270,6 @@ async def post_thread(thread_id: str, message: CreateMessage):
         last_error=run.last_error
     )
 
-@app.websocket("/ws/{thread_id}/{run_id}")
-async def websocket_endpoint(websocket: WebSocket, thread_id: str, run_id: str):
-    await websocket.accept()
-
-    stream = client.beta.threads.runs.submit_tool_outputs_stream(
-        thread_id=thread_id, 
-        run_id=run_id,
-        tool_outputs=[]
-    )
-
-    try:
-        for message in stream:
-            await websocket.send_text(message.value)
-    except Exception as e:
-        await websocket.send_text(f"Error: {str(e)}")
-    finally:
-        await websocket.close()
-
 @app.get("/api/threads/{thread_id}/latest_message")
 async def get_latest_message(thread_id: str):
     # Fetch the last message only
@@ -298,7 +280,7 @@ async def get_latest_message(thread_id: str):
     if not messages.data:
         return {"message": "No messages in the thread."}
 
-    latest_message = messages.data[-1]  # Get the latest message
+    latest_message = messages.data[0]  # Get the latest message
     return ThreadMessage(
         content=latest_message.content[0].text.value,
         role=latest_message.role,
@@ -306,3 +288,56 @@ async def get_latest_message(thread_id: str):
         id=latest_message.id,
         created_at=latest_message.created_at
     )
+
+import asyncio
+
+@app.post("/api/threads/{thread_id}/run_and_get_latest")
+async def run_and_get_latest(thread_id: str, message: CreateMessage):
+    # Post the message to the thread
+    client.beta.threads.messages.create(
+        thread_id=thread_id,
+        content=message.content,
+        role="user"
+    )
+
+    # Create a run for the assistant
+    run = client.beta.threads.runs.create(
+        thread_id=thread_id,
+        assistant_id=assistant_id
+    )
+
+    # Wait for the assistant to process the message
+    await asyncio.sleep(0.1)  # Adjust the delay as needed
+
+    # Fetch the latest message until it is different from the user's message
+    latest_message = None
+    for _ in range(10):  # Retry up to 10 times
+        messages = client.beta.threads.messages.list(
+            thread_id=thread_id
+        )
+        
+        if messages.data and messages.data[0].role != "user":
+            latest_message = messages.data[0]
+            break
+        
+        await asyncio.sleep(1)  # Wait before retrying
+
+    if not latest_message:
+        return {"message": "No response from the assistant."}
+
+    return {
+        "run_status": RunStatus(
+            run_id=run.id,
+            thread_id=thread_id,
+            status=run.status,
+            required_action=run.required_action,
+            last_error=run.last_error
+        ),
+        "latest_message": ThreadMessage(
+            content=latest_message.content[0].text.value,
+            role=latest_message.role,
+            hidden="type" in latest_message.metadata and latest_message.metadata["type"] == "hidden",
+            id=latest_message.id,
+            created_at=latest_message.created_at
+        )
+    }

@@ -8,7 +8,7 @@
     <ChatBubbleContainer v-if="chatMessages.length > 0" :chatMessages="chatMessages" />
     <FooterInput :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
     <ExpandedInput v-if="isExpandedInput" @closeExpandedInput="closeExpandedInput" />
-    <BurgerMenu v-if="isOpenBurgerMenu" @closeBurgerMenu="closeBurgerMenu" @moduleSelected="updateSelectedModule"
+    <BurgerMenu v-if="isOpenBurgerMenu" @closeBurgerMenu="closeBurgerMenu" @moduleSelected="handleModuleSelected" :currentMode="currentMode" :currentModule="currentModule"
       ref="burgerMenuRef" />
   </div>
 </template>
@@ -30,11 +30,15 @@ const isOpenBurgerMenu = ref(false);
 
 const chatMessages = computed(() => chatService.getMessages());
 
+const currentModule = ref<string | undefined>(undefined);
+const currentMode = ref<string>('general');
+
 const selectedModule = ref('');
 
 function updateSelectedModule(module: string) {
   selectedModule.value = module;
   localStorage.setItem('lastSelectedModule', module);
+  handleModuleSelected(module);
 }
 
 const burgerMenuRef = ref<ComponentPublicInstance | null>(null);
@@ -55,6 +59,21 @@ function toggleOverlay(newState: boolean) {
   isExpandedInput.value = newState;
 }
 
+function handleModuleSelected(moduleNameWithMode: string) {
+  if (moduleNameWithMode.endsWith(' (Test)')) {
+    currentMode.value = 'testing';
+    currentModule.value = moduleNameWithMode.replace(' (Test)', '');
+    selectedModule.value = `${currentModule.value} (Test)`;
+  } else {
+    currentMode.value = 'general';
+    currentModule.value = moduleNameWithMode;
+    selectedModule.value = currentModule.value;
+  }
+  // Save the current mode and module to local storage
+  localStorage.setItem('currentMode', currentMode.value);
+  localStorage.setItem('currentModule', currentModule.value);
+}
+
 function handleClickOutside(event: MouseEvent) {
   if (
     burgerMenuRef.value &&
@@ -67,23 +86,61 @@ function handleClickOutside(event: MouseEvent) {
 
 async function retrieveData() {
   let data;
-  const storedData = localStorage.getItem('newThreadData');
+  const storedData = null;
   if (storedData) {
-    data = JSON.parse(storedData);
+    // data = JSON.parse(storedData);
   } else {
-    data = await createNewThread();
+    //hardcoded data for testing 
+    data = {
+      "run_id": "run_FoaRkxJHg3NKgpMWqSWy1an2",
+      "thread_id": "thread_kTRd04hCNoBqIkbyQK2Pxixm",
+      "status": "queued",
+      "required_action": null,
+      "last_error": null
+    };
     localStorage.setItem('newThreadData', JSON.stringify(data));
   }
   console.log(data);
-  //[Log] {run_id: "run_xXCT808DzQkmBHCkckDxYYT0", thread_id: "thread_wk7RAhj9oKImmFOeX8g95aW3", status: "queued", required_action: null, last_error: null} (HomeView.vue, line 49)
 }
 
+
+// async function retrieveData() {
+//   let data;
+//   // localStorage.removeItem('newThreadData')
+//   const storedData = localStorage.getItem('newThreadData');
+  
+//   if (storedData) {
+//     data = JSON.parse(storedData);
+//   } else {
+//     data = await createNewThread();
+//     localStorage.setItem('newThreadData', JSON.stringify(data));
+//   }
+//   console.log(data);
+//   //[Log] {run_id: "run_xXCT808DzQkmBHCkckDxYYT0", thread_id: "thread_wk7RAhj9oKImmFOeX8g95aW3", status: "queued", required_action: null, last_error: null} (HomeView.vue, line 49)
+// }
 
 onMounted(() => {
   retrieveData();
   document.addEventListener('click', handleClickOutside);
-  const savedModule = localStorage.getItem('lastSelectedModule');
-  selectedModule.value = savedModule || 'Grundlagen der Programmierung';
+
+  // Retrieve the saved module and mode from local storage
+  const savedModule = localStorage.getItem('currentModule');
+  const savedMode = localStorage.getItem('currentMode');
+
+  if (savedModule) {
+    currentModule.value = savedModule;
+    if (savedMode === 'testing') {
+      selectedModule.value = `${savedModule} (Test)`;
+    } else {
+      selectedModule.value = savedModule;
+    }
+  } else {
+    selectedModule.value = 'Grundlagen der Programmierung';
+  }
+
+  if (savedMode) {
+    currentMode.value = savedMode;
+  }
 });
 
 onBeforeUnmount(() => {

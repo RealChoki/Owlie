@@ -110,6 +110,14 @@ library.add(faMagnifyingGlass, faCircleInfo);
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
+  currentModule: {
+    type: String,
+    default: null,
+  },
+  currentMode: {
+    type: String,
+    default: 'general',
+  },
 });
 
 const emit = defineEmits(['closeBurgerMenu', 'moduleSelected']);
@@ -118,8 +126,15 @@ const searchQuery = ref('');
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref('general');
+const selectedMode = ref(props.currentMode);
 const showInfo = ref(false);
+
+watch(
+  () => props.currentMode,
+  (newMode) => {
+    selectedMode.value = newMode;
+  }
+);
 
 const modules = ref<string[]>([
   'Grundlagen der Programmierung',
@@ -142,25 +157,12 @@ const filteredModules = computed(() => {
   );
 
   const active = filtered.filter(isModuleActive);
-  const inactive = filtered.filter(
-    (module) => !isModuleActive(module)
-  );
+  const inactive = filtered.filter((module) => !isModuleActive(module));
 
   return [...active, ...inactive.sort()];
 });
 
-const { clearThread } = useThread(ref(undefined), () => {});
-
-const currentModule = ref<string | null>(null);
-const currentMode = ref<string>('general');
-
-watch([selectedMode], () => {
-  if (currentModule.value) {
-    const moduleNameWithMode =
-      selectedMode.value === 'testing' ? `${currentModule.value} (Test)` : currentModule.value;
-    emit('moduleSelected', moduleNameWithMode);
-  }
-});
+const { clearThread, threadId } = useThread(ref(undefined), () => {});
 
 function isModuleActive(module: string): boolean {
   return activeModules.value.includes(module);
@@ -170,10 +172,18 @@ function selectModule(module: string) {
   const moduleNameWithMode =
     selectedMode.value === 'testing' ? `${module} (Test)` : module;
 
-  if (module !== currentModule.value || selectedMode.value !== currentMode.value) {
+  console.log('Selected module:', module);
+  console.log('Current module:', props.currentModule);
+  console.log('Selected mode:', selectedMode.value);
+  console.log('Current mode:', props.currentMode);
+
+  if (module !== props.currentModule || selectedMode.value !== props.currentMode) {
+    if (threadId.value && module === props.currentModule && selectedMode.value === props.currentMode) {
+      // Do not clear the thread if the same module and mode are selected
+      closeBurgerMenu();
+      return;
+    }
     clearThread(); // Clear the thread when a different module or mode is selected
-    currentModule.value = module;
-    currentMode.value = selectedMode.value;
     emit('moduleSelected', moduleNameWithMode);
   }
   closeBurgerMenu();
