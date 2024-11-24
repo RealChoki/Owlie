@@ -93,12 +93,12 @@ async function retrieveData() {
   } else {
     //hardcoded data for testing 
     data = {
-      "run_id": "run_FoaRkxJHg3NKgpMWqSWy1an2",
-      "thread_id": "thread_kTRd04hCNoBqIkbyQK2Pxixm",
+      "run_id": "run_zVfBIidTE2rG8s92eiNtD9Qo",
+      "thread_id": "thread_GTXNjmUjU3O3eV0IAJGAIc7x",
       "status": "queued",
       "required_action": null,
       "last_error": null
-    };
+    }
     localStorage.setItem('newThreadData', JSON.stringify(data));
   }
   console.log(data);

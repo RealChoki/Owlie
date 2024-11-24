@@ -3,7 +3,8 @@ import axios from 'axios';
 
 const chatState = reactive({
   messages: [] as { content: string; role: string; id?: string}[],
-  currentMessage: '' as string
+  currentMessage: '' as string,
+  thinking: false as boolean,
 });
 
 export const messageCount = ref(0);
@@ -25,6 +26,7 @@ function getRandomNoHeartsMessage() {
 
 
 export async function sendMessage(messageToSend: string) {
+  chatState.thinking = true;
   if (messageToSend.trim()) {
     try {
       // Create a new user message object
@@ -53,21 +55,25 @@ export async function sendMessage(messageToSend: string) {
         throw new Error('Thread ID not found in localStorage');
       }
 
-      const response = await axios.post(`http://localhost:8000/api/threads/thread_kTRd04hCNoBqIkbyQK2Pxixm/run_and_get_latest`, {
+      const response = await axios.post(`http://localhost:8000/api/threads/thread_GTXNjmUjU3O3eV0IAJGAIc7x/send_and_wait`, {
         content: messageToSend
       });
 
       console.log(response)
       const assistantMessage = {
-        content: response.data.latest_message.content,
+        content: response.data.content,
         role: 'assistant',
       };
 
       chatState.messages.push(assistantMessage);
+      messageCount.value += 1
+
     } catch (error) {
       console.error('Error sending message:', error);
+      chatState.thinking = false;
     }
   }
+  chatState.thinking = false;
 }
 
 export function getMessages() {
@@ -87,10 +93,15 @@ export function clearMessages() {
   messageCount.value = 0;
 }
 
+export function getThinking() {
+  return chatState.thinking;
+}
+
 export default {
   sendMessage,
   getMessages,
   getCurrentMessage,
   setCurrentMessage,
-  clearMessages
+  clearMessages,
+  getThinking,
 };

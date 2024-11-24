@@ -342,6 +342,56 @@ async def run_and_get_latest(thread_id: str, message: CreateMessage):
         )
     }
 
+
+@app.post("/api/threads/{thread_id}/send_and_wait")
+async def send_message_and_wait_for_response(thread_id: str, message: CreateMessage):
+    # Step 1: Post the message to the assistant
+    client.beta.threads.messages.create(
+        thread_id=thread_id,
+        content=message.content,
+        role="user"
+    )
+
+    # Start the conversation run
+    client.beta.threads.runs.create(
+        thread_id=thread_id,
+        assistant_id=assistant_id
+    )
+
+    # Step 2: Wait for the assistant's response indefinitely
+    wait_interval = 5
+
+    while True:
+        await asyncio.sleep(wait_interval)
+
+        # Fetch the latest messages
+        messages = client.beta.threads.messages.list(
+            thread_id=thread_id
+        )
+        
+        if messages.data:
+            # Look for the first assistant response
+            for message in messages.data:
+                if message.role == "assistant":
+                    # Attempt to extract the content safely
+                    content = "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+                    
+                    # Directly access content attributes if it's a TextContentBlock object
+                    if hasattr(message, 'content') and message.content:
+                        if isinstance(message.content, list) and message.content:
+                            # Access the first content block
+                            content_block = message.content[0]
+                            if hasattr(content_block, 'text') and hasattr(content_block.text, 'value'):
+                                content = content_block.text.value
+                        
+                    return ThreadMessage(
+                        content=content,
+                        role=message.role,
+                        hidden="type" in message.metadata and message.metadata.get("type") == "hidden",
+                        id=message.id,
+                        created_at=message.created_at
+                    )
+
 # validating	the input file is being validated before the batch can begin
 # failed	the input file has failed the validation process
 # in_progress	the input file was successfully validated and the batch is currently being run
