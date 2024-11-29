@@ -2,7 +2,11 @@
   <div ref="chatContainer" class="chat-bubble-container my-4 pb-5">
     <div v-for="(message, index) in messages" :key="message.id">
       <div v-if="message.role === 'user'" class="d-flex justify-content-end">
-        <div class="chat-bubble user-msg my-3">
+        <div
+        :class="{
+          'chat-bubble user-msg my-3': true,
+          'blur-effect': props.isOpenBurgerMenu
+        }">
           {{ message.content }}
         </div>
       </div>
@@ -44,6 +48,11 @@ import {
 const messages = getMessages();
 const chatContainer = ref<HTMLDivElement | null>(null);
 const thinking = computed(() => getThinking());
+
+
+const props = defineProps({
+  isOpenBurgerMenu: Boolean,
+});
 
 watch(messageCount, async () => {
   await nextTick();
@@ -124,5 +133,10 @@ watch(messageCount, async () => {
   30% {
     transform: translateY(-10px);
   }
+}
+
+.blur-effect {
+  filter: blur(1.5px);
+  pointer-events: none;
 }
 </style>

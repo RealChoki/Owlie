@@ -6,7 +6,7 @@
       <img src="../components/icons/OwlLogo.png" style="width: 75px;" />
     </div>
     
-    <ChatBubbleContainer v-if="chatMessages.length > 0" :chatMessages="chatMessages" />
+    <ChatBubbleContainer v-if="chatMessages.length > 0" :chatMessages="chatMessages" :isOpenBurgerMenu="isOpenBurgerMenu" />
     <FooterInput :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
     <ExpandedInput v-if="isExpandedInput" @closeExpandedInput="closeExpandedInput" />
     <BurgerMenu v-if="isOpenBurgerMenu" @closeBurgerMenu="closeBurgerMenu" @moduleSelected="handleModuleSelected" :currentMode="currentMode" :currentModule="currentModule"
