@@ -13,7 +13,10 @@
 
       <div
         v-else-if="message.role === 'assistant'"
-        class="assistant-msg text-white p-2 my-2"
+        :class="{
+          'assistant-msg text-white p-2 my-2': true,
+          'blur-effect': props.isOpenBurgerMenu
+        }"
       >
         <img
           src="./icons/OwlLogo.png"
