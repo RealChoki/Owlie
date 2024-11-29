@@ -9,8 +9,16 @@
     <ChatBubbleContainer v-if="chatMessages.length > 0" :chatMessages="chatMessages" :isOpenBurgerMenu="isOpenBurgerMenu" />
     <FooterInput :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
     <ExpandedInput v-if="isExpandedInput" @closeExpandedInput="closeExpandedInput" />
-    <BurgerMenu v-if="isOpenBurgerMenu" @closeBurgerMenu="closeBurgerMenu" @moduleSelected="handleModuleSelected" :currentMode="currentMode" :currentModule="currentModule"
-      ref="burgerMenuRef" />
+    <transition name="slide">
+      <BurgerMenu
+        v-if="isOpenBurgerMenu"
+        @closeBurgerMenu="closeBurgerMenu"
+        @moduleSelected="handleModuleSelected"
+        :currentMode="currentMode"
+        :currentModule="currentModule"
+        ref="burgerMenuRef"
+      />
+    </transition>
   </div>
 </template>
 
@@ -148,3 +156,26 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
 });
 </script>
+
+<style scoped>
+::v-deep(.slide-enter-active),
+::v-deep(.slide-leave-active) {
+  transition: transform 0.5s ease;
+}
+
+::v-deep(.slide-enter) {
+  transform: translateX(-100%);
+}
+
+::v-deep(.slide-enter-to) {
+  transform: translateX(0);
+}
+
+::v-deep(.slide-leave) {
+  transform: translateX(0);
+}
+
+::v-deep(.slide-leave-to) {
+  transform: translateX(-100%);
+}
+</style>
