@@ -1,0 +1,112 @@
+{
+    "universities": {
+        "hochschule_für_technik_und_wirtschaft_berlin": {
+            "bachelor": {
+                "wirtschaftsinformatik": {
+                    "grundlagen_der_programmierung": {
+                        "course_id": "50115",
+                        "general": {
+                            "instructions": "Du bist ein freundlicher und unterstützender Lehrassistent für das Modul Grundlagen der Programmierung und Informatik. Deine Aufgabe ist es, Erstsemester-Studierende zur Lösung zu führen, ohne jedoch vollständige Lösungen zu geben. Besprich keine Themen, die nicht in den Vorlesungsskripten behandelt werden, wie zum Beispiel Listen. Deine Unterstützung soll das Verständnis fördern und das selbstständige Denken anregen, ohne die akademische Integrität zu gefährden. Du solltest ausschließlich Fragen zu Themen der Grundlagen der Programmierung oder Informatik beantworten. Verhalte dich dabei wie eine weise Eule: freundlich und prägnant. Gib nur kurze, klare Antworten und vermeide lange Erklärungen. Bei Fragen zu Codefehlern oder Problemen sollst du keine direkte Lösung geben, sondern nur hilfreiche Hinweise geben, die den Studierenden zur richtigen Lösung führen. Verwende bei Bedarf Pseudocode im folgenden Format: START INITIALISIERE sum mit 0 FÜR jede Zahl von 1 bis 5 MACH ADDIERE die Zahl zu sum ENDE FÜR GIB sum aus END",
+                            "data_path": "backend/data2/hochschule_für_technik_und_wirtschaft_berlin/bachelor/wirtschaftsinformatik/grundlagen_der_programmierung/general",
+                            "tools": [
+                                {
+                                    "type": "function",
+                                    "function": {
+                                        "name": "get_moodle_course_content",
+                                        "description": "Fetches Moodle course content based on course ID.",
+                                        "parameters": {
+                                            "type": "object",
+                                            "required": [
+                                                "courseid"
+                                            ],
+                                            "properties": {
+                                                "courseid": {
+                                                    "type": "string",
+                                                    "description": "The Moodle course ID, e.g., '51589'."
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "model": "gpt-4o-mini"
+                        },
+                        "testing": {
+                            "instructions": "Du bist ein interaktiver Mentor für Programmierkonzepte. Stelle eine Frage nach der anderen in vorgegebener Reihenfolge. Bei Schwierigkeiten stelle gezielte Fragen oder gib Erklärungen und Beispiele. Wiederhole Themen, bei denen der Benutzer unsicher ist, und überprüfe das Verständnis mit Kontrollfragen. Gratuliere bei Erfolg und gib Aufgaben zu Themen wo der Benutzer Schwierigkeiten hat. Dokumentiere behandelte und offene Themen klar. Beantworte ausschließlich Fragen zu Grundlagen der Programmierung oder Informatik. Wenn der Benutzer ein Thema nennt, zu dem er evaluiert werden möchte, führe ihn durch spezifische Fragen zu diesem Thema nur mit Hilfe bereitgestellter Fragen. Verhalte dich dabei wie eine weise Eule: freundlich und prägnant.",
+                            "data_path": "backend/data2/hochschule_für_technik_und_wirtschaft_berlin/bachelor/wirtschaftsinformatik/grundlagen_der_programmierung/test",
+                            "tools": [
+                                {
+                                    "type": "function",
+                                    "function": {
+                                        "name": "get_moodle_course_content",
+                                        "description": "Fetches Moodle course content based on course ID.",
+                                        "parameters": {
+                                            "type": "object",
+                                            "required": [
+                                                "courseid"
+                                            ],
+                                            "properties": {
+                                                "courseid": {
+                                                    "type": "string",
+                                                    "description": "The Moodle course ID, e.g., '51589'."
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "model": "gpt-4o-mini"
+                        }
+                    },
+                    "statistik": {
+                        "course_id": "48455",
+                        "general": {
+                            "instructions": "Statistik general instructions.",
+                            "data_path": "backend/htw/bachelor/wirtschaftsinformatik/statistik/general_mode/data",
+                            "tools": [],
+                            "model": "gpt-4o-mini"
+                        },
+                        "testing": {
+                            "instructions": "Statistik testing instructions.",
+                            "data_path": "backend/htw/bachelor/wirtschaftsinformatik/statistik/testing_mode/data",
+                            "tools": [],
+                            "model": "gpt-4o-mini"
+                        }
+                    }
+                }
+            },
+            "master": {
+                "wirtschaftsinformatik": {
+                    "bsp": {
+                        "general": {
+                            "instructions": "Advanced programming general instructions.",
+                            "data_path": "backend/htw/master/informatik/advanced_programming/general_mode/data",
+                            "tools": [],
+                            "model": "gpt-4o-advanced"
+                        },
+                        "testing": {
+                            "instructions": "Advanced programming testing instructions.",
+                            "data_path": "backend/htw/master/informatik/advanced_programming/testing_mode/data",
+                            "tools": [],
+                            "model": "gpt-4o-advanced"
+                        }
+                    }
+                }
+            }
+        },
+        "technische_universität_berlin": {
+            "bachelor": {
+                "subject_name": {
+                    "course_name": {
+                        "general": {
+                            "instructions": "Instructions for other university's course.",
+                            "data_path": "backend/other_university/bachelor/subject_name/course_name/general_mode/data",
+                            "tools": [],
+                            "model": "gpt-4o-mini"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
