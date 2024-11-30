@@ -9,6 +9,7 @@
     <ChatBubbleContainer v-if="chatMessages.length > 0" :chatMessages="chatMessages" :isOpenBurgerMenu="isOpenBurgerMenu" />
     <FooterInput :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
     <ExpandedInput v-if="isExpandedInput" @closeExpandedInput="closeExpandedInput" />
+<!-- HomeView.vue -->
     <transition name="slide">
       <BurgerMenu
         v-if="isOpenBurgerMenu"
@@ -157,25 +158,25 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped>
-::v-deep(.slide-enter-active),
-::v-deep(.slide-leave-active) {
+<style>
+.slide-enter-active,
+.slide-leave-active {
   transition: transform 0.5s ease;
 }
 
-::v-deep(.slide-enter) {
+.slide-enter-from {
   transform: translateX(-100%);
 }
 
-::v-deep(.slide-enter-to) {
+.slide-enter-to {
   transform: translateX(0);
 }
 
-::v-deep(.slide-leave) {
+.slide-leave-from {
   transform: translateX(0);
 }
 
-::v-deep(.slide-leave-to) {
+.slide-leave-to {
   transform: translateX(-100%);
 }
 </style>
