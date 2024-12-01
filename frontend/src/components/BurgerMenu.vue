@@ -104,7 +104,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlass, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { VBtn, VBtnToggle } from 'vuetify/components';
-import { useThread } from './hooks/useThread';
+import axios from 'axios';
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
@@ -136,6 +136,7 @@ watch(
   }
 );
 
+// List of all modules
 const modules = ref<string[]>([
   'Grundlagen der Programmierung',
   'Statistik',
@@ -145,11 +146,17 @@ const modules = ref<string[]>([
   'Betriebssysteme',
 ]);
 
+// List of active (clickable) modules
 const activeModules = ref<string[]>([
   'Grundlagen der Programmierung',
-  'Webentwicklung',
 ]);
 
+// Function to check if a module is active
+function isModuleActive(module: string): boolean {
+  return activeModules.value.includes(module);
+}
+
+// Computed property for filtered modules
 const filteredModules = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const filtered = modules.value.filter((module) =>
@@ -162,30 +169,43 @@ const filteredModules = computed(() => {
   return [...active, ...inactive.sort()];
 });
 
-const { clearThread, threadId } = useThread(ref(undefined), () => {});
+const courseKeyMapping: { [key: string]: string } = {
+  'Grundlagen der Programmierung': 'grundlagen_der_programmierung',
+  // 'Statistik': 'statistik',
+  // Remove other mappings as needed
+};
 
-function isModuleActive(module: string): boolean {
-  return activeModules.value.includes(module);
-}
+async function selectModule(module: string) {
+  if (!isModuleActive(module)) {
+    // If the module is inactive, do nothing
+    return;
+  }
 
-function selectModule(module: string) {
   const moduleNameWithMode =
     selectedMode.value === 'testing' ? `${module} (Test)` : module;
+
+  // Prepare course name and mode name
+  const modeName = selectedMode.value;
+  const courseName =
+    courseKeyMapping[module] || module.toLowerCase().replace(/ /g, '_');
+
+  // Send request to backend to set assistant
+  try {
+    await axios.post('http://localhost:8000/api/set_assistant', {
+      course_name: courseName,
+      mode_name: modeName,
+    });
+  } catch (error) {
+    console.error('Error setting assistant:', error);
+  }
 
   console.log('Selected module:', module);
   console.log('Current module:', props.currentModule);
   console.log('Selected mode:', selectedMode.value);
   console.log('Current mode:', props.currentMode);
 
-  if (module !== props.currentModule || selectedMode.value !== props.currentMode) {
-    if (threadId.value && module === props.currentModule && selectedMode.value === props.currentMode) {
-      // Do not clear the thread if the same module and mode are selected
-      closeBurgerMenu();
-      return;
-    }
-    clearThread(); // Clear the thread when a different module or mode is selected
-    emit('moduleSelected', moduleNameWithMode);
-  }
+  // Emit the selected module and mode
+  emit('moduleSelected', moduleNameWithMode);
   closeBurgerMenu();
 }
 
@@ -323,7 +343,7 @@ ul.p-0 {
 
 .inactive {
   opacity: 0.5 !important;
-  cursor: standard !important;
+  cursor: not-allowed !important;
   pointer-events: none !important;
 }
 

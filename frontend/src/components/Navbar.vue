@@ -25,35 +25,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, computed, onMounted, onUnmounted, watch} from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPenToSquare, faCalendarDays, faHeart } from '@fortawesome/free-solid-svg-icons'
-import { useThread } from './hooks/useThread' // Adjust the import path accordingly
-import { messageCount } from '../services/chatService' // Adjust the import path accordingly
+import { ref, defineEmits, computed, onMounted, onUnmounted, watch } from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faPenToSquare, faCalendarDays, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { useThread } from './hooks/useThread'; // Adjust the import path accordingly
+import { messageCount, clearMessages } from '../services/chatService'; // Adjust the import path accordingly
+import axios from 'axios';
 
-library.add(faPenToSquare, faCalendarDays, faHeart)
+library.add(faPenToSquare, faCalendarDays, faHeart);
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
   selectedModule: String  // Add selectedModule prop
-})
+});
 
-const menuToggleRef = ref(null)
-const emit = defineEmits(['toggleBurgerMenu'])
+const menuToggleRef = ref(null);
+const emit = defineEmits(['toggleBurgerMenu']);
 
-const { clearThread } = useThread(ref(undefined), () => {})
+const { clearThread } = useThread(ref(undefined), () => {}); // Initialize useThread and get clearThread
 
 const toggleBurgerMenu = () => {
-  emit('toggleBurgerMenu', !props.isOpenBurgerMenu)
-}
+  emit('toggleBurgerMenu', !props.isOpenBurgerMenu);
+};
 
-const handlePenClick = () => {
+const handlePenClick = async () => {
   if (!props.isOpenBurgerMenu) {
-    localStorage.removeItem('newThreadData')
-    clearThread()
+    clearMessages(false); // Do not reset messageCount
   }
-}
+};
 
 const totalHearts = 5;
 const messagesPerHalfHeart = 3;

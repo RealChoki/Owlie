@@ -22,8 +22,7 @@ const noHeartsMessages = [
 function getRandomNoHeartsMessage() {
   const randomIndex = Math.floor(Math.random() * noHeartsMessages.length);
   return noHeartsMessages[randomIndex];
-}(0);
-
+}
 
 export async function sendMessage(messageToSend: string) {
   chatState.thinking = true;
@@ -88,9 +87,14 @@ export function setCurrentMessage(newMessage: string) {
   chatState.currentMessage = newMessage;
 }
 
-export function clearMessages() {
+export function clearMessages(resetCount: boolean = true) {
   chatState.messages.length = 0;
-  messageCount.value = 0;
+  if (resetCount) {
+    messageCount.value = 0;
+  }
+  // Optionally, reset other related state
+  // chatState.currentMessage = '';
+  // chatState.thinking = false;
 }
 
 export function getThinking() {

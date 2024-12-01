@@ -1,7 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
@@ -9,16 +9,29 @@ from openai import OpenAI, AssistantEventHandler
 from openai.types.beta.threads.run import RequiredAction, LastError
 from openai.types.beta.threads.run_submit_tool_outputs_params import ToolOutput
 from function_calling import get_moodle_course_content
+import logging
 
 # Load environment variables
 load_dotenv()
+
+# Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# Get the directory of the current script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Construct the path to 'config.json' one level up
+config_path = os.path.join(BASE_DIR, '..', 'config.json')
+
+# Load and parse config.json
+with open(config_path, 'r') as f:
+    config_data = json.load(f)
 
 # Initialize FastAPI application
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],  # Allow all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,8 +40,109 @@ app.add_middleware(
 # Global variables for assistant and vector store IDs
 assistant_id = None
 vector_store_id = None
-FILES_DIR = "../data/"
+current_course = None
+current_mode = None
+assistant_cache = {}  # Cache assistants for reuse
+FILES_DIR = ""
 file_ids = []
+
+# Configure logging
+logging.basicConfig(level=logging.ERROR)
+
+def get_course_config(course_name, mode_name):
+    # Traverse the config to find the matching course and mode
+    for university in config_data['universities'].values():
+        for degree_level in university.values():
+            for subject in degree_level.values():
+                course = subject.get(course_name)
+                if course and mode_name in course:
+                    return course[mode_name]
+    raise ValueError('Course or mode not found in config')
+
+def initialize_assistant(course_name, mode_name):
+    global assistant_id, vector_store_id, FILES_DIR, file_ids, current_course, current_mode
+
+    try:
+        assistant_key = f"{course_name}_{mode_name}"
+        if assistant_key in assistant_cache:
+            assistant_id = assistant_cache[assistant_key]['assistant_id']
+            vector_store_id = assistant_cache[assistant_key]['vector_store_id']
+            current_course = course_name
+            current_mode = mode_name
+            return assistant_id, vector_store_id
+
+        mode_config = get_course_config(course_name, mode_name)
+
+        instructions = mode_config['instructions']
+        data_path = mode_config['data_path']
+        tools = mode_config['tools']
+        model = mode_config['model']
+
+        FILES_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', data_path))
+        if not os.path.exists(FILES_DIR):
+            raise FileNotFoundError(f"Data path {FILES_DIR} does not exist.")
+
+        file_ids = []
+
+        # Upload files to OpenAI
+        for file in sorted(os.listdir(FILES_DIR)):
+            file_path = os.path.join(FILES_DIR, file)
+            if os.path.isfile(file_path):
+                with open(file_path, "rb") as f:
+                    _file = client.files.create(file=f, purpose="assistants")
+                    file_ids.append(_file.id)
+                    print(f"Uploaded file: {_file.id} - {file}")
+            else:
+                print(f"Skipping {file_path}, not a file.")
+
+        if not file_ids:
+            raise ValueError("No files were uploaded. Please check the data directory.")
+
+        # Create vector store
+        vector_store = client.beta.vector_stores.create(
+            name=f"{course_name} - {mode_name}",
+            file_ids=file_ids
+        )
+        vector_store_id = vector_store.id
+        print(f"Created vector store: {vector_store_id} - {vector_store.name}")
+
+        # Create assistant
+        assistant = client.beta.assistants.create(
+            instructions=instructions,
+            name=f"{course_name} - {mode_name} Assistant",
+            tools=tools,
+            tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}},
+            model=model,
+        )
+        assistant_id = assistant.id
+        current_course = course_name
+        current_mode = mode_name
+
+        # Cache the assistant for future use
+        assistant_cache[assistant_key] = {
+            'assistant_id': assistant_id,
+            'vector_store_id': vector_store_id
+        }
+        return assistant_id, vector_store_id
+    except Exception as e:
+        logging.error(f"Error initializing assistant: {e}")
+        raise e  # Re-raise exception to trigger a 500 response
+
+# Add an endpoint to set the assistant based on course and mode
+@app.post("/api/set_assistant")
+async def set_assistant(request: Request):
+    data = await request.json()
+    course_name = data.get('course_name')
+    mode_name = data.get('mode_name')
+
+    if not course_name or not mode_name:
+        return {"error": "Course name and mode name are required"}
+
+    try:
+        assistant_id, vector_store_id = initialize_assistant(course_name, mode_name)
+        return {"message": "Assistant updated successfully", "assistant_id": assistant_id, "vector_store_id": vector_store_id}
+    except ValueError as e:
+        return {"error": str(e)}
 
 # Helper data models
 class RunStatus(BaseModel):
@@ -96,85 +210,11 @@ class EventHandler(AssistantEventHandler):
                 print(f"Received Text Delta: {text.value}", end="", flush=True)
             print("Stream finished")
 
-# Function to initialize the assistant and upload resources
-def initialize_assistant():
-    global assistant_id, vector_store_id
-
-    # Upload files to OpenAI
-    for file in sorted(os.listdir(FILES_DIR)):
-        with open(os.path.join(FILES_DIR, file), "rb") as f:
-            _file = client.files.create(file=f, purpose="assistants")
-            file_ids.append(_file.id)
-            print(f"Uploaded file: {_file.id} - {file}")
-
-    # Create a vector store for course content
-    vector_store = client.beta.vector_stores.create(
-        name="Vorlesungsuntertitel zu den Grundlagen der Programmierung",
-        file_ids=file_ids
-    )
-    vector_store_id = vector_store.id
-    print(f"Created vector store: {vector_store_id} - {vector_store.name}")
-
-
-    # Instructions for test programming assistant
-    # instructions = (
-    #     " Du bist ein interaktiver Mentor für Programmierkonzepte. Stelle eine Frage nach der anderen in vorgegebener"
-    #     " Reihenfolge. Bei Schwierigkeiten stelle gezielte Fragen oder gib Erklärungen und Beispiele. Wiederhole Themen,"
-    #     " bei denen der Benutzer unsicher ist, und überprüfe das Verständnis mit Kontrollfragen. Gratuliere bei Erfolg"
-    #     " und gib Aufgaben zu schwierigen Themen. Dokumentiere behandelte und offene Themen klar."
-    # )
-
-    # Instructions for general programming assistant
-    instructions = (
-        " Du bist ein freundlicher und unterstützender Lehrassistent für das Modul Grundlagen der Programmierung"
-        " Deine Aufgabe ist es Erstsemester-Studierende zur Lösung zu führen ohne jedoch vollständige Lösungen zu"
-        " geben Bespreche keine Themen die nicht in den Vorlesungsskripten behandelt werden wie zum Beispiel Listen"
-        " Deine Unterstützung soll das Verständnis fördern und das selbstständige Denken anregen ohne die akademische"
-        " Integrität zu gefährden Verwende bei Bedarf Pseudocode im folgenden Format"
-        " START"
-        "     INITIALISIERE sum mit 0"
-        "     FÜR jede Zahl von 1 bis 5 MACH"
-        "         ADDIERE die Zahl zu sum"
-        "     ENDE FÜR"
-        "     GIB sum aus"
-        " END"
-    )
-
-    # Register the assistant and add the Moodle function as a callable tool
-    assistant = client.beta.assistants.create(
-        instructions=instructions,
-        name="HTWCodingMentor",
-        tools=[{
-            "type": "function",
-            "function": {
-                "name": "get_moodle_course_content",
-                "description": "Fetches Moodle course content based on course ID.",
-                "parameters": {
-                    "type": "object",
-                    "required": ["courseid"],
-                    "properties": {
-                        "courseid": {
-                            "type": "string",
-                            "description": "The Moodle course ID, e.g., '51589'."
-                        }
-                    },
-                    "additionalProperties": False
-                }
-            }
-        }],
-        tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}},
-        model="gpt-4o-mini",
-    )
-    assistant_id = assistant.id
-    print(f"Created assistant: {assistant_id} - {assistant.name}")
-
-# Initialize the assistant when the server starts
-initialize_assistant()
-
-# API Endpoints
-
+# Update endpoints to check if assistant_id is initialized
 @app.post("/api/new")
 def post_new():
+    if assistant_id is None:
+        return {"error": "Assistant is not initialized. Please set the assistant using /api/set_assistant."}
     thread = client.beta.threads.create()
     client.beta.threads.messages.create(
         thread_id=thread.id,
@@ -251,6 +291,8 @@ async def get_thread(thread_id: str):
 
 @app.post("/api/threads/{thread_id}")
 async def post_thread(thread_id: str, message: CreateMessage):
+    if assistant_id is None:
+        return {"error": "Assistant is not initialized. Please set the assistant using /api/set_assistant."}
     client.beta.threads.messages.create(
         thread_id=thread_id,
         content=message.content,
@@ -293,6 +335,8 @@ import asyncio
 
 @app.post("/api/threads/{thread_id}/run_and_get_latest")
 async def run_and_get_latest(thread_id: str, message: CreateMessage):
+    if assistant_id is None:
+        return {"error": "Assistant is not initialized. Please set the assistant using /api/set_assistant."}
     # Post the message to the thread
     client.beta.threads.messages.create(
         thread_id=thread_id,
@@ -345,6 +389,8 @@ async def run_and_get_latest(thread_id: str, message: CreateMessage):
 
 @app.post("/api/threads/{thread_id}/send_and_wait")
 async def send_message_and_wait_for_response(thread_id: str, message: CreateMessage):
+    if assistant_id is None:
+        return {"error": "Assistant is not initialized. Please set the assistant using /api/set_assistant."}
     # Step 1: Post the message to the assistant
     client.beta.threads.messages.create(
         thread_id=thread_id,
@@ -371,25 +417,25 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
         
         if messages.data:
             # Look for the first assistant response
-            for message in messages.data:
-                if message.role == "assistant":
+            for latest_message in messages.data:
+                if latest_message.role == "assistant":
                     # Attempt to extract the content safely
                     content = "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
                     
                     # Directly access content attributes if it's a TextContentBlock object
-                    if hasattr(message, 'content') and message.content:
-                        if isinstance(message.content, list) and message.content:
+                    if hasattr(latest_message, 'content') and latest_message.content:
+                        if isinstance(latest_message.content, list) and latest_message.content:
                             # Access the first content block
-                            content_block = message.content[0]
+                            content_block = latest_message.content[0]
                             if hasattr(content_block, 'text') and hasattr(content_block.text, 'value'):
                                 content = content_block.text.value
                         
                     return ThreadMessage(
                         content=content,
-                        role=message.role,
-                        hidden="type" in message.metadata and message.metadata.get("type") == "hidden",
-                        id=message.id,
-                        created_at=message.created_at
+                        role=latest_message.role,
+                        hidden="type" in latest_message.metadata and latest_message.metadata.get("type") == "hidden",
+                        id=latest_message.id,
+                        created_at=latest_message.created_at
                     )
 
 # validating	the input file is being validated before the batch can begin

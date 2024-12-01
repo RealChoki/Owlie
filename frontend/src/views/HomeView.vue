@@ -9,7 +9,6 @@
     <ChatBubbleContainer v-if="chatMessages.length > 0" :chatMessages="chatMessages" :isOpenBurgerMenu="isOpenBurgerMenu" />
     <FooterInput :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
     <ExpandedInput v-if="isExpandedInput" @closeExpandedInput="closeExpandedInput" />
-<!-- HomeView.vue -->
     <transition name="slide">
       <BurgerMenu
         v-if="isOpenBurgerMenu"
@@ -32,8 +31,10 @@ import FooterInput from '../components/FooterInput.vue';
 import ExpandedInput from '../components/ExpandedInput.vue';
 import BurgerMenu from '../components/BurgerMenu.vue';
 import ChatBubbleContainer from '../components/ChatBubbleContainer.vue';
-import chatService from '@/services/chatService';
+import chatService, { clearMessages } from '@/services/chatService'; // Import clearMessages
 import { createNewThread, startWebSocket } from '../api/restService';
+import { useThread } from '../components/hooks/useThread'; // Import useThread
+import axios from 'axios';
 
 const isExpandedInput = ref(false);
 const isOpenBurgerMenu = ref(false);
@@ -103,7 +104,7 @@ async function retrieveData() {
     //hardcoded data for testing 
     data = {
       "run_id": "run_zVfBIidTE2rG8s92eiNtD9Qo",
-      "thread_id": "thread_GTXNjmUjU3O3eV0IAJGAIc7x",
+      "thread_id": "thread_GTXNjmUjU3eV0IAJGAIc7x",
       "status": "queued",
       "required_action": null,
       "last_error": null
@@ -113,21 +114,13 @@ async function retrieveData() {
   console.log(data);
 }
 
+const { clearThread } = useThread(ref(undefined), () => {}); // Initialize useThread and get clearThread
 
-// async function retrieveData() {
-//   let data;
-//   // localStorage.removeItem('newThreadData')
-//   const storedData = localStorage.getItem('newThreadData');
-  
-//   if (storedData) {
-//     data = JSON.parse(storedData);
-//   } else {
-//     data = await createNewThread();
-//     localStorage.setItem('newThreadData', JSON.stringify(data));
-//   }
-//   console.log(data);
-//   //[Log] {run_id: "run_xXCT808DzQkmBHCkckDxYYT0", thread_id: "thread_wk7RAhj9oKImmFOeX8g95aW3", status: "queued", required_action: null, last_error: null} (HomeView.vue, line 49)
-// }
+async function handlePenClick() {
+  if (!isOpenBurgerMenu.value) {
+    clearMessages(false); // Do not reset messageCount
+  }
+}
 
 onMounted(() => {
   retrieveData();
