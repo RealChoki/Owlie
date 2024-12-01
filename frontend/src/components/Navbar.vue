@@ -30,20 +30,20 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPenToSquare, faCalendarDays, faHeart } from '@fortawesome/free-solid-svg-icons';
 import { useThread } from './hooks/useThread'; // Adjust the import path accordingly
-import { messageCount, clearMessages } from '../services/chatService'; // Adjust the import path accordingly
+import { heartCount, messageCount, clearMessages } from '../services/chatService'; // Use heartCount instead of messageCount
 import axios from 'axios';
 
 library.add(faPenToSquare, faCalendarDays, faHeart);
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
-  selectedModule: String  // Add selectedModule prop
+  selectedModule: String, // Add selectedModule prop
 });
 
 const menuToggleRef = ref(null);
 const emit = defineEmits(['toggleBurgerMenu']);
 
-const { clearThread } = useThread(ref(undefined), () => {}); // Initialize useThread and get clearThread
+const { clearThread, initializeThread } = useThread(ref(undefined), () => {}); // Initialize useThread and get clearThread
 
 const toggleBurgerMenu = () => {
   emit('toggleBurgerMenu', !props.isOpenBurgerMenu);
@@ -51,24 +51,22 @@ const toggleBurgerMenu = () => {
 
 const handlePenClick = async () => {
   if (!props.isOpenBurgerMenu) {
-    clearMessages(false); // Do not reset messageCount
+    clearMessages(false); // Do not reset heartCount
+    clearThread();
+    await initializeThread();
   }
 };
 
 const totalHearts = 5;
 const messagesPerHalfHeart = 3;
 
-const storedMessageCount = localStorage.getItem('messageCount');
-if (storedMessageCount !== null) {
-  messageCount.value = parseInt(storedMessageCount, 10);
-}
-
 const heartClasses = computed(() => {
-  const totalHalves = totalHearts * 2;
-  const halvesRemaining = totalHalves - Math.floor(messageCount.value / messagesPerHalfHeart);
   const classes = [];
+  const totalHalves = totalHearts * 2; // 10 halves for 5 hearts
+  const halvesRemaining = heartCount.value * 2; // Convert heartCount to halves
+
   for (let index = 1; index <= totalHearts; index++) {
-    const heartPosition = index * 2;
+    const heartPosition = index * 2; // Positions 2,4,6,8,10
     if (heartPosition - 1 < halvesRemaining) {
       classes.push('heart-filled');
     } else if (heartPosition - 2 < halvesRemaining) {
@@ -80,25 +78,49 @@ const heartClasses = computed(() => {
   return classes;
 });
 
+// Watch for changes in heartCount and save to local storage
+watch(heartCount, (newValue) => {
+  localStorage.setItem('heartCount', newValue.toString());
+});
+
 // Watch for changes in messageCount and save to local storage
 watch(messageCount, (newValue) => {
   localStorage.setItem('messageCount', newValue.toString());
 });
 
-// Regenerate half a heart every 5 minutes
+// Initialize heartCount from localStorage
+const storedHeartCount = localStorage.getItem('heartCount');
+if (storedHeartCount !== null) {
+  heartCount.value = parseFloat(storedHeartCount);
+} else {
+  heartCount.value = totalHearts;
+}
+
+// Initialize messageCount from localStorage
+const storedMessageCount = localStorage.getItem('messageCount');
+if (storedMessageCount !== null) {
+  messageCount.value = parseInt(storedMessageCount, 10);
+} else {
+  messageCount.value = 0;
+}
+
+// Regenerate a half heart every 3 minutes
 onMounted(() => {
   const regenInterval = setInterval(() => {
-    if (messageCount.value > 0) {
-      messageCount.value -= messagesPerHalfHeart;
+    if (heartCount.value < totalHearts) {
+      heartCount.value += 0.5; // Regenerate half a heart
+      if (heartCount.value > totalHearts) {
+        heartCount.value = totalHearts; // Cap at totalHearts
+      }
+      console.log(`[Navbar.vue] Regenerated half a heart. New heartCount: ${heartCount.value}`);
     }
-  }, 3 * 60 * 1000);
+  }, 3 * 60 * 1000); // Every 3 minutes
 
   // Clear interval on component unmount
   onUnmounted(() => {
     clearInterval(regenInterval);
   });
 });
-
 </script>
 
 <style scoped>

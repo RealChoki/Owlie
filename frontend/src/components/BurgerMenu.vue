@@ -110,10 +110,6 @@ library.add(faMagnifyingGlass, faCircleInfo);
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
-  currentModule: {
-    type: String,
-    default: null,
-  },
   currentMode: {
     type: String,
     default: 'general',
@@ -126,7 +122,7 @@ const searchQuery = ref('');
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref(props.currentMode);
+const selectedMode = ref('general');
 const showInfo = ref(false);
 
 watch(
@@ -183,7 +179,6 @@ async function selectModule(module: string) {
 
   const moduleNameWithMode =
     selectedMode.value === 'testing' ? `${module} (Test)` : module;
-
   // Prepare course name and mode name
   const modeName = selectedMode.value;
   const courseName =
@@ -198,11 +193,6 @@ async function selectModule(module: string) {
   } catch (error) {
     console.error('Error setting assistant:', error);
   }
-
-  console.log('Selected module:', module);
-  console.log('Current module:', props.currentModule);
-  console.log('Selected mode:', selectedMode.value);
-  console.log('Current mode:', props.currentMode);
 
   // Emit the selected module and mode
   emit('moduleSelected', moduleNameWithMode);

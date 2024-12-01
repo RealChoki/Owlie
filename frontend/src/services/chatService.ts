@@ -1,13 +1,37 @@
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import axios from 'axios';
 
 const chatState = reactive({
-  messages: [] as { content: string; role: string; id?: string}[],
+  messages: [] as { content: string; role: string; id?: string }[],
   currentMessage: '' as string,
   thinking: false as boolean,
 });
 
-export const messageCount = ref(0);
+export const heartCount = ref(5); // Initialize with total hearts
+export const messageCount = ref(0); // Track number of user messages
+
+const storedHeartCount = localStorage.getItem('heartCount');
+if (storedHeartCount !== null) {
+  heartCount.value = parseFloat(storedHeartCount);
+} else {
+  heartCount.value = 5;
+}
+
+const storedMessageCount = localStorage.getItem('messageCount');
+if (storedMessageCount !== null) {
+  messageCount.value = parseInt(storedMessageCount, 10);
+} else {
+  messageCount.value = 0;
+}
+
+watch(heartCount, (newValue) => {
+  localStorage.setItem('heartCount', newValue.toString());
+});
+
+watch(messageCount, (newValue) => {
+  localStorage.setItem('messageCount', newValue.toString());
+});
+
 const noHeartsMessages = [
   "Zzzz... schnarch",
   "Ich bin gleich wieder da. Nur ein kurzes Nickerchen... zzzz...",
@@ -25,54 +49,69 @@ function getRandomNoHeartsMessage() {
 }
 
 export async function sendMessage(messageToSend: string) {
-  chatState.thinking = true;
-  if (messageToSend.trim()) {
-    try {
-      // Create a new user message object
-      const userMessage = {
-        content: messageToSend,
-        role: 'user',
-      };
-      console.log(userMessage)
+  console.log(`[sendMessage] Attempting to send message. Current heartCount: ${heartCount.value}, messageCount: ${messageCount.value}`);
 
-      // Save the user's message in the chat state
-      chatState.messages.push(userMessage);
-      chatState.currentMessage = '';
-      messageCount.value += 1; // Increment message count
+  if (!messageToSend.trim()) {
+    return;
+  }
 
-      const threadData = localStorage.getItem('newThreadData');
-      let threadId = '';
-      if (threadData) {
-        try {
-          const parsedData = JSON.parse(threadData);
-          threadId = parsedData.thread_id;
-        } catch (error) {
-          console.error('Error parsing thread data from localStorage:', error);
-        }
-      }
-      if (!threadId) {
-        throw new Error('Thread ID not found in localStorage');
-      }
+  // Save the user's message in the chat state
+  const userMessage = {
+    content: messageToSend,
+    role: 'user',
+  };
+  chatState.messages.push(userMessage);
+  chatState.currentMessage = '';
 
-      const response = await axios.post(`http://localhost:8000/api/threads/thread_GTXNjmUjU3O3eV0IAJGAIc7x/send_and_wait`, {
-        content: messageToSend
-      });
+  if (heartCount.value <= 0) {
+    console.log(`[sendMessage] No hearts left. Sending noHeartsMessage.`);
+    // If no hearts left, respond with a random noHeartsMessage
+    const assistantMessage = {
+      content: getRandomNoHeartsMessage(),
+      role: 'assistant',
+    };
+    chatState.messages.push(assistantMessage);
+    return;
+  }
 
-      console.log(response)
-      const assistantMessage = {
-        content: response.data.content,
-        role: 'assistant',
-      };
+  messageCount.value += 1; // Increment message count
 
-      chatState.messages.push(assistantMessage);
-      messageCount.value += 1
-
-    } catch (error) {
-      console.error('Error sending message:', error);
-      chatState.thinking = false;
+  // Check if 3 messages have been sent to consume half a heart
+  if (messageCount.value >= 3) {
+    heartCount.value -= 0.5; // Consume half a heart
+    messageCount.value = 0; // Reset message count
+    console.log(`[sendMessage] Consumed half a heart. New heartCount: ${heartCount.value}`);
+    
+    // Ensure heartCount doesn't go negative
+    if (heartCount.value < 0) {
+      heartCount.value = 0;
     }
   }
-  chatState.thinking = false;
+
+  chatState.thinking = true;
+
+  try {
+    const threadId = localStorage.getItem('thread_id');
+    if (!threadId) {
+      throw new Error('Thread ID not found in localStorage');
+    }
+
+    console.log('Sending message to thread:', threadId);
+    const response = await axios.post(`http://localhost:8000/api/threads/${threadId}/send_and_wait`, {
+      content: messageToSend,
+    });
+
+    const assistantMessage = {
+      content: response.data.content,
+      role: 'assistant',
+    };
+    chatState.messages.push(assistantMessage);
+    console.log(`[sendMessage] Assistant responded. Current heartCount: ${heartCount.value}`);
+  } catch (error) {
+    console.error('Error sending message:', error);
+  } finally {
+    chatState.thinking = false;
+  }
 }
 
 export function getMessages() {
@@ -90,11 +129,13 @@ export function setCurrentMessage(newMessage: string) {
 export function clearMessages(resetCount: boolean = true) {
   chatState.messages.length = 0;
   if (resetCount) {
-    messageCount.value = 0;
+    heartCount.value = 5; // Reset to total hearts
+    messageCount.value = 0; // Reset message count
+    localStorage.setItem('heartCount', heartCount.value.toString());
+    localStorage.setItem('messageCount', messageCount.value.toString());
   }
-  // Optionally, reset other related state
-  // chatState.currentMessage = '';
-  // chatState.thinking = false;
+  chatState.thinking = false;
+  chatState.currentMessage = "";
 }
 
 export function getThinking() {
@@ -108,4 +149,5 @@ export default {
   setCurrentMessage,
   clearMessages,
   getThinking,
+  messageCount, // Exporting messageCount
 };

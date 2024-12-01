@@ -59,6 +59,9 @@ def get_course_config(course_name, mode_name):
                     return course[mode_name]
     raise ValueError('Course or mode not found in config')
 
+def get_course_id(config, university, degree, subject, course):
+    return config['universities'][university][degree][subject][course]['course_id']
+
 def initialize_assistant(course_name, mode_name):
     global assistant_id, vector_store_id, FILES_DIR, file_ids, current_course, current_mode
 
@@ -106,7 +109,7 @@ def initialize_assistant(course_name, mode_name):
         vector_store_id = vector_store.id
         print(f"Created vector store: {vector_store_id} - {vector_store.name}")
 
-        # Create assistant
+        # Create assistant with file_search tool
         assistant = client.beta.assistants.create(
             instructions=instructions,
             name=f"{course_name} - {mode_name} Assistant",
@@ -191,12 +194,21 @@ class EventHandler(AssistantEventHandler):
             if tool.function.name == "get_moodle_course_content":
                 try:
                     arguments = json.loads(tool.function.arguments)
-                    course_id = arguments.get("courseid", "51589")
+                    course_id = arguments.get("courseid", get_course_id(config_data, 'hochschule_fuer_technik_und_wirtschaft_berlin', 'bachelor', 'wirtschaftsinformatik', 'grundlagen_der_programmierung'))
                     result = get_moodle_course_content(course_id)
                     tool_outputs.append({"tool_call_id": tool.id, "output": result})
                 except (json.JSONDecodeError, ValueError) as e:
                     print(f"Error processing course content: {e}")
                     tool_outputs.append({"tool_call_id": tool.id, "output": "Error fetching course content"})
+            elif tool.function.name == "file_search":
+                try:
+                    arguments = json.loads(tool.function.arguments)
+                    query = arguments.get("query", "")
+                    search_results = perform_file_search(query, vector_store_id)
+                    tool_outputs.append({"tool_call_id": tool.id, "output": search_results})
+                except (json.JSONDecodeError, ValueError) as e:
+                    print(f"Error processing file search: {e}")
+                    tool_outputs.append({"tool_call_id": tool.id, "output": "Error performing file search"})
         self.submit_tool_outputs(tool_outputs, run_id)
 
     def submit_tool_outputs(self, tool_outputs, run_id):
@@ -209,6 +221,19 @@ class EventHandler(AssistantEventHandler):
             for text in stream.text_deltas:
                 print(f"Received Text Delta: {text.value}", end="", flush=True)
             print("Stream finished")
+
+def perform_file_search(query: str, vector_store_id: str):
+    try:
+        search_response = client.beta.vector_stores.query(
+            vector_store_id=vector_store_id,
+            query=query,
+            top_k=5  # Number of results to return
+        )
+        results = [doc['content'] for doc in search_response.data]
+        return results
+    except Exception as e:
+        logging.error(f"Error performing file search: {e}")
+        return ["Error performing file search"]
 
 # Update endpoints to check if assistant_id is initialized
 @app.post("/api/new")

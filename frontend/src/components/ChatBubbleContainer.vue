@@ -3,10 +3,10 @@
     <div v-for="(message, index) in messages" :key="message.id">
       <div v-if="message.role === 'user'" class="d-flex justify-content-end">
         <div
-        :class="{
-          'chat-bubble user-msg my-3': true,
-          'blur-effect': props.isOpenBurgerMenu
-        }">
+          :class="{
+            'chat-bubble user-msg my-3': true,
+            'blur-effect': props.isOpenBurgerMenu
+          }">
           {{ message.content }}
         </div>
       </div>
@@ -44,7 +44,7 @@
 import { ref, watch, nextTick, computed } from "vue";
 import {
   getMessages,
-  messageCount,
+  heartCount,
   getThinking,
 } from "../services/chatService";
 
@@ -52,27 +52,31 @@ const messages = getMessages();
 const chatContainer = ref<HTMLDivElement | null>(null);
 const thinking = computed(() => getThinking());
 
-
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
 });
 
-watch(messageCount, async () => {
-  await nextTick();
-  if (chatContainer.value) {
-    const assistantMessages =
-      chatContainer.value.querySelectorAll(".assistant-msg");
-    if (assistantMessages.length > 0) {
-      const lastAssistantMessage = assistantMessages[
-        assistantMessages.length - 1
-      ] as HTMLElement;
-      chatContainer.value.scrollTop =
-        lastAssistantMessage.offsetTop - chatContainer.value.offsetTop;
-    } else {
-      chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+// Watch for changes in messages to scroll to the latest message
+watch(
+  messages,
+  async () => {
+    await nextTick();
+    if (chatContainer.value) {
+      const assistantMessages =
+        chatContainer.value.querySelectorAll(".assistant-msg");
+      if (assistantMessages.length > 0) {
+        const lastAssistantMessage = assistantMessages[
+          assistantMessages.length - 1
+        ] as HTMLElement;
+        chatContainer.value.scrollTop =
+          lastAssistantMessage.offsetTop - chatContainer.value.offsetTop;
+      } else {
+        chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+      }
     }
-  }
-});
+  },
+  { deep: true }
+);
 </script>
 
 <style scoped>
