@@ -1,7 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
@@ -10,6 +10,8 @@ from openai.types.beta.threads.run import RequiredAction, LastError
 from openai.types.beta.threads.run_submit_tool_outputs_params import ToolOutput
 from function_calling import get_moodle_course_content
 import logging
+import shutil
+import tempfile  # Add this import
 
 # Load environment variables
 load_dotenv()
@@ -101,15 +103,17 @@ def initialize_assistant(course_name, mode_name):
         if not file_ids:
             raise ValueError("No files were uploaded. Please check the data directory.")
 
-        # Create vector store
-        vector_store = client.beta.vector_stores.create(
-            name=f"{course_name} - {mode_name}",
-            file_ids=file_ids
-        )
-        vector_store_id = vector_store.id
-        print(f"Created vector store: {vector_store_id} - {vector_store.name}")
+        # **Add the vector store creation here**
+        if vector_store_id is None:
+            # Create an initial vector store if one doesn't exist
+            vector_store = client.beta.vector_stores.create(
+                name=f"{course_name} - {mode_name}",
+                file_ids=file_ids
+            )
+            vector_store_id = vector_store.id
+            print(f"Created vector store: {vector_store_id} - {vector_store.name}")
 
-        # Create assistant with file_search tool
+        # Create assistant with the updated vector store
         assistant = client.beta.assistants.create(
             instructions=instructions,
             name=f"{course_name} - {mode_name} Assistant",
@@ -462,6 +466,64 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
                         id=latest_message.id,
                         created_at=latest_message.created_at
                     )
+
+@app.post("/api/upload")
+async def upload_files(files: List[UploadFile] = File(...)):
+    global vector_store_id, assistant_id
+
+    if not files:
+        return {"error": "No files uploaded"}
+
+    file_ids = []
+
+    for uploaded_file in files:
+        # Get the system's temporary directory
+        temp_dir = tempfile.gettempdir()
+        temp_file_path = os.path.join(temp_dir, uploaded_file.filename)
+        
+        # Save the file temporarily
+        with open(temp_file_path, "wb") as buffer:
+            shutil.copyfileobj(uploaded_file.file, buffer)
+
+        # Upload the file to OpenAI
+        with open(temp_file_path, "rb") as f:
+            _file = client.files.create(file=f, purpose="assistants")
+            file_ids.append(_file.id)
+            print(f"Uploaded file: {_file.id} - {uploaded_file.filename}")
+
+        # Optionally delete the temp file after upload
+        os.remove(temp_file_path)
+
+    # Update the vector store with new files
+    if vector_store_id is None:
+        # Create a new vector store if it doesn't exist
+        vector_store = client.beta.vector_stores.create(
+            name="User Uploaded Files",
+            file_ids=file_ids
+        )
+        vector_store_id = vector_store.id
+        print(f"Created vector store: {vector_store_id}")
+    else:
+        # Retrieve existing file IDs from the vector store
+        existing_files = client.beta.vector_stores.files.list(vector_store_id=vector_store_id)
+        existing_file_ids = [file.id for file in existing_files.data]
+        updated_file_ids = existing_file_ids + file_ids
+
+        # Add new files to the vector store
+        for file_id in updated_file_ids:
+            client.beta.vector_stores.files.create(
+                vector_store_id=vector_store_id,
+                file_id=file_id
+            )
+            print(f"Added file {file_id} to vector store: {vector_store_id}")
+
+    # Update the assistant's tool resources to include the updated vector store
+    client.beta.assistants.update(
+        assistant_id=assistant_id,
+        tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}}
+    )
+
+    return {"message": "Files uploaded and vector store updated successfully"}
 
 # validating	the input file is being validated before the batch can begin
 # failed	the input file has failed the validation process

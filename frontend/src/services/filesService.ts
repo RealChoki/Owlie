@@ -17,8 +17,8 @@ export async function uploadFiles(filesToUpload: File[]) {
       const formData = new FormData();
       filesToUpload.forEach(file => formData.append('files', file));
 
-      // Send the files to the Fastify backend
-      const response = await axios.post('http://localhost:3000/upload', formData, {
+      // Send the files to the FastAPI backend
+      const response = await axios.post('http://localhost:8000/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
