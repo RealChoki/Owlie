@@ -1,7 +1,7 @@
 import { ref, watch, type Ref } from 'vue';
-import { createNewThread, fetchThread } from "../../api/restService";
+import { createNewThread, fetchThread } from "../api/restService";
 import { runFinishedStates } from "./constants";
-import type { RunStatus, Thread, ThreadMessage, CreateThreadResponse } from "../../api/restService";
+import type { RunStatus, Thread, ThreadMessage, CreateThreadResponse } from "../api/restService";
 
 export const useThread = (
   run: Ref<RunStatus | undefined>,

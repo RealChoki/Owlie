@@ -19,7 +19,7 @@
         }"
       >
         <img
-          src="./icons/OwlLogo.png"
+          src="../icons/OwlLogo.png"
           alt="assistant"
           class="assistant-pfp p-1 pt-0"
         />
@@ -28,7 +28,7 @@
     </div>
     <div v-if="thinking">
       <img
-        src="./icons/OwlLogo.png"
+        src="../icons/OwlLogo.png"
         alt="assistant"
         class="assistant-pfp p-1 pt-0"
       />

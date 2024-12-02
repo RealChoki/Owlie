@@ -1,6 +1,6 @@
 import { ref, watch, type Ref } from 'vue';
 import { runFinishedStates } from "./constants";
-import type { RunStatus } from "../../api/restService";
+import type { RunStatus } from "../api/restService";
 
 export const useRunStatus = (run: Ref<RunStatus | undefined>) => {
     const status = ref<string | undefined>(undefined);

@@ -1,5 +1,3 @@
-import './assets/main.css'
-
 import { createApp } from 'vue'
 import { createVuetify } from 'vuetify';
 import App from './App.vue'

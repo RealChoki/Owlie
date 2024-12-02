@@ -2,7 +2,7 @@
   <div class="container d-flex flex-column min-vh-100 h-100">
     <Navbar :isOpenBurgerMenu="isOpenBurgerMenu" @toggleBurgerMenu="toggleBurgerMenu" :selectedModule="selectedModule" />
     <div v-if="!chatMessages.length" class="position-absolute start-50 translate-middle" style="top: 45%;">
-      <img src="../components/icons/OwlLogo.png" style="width: 75px;" />
+      <img src="../icons/OwlLogo.png" style="width: 75px;" />
     </div>
     <ChatBubbleContainer v-if="chatMessages.length" :chatMessages="chatMessages" :isOpenBurgerMenu="isOpenBurgerMenu" />
     <FooterInput :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
@@ -30,7 +30,7 @@ import ChatBubbleContainer from '../components/ChatBubbleContainer.vue';
 import type { RunStatus } from '../api/restService'; // Import RunStatus type if not already imported
 import chatService, { clearMessages } from '@/services/chatService';
 import { createNewThread, startWebSocket } from '../api/restService';
-import { useThread } from '../components/hooks/useThread';
+import { useThread } from '../hooks/useThread';
 import axios from 'axios';
 
 const isExpandedInput = ref(false);

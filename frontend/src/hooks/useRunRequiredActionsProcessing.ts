@@ -1,6 +1,6 @@
 import { watch, type Ref } from 'vue';
-import { postToolResponse } from "../../api/restService";
-import type { RunStatus, ToolOutput, ThreadMessage, PostToolResponse } from "../../api/restService";
+import { postToolResponse } from "../api/restService";
+import type { RunStatus, ToolOutput, ThreadMessage, PostToolResponse } from "../api/restService";
 
 export const useRunRequiredActionsProcessing = (
   run: Ref<RunStatus | undefined>,

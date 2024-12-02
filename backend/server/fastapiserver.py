@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from openai import OpenAI, AssistantEventHandler
 from openai.types.beta.threads.run import RequiredAction, LastError
 from openai.types.beta.threads.run_submit_tool_outputs_params import ToolOutput
-from function_calling import get_moodle_course_content
+from tools.function_calling import get_moodle_course_content
 import logging
 import shutil
 import tempfile  # Add this import

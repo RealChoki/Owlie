@@ -22,7 +22,7 @@
         @click="focusInput"
       />
       <img
-        src="../components/icons/Menu gray.png"
+        src="../icons/MenuClose.png"
         class="ms-3"
         style="cursor: pointer"
         @click="closeBurgerMenu"

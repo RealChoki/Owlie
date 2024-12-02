@@ -1,6 +1,6 @@
 import { ref, onBeforeUnmount, watch, type Ref } from 'vue';
-import { fetchRun } from "../../api/restService";
-import type { FetchRunResponse } from "../../api/restService";
+import { fetchRun } from "../api/restService";
+import type { FetchRunResponse } from "../api/restService";
 import { runFinishedStates } from "./constants";
 
 export const useRunPolling = (

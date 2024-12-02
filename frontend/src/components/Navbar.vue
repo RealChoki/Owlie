@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light sticky-top">
     <div class="container-fluid d-flex justify-content-between align-items-center">
-      <img src="../components/icons/Menu.png" style="cursor: pointer" ref="menuToggleRef" @click="toggleBurgerMenu" />
+      <img src="../icons/MenuOpen.png" style="cursor: pointer" ref="menuToggleRef" @click="toggleBurgerMenu" />
       <div class="d-flex flex-column align-items-center position-relative w-50">
         <div class="hearts-container">
           <span
@@ -29,7 +29,7 @@ import { ref, defineEmits, computed, onMounted, onUnmounted, watch } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPenToSquare, faCalendarDays, faHeart } from '@fortawesome/free-solid-svg-icons';
-import { useThread } from './hooks/useThread'; // Adjust the import path accordingly
+import { useThread } from '../hooks/useThread'; // Adjust the import path accordingly
 import { heartCount, messageCount, clearMessages } from '../services/chatService'; // Use heartCount instead of messageCount
 import axios from 'axios';
 
