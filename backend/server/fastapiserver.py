@@ -64,6 +64,14 @@ def get_course_config(course_name, mode_name):
 def get_course_id(config, university, degree, subject, course):
     return config['universities'][university][degree][subject][course]['course_id']
 
+def get_assistant_ids(course_name, mode_name):
+    mode_config = get_course_config(course_name, mode_name)
+    assistant_id = mode_config.get('assistant_id')
+    vector_store_id = mode_config.get('vector_store_id')
+    if not assistant_id or not vector_store_id:
+        raise ValueError('Assistant IDs not found in configuration.')
+    return assistant_id, vector_store_id
+
 def initialize_assistant(course_name, mode_name):
     global assistant_id, vector_store_id, FILES_DIR, file_ids, current_course, current_mode
 
@@ -174,6 +182,7 @@ class Thread(BaseModel):
 
 class CreateMessage(BaseModel):
     content: str
+    assistant_id: Optional[str]
 
 # Event handler class for managing assistant actions
 class EventHandler(AssistantEventHandler):
@@ -241,9 +250,13 @@ def perform_file_search(query: str, vector_store_id: str):
 
 # Update endpoints to check if assistant_id is initialized
 @app.post("/api/new")
-def post_new():
-    if assistant_id is None:
-        return {"error": "Assistant is not initialized. Please set the assistant using /api/set_assistant."}
+async def post_new(request: Request):
+    data = await request.json()
+    assistant_id = data.get('assistant_id')
+
+    if not assistant_id:
+        return {"error": "Assistant ID is required."}
+
     thread = client.beta.threads.create()
     client.beta.threads.messages.create(
         thread_id=thread.id,
@@ -415,19 +428,20 @@ async def run_and_get_latest(thread_id: str, message: CreateMessage):
         )
     }
 
-
 @app.post("/api/threads/{thread_id}/send_and_wait")
 async def send_message_and_wait_for_response(thread_id: str, message: CreateMessage):
-    if assistant_id is None:
-        return {"error": "Assistant is not initialized. Please set the assistant using /api/set_assistant."}
-    # Step 1: Post the message to the assistant
+    assistant_id = message.assistant_id
+    if not assistant_id:
+        return {"error": "Assistant ID is required."}
+
+    # Post the message to the thread
     client.beta.threads.messages.create(
         thread_id=thread_id,
         content=message.content,
         role="user"
     )
 
-    # Start the conversation run
+    # Start the conversation run with the provided assistant_id
     client.beta.threads.runs.create(
         thread_id=thread_id,
         assistant_id=assistant_id
@@ -466,6 +480,14 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
                         id=latest_message.id,
                         created_at=latest_message.created_at
                     )
+
+@app.get("/api/get_assistant_ids")
+async def get_assistant_ids_endpoint(course_name: str, mode_name: str):
+    try:
+        assistant_id, vector_store_id = get_assistant_ids(course_name, mode_name)
+        return {"assistant_id": assistant_id, "vector_store_id": vector_store_id}
+    except ValueError as e:
+        return {"error": str(e)}
 
 @app.post("/api/upload")
 async def upload_files(files: List[UploadFile] = File(...)):

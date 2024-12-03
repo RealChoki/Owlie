@@ -105,6 +105,8 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlass, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { VBtn, VBtnToggle } from 'vuetify/components';
 import axios from 'axios';
+import { useThread } from '../hooks/useThread'; // Ensure this path is correct
+import { clearMessages } from '../services/chatService'; 
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
@@ -171,30 +173,73 @@ const courseKeyMapping: { [key: string]: string } = {
   // Remove other mappings as needed
 };
 
+// Utility functions to manage current module and mode
+const getCurrentModule = (): string | null => {
+  return localStorage.getItem('currentModule');
+};
+
+const setCurrentModule = (module: string) => {
+  localStorage.setItem('currentModule', module);
+};
+
+const getCurrentMode = (): string | null => {
+  return localStorage.getItem('currentMode');
+};
+
+const setCurrentMode = (mode: string) => {
+  localStorage.setItem('currentMode', mode);
+};
+
+// Initialize useThread hook
+const { clearThread, initializeThread } = useThread(ref(undefined), () => {}); // Initialize useThread and get clearThread
+
+// Function to select a module
 async function selectModule(module: string) {
   if (!isModuleActive(module)) {
-    // If the module is inactive, do nothing
     return;
   }
 
-  const moduleNameWithMode =
-    selectedMode.value === 'testing' ? `${module} (Test)` : module;
-  // Prepare course name and mode name
   const modeName = selectedMode.value;
   const courseName =
     courseKeyMapping[module] || module.toLowerCase().replace(/ /g, '_');
 
-  // Send request to backend to set assistant
-  try {
-    await axios.post('http://localhost:8000/api/set_assistant', {
-      course_name: courseName,
-      mode_name: modeName,
-    });
-  } catch (error) {
-    console.error('Error setting assistant:', error);
+  const currentModule = getCurrentModule();
+  const currentMode = getCurrentMode();
+
+  // Check if the selected module or mode has changed
+  if (module !== currentModule || modeName !== currentMode) {
+    console.log('Module or mode changed. Resetting thread and messages.');
+
+    // Clear existing messages and thread
+    clearMessages(false); // Do not reset heartCount
+    clearThread();
+
+    // Fetch assistant IDs from the backend
+    try {
+      const response = await axios.get('http://localhost:8000/api/get_assistant_ids', {
+        params: { course_name: courseName, mode_name: modeName },
+      });
+      const { assistant_id, vector_store_id } = response.data;
+
+      // Store the IDs and current selections locally
+      localStorage.setItem('assistant_id', assistant_id);
+      localStorage.setItem('vector_store_id', vector_store_id);
+      setCurrentModule(module);
+      setCurrentMode(modeName);
+
+      // Initialize a new thread
+      await initializeThread();
+    } catch (error) {
+      console.error('Error fetching assistant IDs or initializing thread:', error);
+      return;
+    }
+  } else {
+    console.log('Same module and mode selected. No action taken.');
   }
 
   // Emit the selected module and mode
+  const moduleNameWithMode =
+    modeName === 'testing' ? `${module} (Test)` : module;
   emit('moduleSelected', moduleNameWithMode);
   closeBurgerMenu();
 }

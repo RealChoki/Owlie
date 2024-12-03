@@ -36,7 +36,7 @@ import axios from 'axios';
 const isExpandedInput = ref(false);
 const isOpenBurgerMenu = ref(false);
 const chatMessages = computed(() => chatService.getMessages());
-const selectedModule = ref('');
+const selectedModule = ref(localStorage.getItem('selectedModule') || '');
 const burgerMenuRef = ref<ComponentPublicInstance | null>(null);
 
 const run = ref<RunStatus | undefined>(undefined);
@@ -46,9 +46,8 @@ const setRun = (data: RunStatus | undefined) => {
 
 function handleModuleSelected(moduleNameWithMode: string) {
   selectedModule.value = moduleNameWithMode;
-  console.log('Module selected:', moduleNameWithMode);
-  localStorage.clear();
   localStorage.setItem('selectedModule', moduleNameWithMode);
+  // Clear previous messages or thread if necessary
 }
 
 const { initializeThread } = useThread(run, setRun);

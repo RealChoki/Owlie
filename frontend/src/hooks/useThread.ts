@@ -38,25 +38,20 @@ export const useThread = (
   // });
 
   const initializeThread = async () => {
-    if (threadId.value === undefined) {
-      const localThreadId = localStorage.getItem("thread_id");
-      if (localThreadId) {
-        console.log(`Resuming thread ${localThreadId}`);
-        threadId.value = localThreadId;
-        const data = await fetchThread(localThreadId);
-        if (data) {
-          thread.value = data;
-        }
-      } else {
-        console.log("Creating new thread");
-        const data: CreateThreadResponse | undefined = await createNewThread();
-        if (data) {
-          setRun(data);
-          threadId.value = data.thread_id;
-          localStorage.setItem("thread_id", data.thread_id);
-          console.log(`Created new thread ${data.thread_id}`);
-        }
-      }
+    threadId.value = undefined; // Reset threadId to force new thread creation
+    const assistant_id = localStorage.getItem('assistant_id');
+    if (!assistant_id) {
+      console.error('Assistant ID is not available.');
+      return;
+    }
+
+    console.log("Creating new thread");
+    const data: CreateThreadResponse | undefined = await createNewThread();
+    if (data) {
+      setRun(data);
+      threadId.value = data.thread_id;
+      localStorage.setItem("thread_id", data.thread_id);
+      console.log(`Created new thread ${data.thread_id}`);
     }
   };
 

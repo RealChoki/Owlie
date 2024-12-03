@@ -68,8 +68,17 @@ export interface PostMessageResponse extends RunStatus {}
 
 export const createNewThread = async (): Promise<CreateThreadResponse | undefined> => {
     try {
+        const assistant_id = localStorage.getItem('assistant_id');
+        if (!assistant_id) {
+            throw new Error('Assistant ID is not available.');
+        }
+
         const response = await fetch("http://localhost:8000/api/new", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ assistant_id }),
         });
         if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);

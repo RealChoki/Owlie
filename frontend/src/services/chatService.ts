@@ -53,8 +53,15 @@ function getThreadId(): string {
 }
 
 async function sendToThread(threadId: string, content: string) {
-  console.log('Sending message to thread:', threadId);
-  return axios.post(`http://localhost:8000/api/threads/${threadId}/send_and_wait`, { content });
+  const assistant_id = localStorage.getItem('assistant_id');
+  if (!assistant_id) {
+    throw new Error('Assistant ID not found.');
+  }
+
+  return axios.post(`http://localhost:8000/api/threads/${threadId}/send_and_wait`, {
+    content,
+    assistant_id,
+  });
 }
 
 function handleSendMessageError(error: any) {

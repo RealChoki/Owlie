@@ -51,7 +51,7 @@
           'blur-effect': isOpenBurgerMenu,
         }"
         @click="sendMessage"
-        v-if="message || fileCount > 0"
+        v-if="message || fileCount > 0 || isFirstMessage()"
       />
       <!-- Text to speech when there's no message -->
       <font-awesome-icon
