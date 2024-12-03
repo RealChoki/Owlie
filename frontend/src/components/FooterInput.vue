@@ -1,6 +1,5 @@
 <template>
   <div class="sticky-footer container-fluid d-flex align-items-end gap-2 py-2">
-    <!-- Plus Icon for Upload -->
     <div class="position-relative">
       <font-awesome-icon
         :icon="['fas', 'plus']"
@@ -11,7 +10,6 @@
       <span v-if="showFileCount" class="file-count-indicator bg-danger text-white">{{ fileCount }}</span>
     </div>
 
-    <!-- Hidden File Input -->
     <input
       type="file"
       ref="fileInput"
@@ -48,8 +46,8 @@
         class="btn-circle bg-white"
         :icon="['fas', 'arrow-up']"
         :class="{
-          'cursor-pointer': message || fileCount > 0,
-          'btn-disabled': !message && fileCount === 0,
+          'cursor-pointer': !disableSendButton(),
+          'btn-disabled': !message && fileCount === 0 || disableSendButton(),
           'blur-effect': isOpenBurgerMenu,
         }"
         @click="sendMessage"
@@ -63,7 +61,7 @@
           'cursor-pointer btn-circle bg-light align-bottom': true,
           'blur-effect': isOpenBurgerMenu,
         }"
-        @click="isOpenBurgerMenu ? null : null"
+        @click="readLatestAssistantMessage"
       />
     </div>
   </div>
@@ -79,7 +77,7 @@ import {
   faArrowUp,
   faVolumeHigh,
 } from "@fortawesome/free-solid-svg-icons";
-
+import { getMessages } from '../services/chatService';
 import {
   sendMessage as sendChatMessage,
   getCurrentMessage,
@@ -105,13 +103,25 @@ const message = computed({
 
 const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
 
+function isFirstMessage() {
+  return getMessages()[getMessages().length - 1] === undefined
+}
+function disableSendButton() {
+  const messages = getMessages();
+  const lastMessage = messages[messages.length - 1];
+  const isLastMessageFromAssistant = lastMessage?.role === "assistant" || isFirstMessage();
+  const isMessageNotEmpty = message.value.trim() !== "";
+  const hasFilesAttached = fileCount.value > 0;
+
+  return !(isLastMessageFromAssistant && (isMessageNotEmpty || hasFilesAttached));
+}
+
 function sendMessage() {
-  if (message.value.trim() || fileCount.value > 0) {
+  if (!disableSendButton()) {
     sendChatMessage(message.value);
     message.value = "";
-    fileCount.value = 0; // Clear the file count
-    uploadedFiles.value.clear(); // Clear the uploaded files set
-    // messageCount is incremented in sendChatMessage
+    fileCount.value = 0;
+    uploadedFiles.value.clear();
   }
 }
 
@@ -155,6 +165,39 @@ function handleFileChange(event: Event) {
       fileCount.value += newFiles.length; // Increment the file count
     }
     input.value = ""; // Reset the input after files are selected
+  }
+}
+
+function readLatestAssistantMessage() {
+  if (!props.isOpenBurgerMenu) {
+    console.log('readLatestAssistantMessage called');
+    const messages = getMessages();
+    const assistantMessages = messages.filter(message => message.role === 'assistant');
+    console.log('Assistant Messages:', assistantMessages);
+    if (assistantMessages.length > 0) {
+      const latestMessage = assistantMessages[assistantMessages.length - 1];
+      console.log('Latest Assistant Message:', latestMessage.content);
+      const utterance = new SpeechSynthesisUtterance(latestMessage.content);
+      
+      // Customize the speech properties
+      utterance.lang = 'de-DE'; // Set language to German
+      utterance.pitch = 1.1;
+      utterance.rate = 1.1;
+      utterance.volume = 1;
+
+      // Select a female voice
+      const voices = window.speechSynthesis.getVoices();
+      const femaleGermanVoice = voices.find(voice => voice.lang === 'de-DE' && voice.name.includes('female'));
+      if (femaleGermanVoice) {
+        utterance.voice = femaleGermanVoice;
+        console.log('Selected voice:', femaleGermanVoice.name);
+      }
+
+      window.speechSynthesis.cancel(); // Clear any pending speeches
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.log('No assistant messages to read.');
+    }
   }
 }
 

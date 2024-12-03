@@ -32,7 +32,9 @@
                                   "type": "file_search"
                                 }
                             ],
-                            "model": "gpt-4o-mini"
+                            "model": "gpt-4o-mini",
+                            "assistant_id": "asst_UZdnjlHXSK2ekZkPge69AEC1",
+                            "vector_store_id": "vs_qMQUP4h57ujeHiW5UWThhJxO"
                         },
                         "testing": {
                             "instructions": "Du bist ein interaktiver Mentor für Programmierkonzepte. Stelle eine Frage nach der anderen in vorgegebener Reihenfolge. Bei Schwierigkeiten stelle gezielte Fragen oder gib Erklärungen und Beispiele. Wiederhole Themen, bei denen der Benutzer unsicher ist, und überprüfe das Verständnis mit Kontrollfragen. Gratuliere bei Erfolg und gib Aufgaben zu Themen wo der Benutzer Schwierigkeiten hat. Dokumentiere behandelte und offene Themen klar. Beantworte ausschließlich Fragen zu Grundlagen der Programmierung oder Informatik. Wenn der Benutzer ein Thema nennt, zu dem er evaluiert werden möchte, führe ihn durch spezifische Fragen zu diesem Thema nur mit Hilfe bereitgestellter Fragen. Verhalte dich dabei wie eine weise Eule: freundlich und prägnant.",
@@ -61,7 +63,9 @@
                                   "type": "file_search"
                                 }
                             ],
-                            "model": "gpt-4o-mini"
+                            "model": "gpt-4o-mini",
+                            "assistant_id": "asst_A5qdJPavynOaFlTqtFjdrBN3",
+                            "vector_store_id": "vs_rLhXYapnwd5PNZueozNwFUXB"
                         }
                     },
                     "statistik": {
