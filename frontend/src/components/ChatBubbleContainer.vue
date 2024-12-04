@@ -1,29 +1,24 @@
 <template>
   <div ref="chatContainer" class="chat-bubble-container my-4 pb-5">
-    <div v-for="(message, index) in messages" :key="message.id">
+    <div v-for="(message, index) in messages" :key="message.id || index">
       <div v-if="message.role === 'user'" class="d-flex justify-content-end">
         <div
-          :class="{
-            'chat-bubble user-msg my-3': true,
-            'blur-effect': props.isOpenBurgerMenu
-          }">
+          :class="['chat-bubble user-msg my-3', { 'blur-effect': props.isOpenBurgerMenu }]">
           {{ message.content }}
         </div>
       </div>
 
       <div
         v-else-if="message.role === 'assistant'"
-        :class="{
-          'assistant-msg text-white p-2 my-2': true,
-          'blur-effect': props.isOpenBurgerMenu
-        }"
+        :class="['assistant-msg text-white p-2 my-2', { 'blur-effect': props.isOpenBurgerMenu }]"
       >
         <img
           src="../icons/OwlLogo.png"
           alt="assistant"
           class="assistant-pfp p-1 pt-0"
         />
-        {{ message.content }}
+        <!-- Render the markdown content as HTML -->
+        <div v-html="renderedMessages[index]"></div>
       </div>
     </div>
     <div v-if="thinking">
@@ -42,15 +37,27 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick, computed } from "vue";
-import {
-  getMessages,
-  heartCount,
-  getThinking,
-} from "../services/chatService";
+import { getMessages, getThinking } from "../services/chatService";
+import MarkdownIt from 'markdown-it';
+import DOMPurify from 'dompurify';
 
 const messages = getMessages();
 const chatContainer = ref<HTMLDivElement | null>(null);
 const thinking = computed(() => getThinking());
+const md = new MarkdownIt();
+
+// Convert assistant messages from markdown to HTML
+const renderedMessages = computed(() => {
+  return messages.map(message => {
+    if (message.role === 'assistant') {
+      const markdownContent = md.render(message.content);
+      // Sanitize the HTML to prevent XSS attacks
+      return DOMPurify.sanitize(markdownContent);
+    } else {
+      return message.content;
+    }
+  });
+});
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
@@ -146,4 +153,52 @@ watch(
   filter: blur(1.5px);
   pointer-events: none;
 }
+
+/* Assistant message styles (change)
+.assistant-msg pre {
+  background-color: #2d2d2d;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 10px 0;
+}
+
+.assistant-msg code {
+  background-color: #2d2d2d;
+  padding: 2px 4px;
+  border-radius: 3px;
+  color: #e96900;
+}
+
+.assistant-msg h1,
+.assistant-msg h2,
+.assistant-msg h3 {
+  font-weight: bold;
+  margin: 10px 0 5px;
+}
+
+.assistant-msg p {
+  margin: 5px 0;
+}
+
+.assistant-msg strong {
+  font-weight: bold;
+}
+
+.assistant-msg em {
+  font-style: italic;
+}
+
+.assistant-msg ul {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+.assistant-msg ol {
+  list-style-type: decimal;
+  margin-left: 20px;
+}
+  */
 </style>

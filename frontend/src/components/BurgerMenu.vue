@@ -194,11 +194,17 @@ const setCurrentMode = (mode: string) => {
 // Initialize useThread hook
 const { clearThread, initializeThread } = useThread(ref(undefined), () => {}); // Initialize useThread and get clearThread
 
-const courseKeyMapping: { [key: string]: string } = {
-  'Grundlagen der Programmierung': 'Grundlagen_der_Programmierung',
-  // 'Statistik': 'Statistik',
-  // Remove other mappings as needed
-};
+async function fetchAssistantIds(courseName: string, modeName: string) {
+  try {
+    const response = await axios.get('http://localhost:8000/api/get_assistant_ids', {
+      params: { course_name: courseName, mode_name: modeName },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching assistant IDs:', error);
+    throw error;
+  }
+}
 
 // Function to select a module
 async function selectModule(module: string) {
@@ -208,8 +214,7 @@ async function selectModule(module: string) {
   console.log('Selected module:', module);
 
   const modeName = selectedMode.value;
-  const courseName =
-    courseKeyMapping[module] || module.toLowerCase().replace(/ /g, '_');
+  const courseName = module.replace(/ /g, '_');
 
   const currentModule = getCurrentModule();
   const currentMode = getCurrentMode();
@@ -224,10 +229,7 @@ async function selectModule(module: string) {
 
     // Fetch assistant IDs from the backend
     try {
-      const response = await axios.get('http://localhost:8000/api/get_assistant_ids', {
-        params: { course_name: courseName, mode_name: modeName },
-      });
-      const { assistant_id, vector_store_id } = response.data;
+      const { assistant_id, vector_store_id } = await fetchAssistantIds(courseName, modeName);
 
       // Store the IDs and current selections locally
       localStorage.setItem('assistant_id', assistant_id);
@@ -238,7 +240,7 @@ async function selectModule(module: string) {
       // Initialize a new thread
       await initializeThread();
     } catch (error) {
-      console.error('Error fetching assistant IDs or initializing thread:', error);
+      console.error('Error initializing thread:', error);
       return;
     }
   } else {
