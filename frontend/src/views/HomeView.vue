@@ -84,7 +84,7 @@ onMounted(async () => {
 
   try {
     await fetchAssistantIds(
-      localStorage.getItem('selectedModule') || 'Grundlagen_der_Programmierung',
+      localStorage.getItem('selectedModule')?.replace(/ /g, '_') || 'Grundlagen_der_Programmierung',
       localStorage.getItem('selectedMode') || 'general'
     );
     await initializeThread();

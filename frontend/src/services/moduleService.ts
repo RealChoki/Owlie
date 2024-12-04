@@ -32,10 +32,15 @@ export async function fetchAssistantIds(courseName: string, modeName: string) {
     );
     const { assistant_id, vector_store_id } = response.data;
 
+    console.log("Assistant ID:", assistant_id);
+    console.log("Vector Store ID:", vector_store_id);
+    if (!assistant_id || !vector_store_id) {
+      throw new Error("Assistant ID or vector store ID not found");
+    }
     localStorage.setItem("assistant_id", assistant_id);
     localStorage.setItem("vector_store_id", vector_store_id);
 
-    return response.data;
+    return response.data; 
   } catch (error) {
     console.error("Error fetching assistant IDs:", error);
     throw error;

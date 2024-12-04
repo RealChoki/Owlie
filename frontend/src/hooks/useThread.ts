@@ -45,7 +45,6 @@ export const useThread = (
       return;
     }
 
-    console.log("Creating new thread");
     const data: CreateThreadResponse | undefined = await createNewThread();
     if (data) {
       setRun(data);
