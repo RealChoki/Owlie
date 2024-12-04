@@ -27,11 +27,10 @@ import FooterInput from '../components/FooterInput.vue';
 import ExpandedInput from '../components/ExpandedInput.vue';
 import BurgerMenu from '../components/BurgerMenu.vue';
 import ChatBubbleContainer from '../components/ChatBubbleContainer.vue';
-import type { RunStatus } from '../api/restService'; // Import RunStatus type if not already imported
-import chatService, { clearMessages } from '@/services/chatService';
-import { createNewThread, startWebSocket } from '../api/restService';
+import type { RunStatus } from '../api/restService';
+import chatService from '@/services/chatService';
 import { useThread } from '../hooks/useThread';
-import axios from 'axios';
+import { fetchModules, fetchAssistantIds } from '@/services/moduleService';
 
 const isExpandedInput = ref(false);
 const isOpenBurgerMenu = ref(false);
@@ -78,27 +77,20 @@ function handleClickOutside(event: MouseEvent) {
   }
 }
 
-// async function retrieveData() {
-//   let data;
-//   const storedData = null;
-//   if (storedData) {
-//     // data = JSON.parse(storedData);
-//   } else {
-//     data = {
-//       run_id: "run_zVfBIidTE2rG8s92eiNtD9Qo",
-//       thread_id: "thread_GTXNjmUjU3O3eV0IAJGAIc7x",
-//       status: "queued",
-//       required_action: null,
-//       last_error: null
-//     };
-//     localStorage.setItem('newThreadData', JSON.stringify(data));
-//   }
-//   console.log(data);
-// }
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside);
   selectedModule.value = localStorage.getItem('selectedModule') || 'Grundlagen der Programmierung';
-  initializeThread();
+  fetchModules();
+
+  try {
+    await fetchAssistantIds(
+      localStorage.getItem('selectedModule') || 'Grundlagen_der_Programmierung',
+      localStorage.getItem('selectedMode') || 'general'
+    );
+    await initializeThread();
+  } catch (error) {
+    console.error('Error during initialization:', error);
+  }
 });
 
 onBeforeUnmount(() => {

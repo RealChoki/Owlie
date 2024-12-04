@@ -104,9 +104,9 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlass, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { VBtn, VBtnToggle } from 'vuetify/components';
-import axios from 'axios';
-import { useThread } from '../hooks/useThread'; // Ensure this path is correct
+import { useThread } from '../hooks/useThread';
 import { clearMessages } from '../services/chatService'; 
+import { fetchAssistantIds, modules } from '../services/moduleService';
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
@@ -134,9 +134,6 @@ watch(
   }
 );
 
-// List of all modules
-const modules = ref<string[]>([]);
-
 // List of active (clickable) modules
 const activeModules = ref<string[]>([
   'Grundlagen der Programmierung',
@@ -145,20 +142,6 @@ const activeModules = ref<string[]>([
 // Function to check if a module is active
 function isModuleActive(module: string): boolean {
   return activeModules.value.includes(module);
-}
-
-async function fetchModules() {
-  try {
-    //hard coded URL for now
-    const response = await fetch('http://localhost:8000/api/courses?university=hochschule_fuer_technik_und_wirtschaft_berlin&degree=bachelor&subject=wirtschaftsinformatik');
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const data = await response.json();
-    modules.value = data.courses.map((course: string) => course.replace(/_/g, ' '));
-  } catch (error) {
-    console.error('There has been a problem with your fetch operation:', error);
-  }
 }
 
 // Computed property for filtered modules
@@ -192,19 +175,7 @@ const setCurrentMode = (mode: string) => {
 };
 
 // Initialize useThread hook
-const { clearThread, initializeThread } = useThread(ref(undefined), () => {}); // Initialize useThread and get clearThread
-
-async function fetchAssistantIds(courseName: string, modeName: string) {
-  try {
-    const response = await axios.get('http://localhost:8000/api/get_assistant_ids', {
-      params: { course_name: courseName, mode_name: modeName },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching assistant IDs:', error);
-    throw error;
-  }
-}
+const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
 // Function to select a module
 async function selectModule(module: string) {
@@ -223,17 +194,13 @@ async function selectModule(module: string) {
   if (module !== currentModule || modeName !== currentMode) {
     console.log('Module or mode changed. Resetting thread and messages.');
 
-    // Clear existing messages and thread
-    clearMessages(false); // Do not reset heartCount
+    clearMessages(false);
     clearThread();
 
-    // Fetch assistant IDs from the backend
     try {
-      const { assistant_id, vector_store_id } = await fetchAssistantIds(courseName, modeName);
+      await fetchAssistantIds(courseName, modeName);
 
       // Store the IDs and current selections locally
-      localStorage.setItem('assistant_id', assistant_id);
-      localStorage.setItem('vector_store_id', vector_store_id);
       setCurrentModule(module);
       setCurrentMode(modeName);
 
@@ -265,10 +232,6 @@ function focusInput() {
 function toggleInfo() {
   showInfo.value = !showInfo.value;
 }
-
-onMounted(() => {
-  fetchModules();
-});
 </script>
 
 <style scoped>
