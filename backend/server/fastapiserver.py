@@ -1,7 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, File, UploadFile
+from fastapi import FastAPI, Request, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
@@ -480,6 +480,28 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
                         id=latest_message.id,
                         created_at=latest_message.created_at
                     )
+
+@app.get("/api/courses")
+async def get_courses(university: str, degree: str, subject: str):
+    try:
+        university_data = config_data['universities'].get(university)
+        if not university_data:
+            raise KeyError(f"University '{university}' not found.")
+
+        degree_data = university_data.get(degree)
+        if not degree_data:
+            raise KeyError(f"Degree '{degree}' not found.")
+
+        subject_data = degree_data.get(subject)
+        if not subject_data:
+            raise KeyError(f"Subject '{subject}' not found.")
+
+        # Extract and return the course names
+        course_names = list(subject_data.keys())
+        return {"courses": course_names}
+    
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @app.get("/api/get_assistant_ids")
 async def get_assistant_ids_endpoint(course_name: str, mode_name: str):

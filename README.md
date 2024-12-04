@@ -27,13 +27,21 @@ Key goals:
 
 --- 
 
-### Use Cases
-1. **Debugging Assistance**: Offers pseudocode hints to guide students in fixing coding errors without revealing complete solutions.
-2. **Course-Specific Answers**: Provides information directly tied to course content, avoiding unrelated or advanced topics.
-3. **Concept Clarification**: Answers questions on programming fundamentals with brief, clear explanations aligned with lecture materials.
-4. **Test Preparation**: Asks tailored questions in test mode, focusing on areas where students need improvement, and provides targeted exercises until concepts are mastered.
-5. **Progress Tracking**: Adapts future tasks based on student performance to reinforce learning in weaker areas.
-6. **Academic Integrity**: Maintains a mentorship approach to ensure students learn effectively without academic shortcuts.
+### Use Cases 
+
+#### **General Mode**  
+1. **Debugging Assistance**: Hints or points at potential error causes in code without revealing solutions or explicitly identifying the issue.  
+2. **Concept Clarification**: Explains programming fundamentals in a simple, beginner-friendly way, tailored for first-semester students and aligned with lecture materials.  
+3. **Course-Specific Answers**: Offers information tied strictly to course content, avoiding irrelevant or advanced topics.  
+4. **Academic Integrity**: Guides students to solve tasks using pseudocode and problem-solving strategies, ensuring independent learning.  
+
+#### **Test Mode**  
+5. **Test Preparation**: Asks targeted questions to address weak areas, offering exercises and hints to help master concepts.  
+6. **Progress Tracking**: Adapts tasks based on performance to reinforce weak areas and ensure steady improvement.  
+7. **Professor-Approved Questions**: Uses professor-approved lesson questions to provide practice aligned directly with the course syllabus.  
+
+#### **Moodle Integration**  
+8. **Course-Specific Answers via Moodle**: Directly answers questions tied to the Moodle course by accessing and utilizing approved content. Available in both General and Test Modes.  
 
 ---
 

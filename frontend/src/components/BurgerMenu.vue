@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits, watch } from 'vue';
+import { ref, computed, defineProps, defineEmits, watch, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlass, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
@@ -135,14 +135,7 @@ watch(
 );
 
 // List of all modules
-const modules = ref<string[]>([
-  'Grundlagen der Programmierung',
-  'Statistik',
-  'Unternehmenssoftware',
-  'Datenbanktechnologien',
-  'Webentwicklung',
-  'Betriebssysteme',
-]);
+const modules = ref<string[]>([]);
 
 // List of active (clickable) modules
 const activeModules = ref<string[]>([
@@ -152,6 +145,20 @@ const activeModules = ref<string[]>([
 // Function to check if a module is active
 function isModuleActive(module: string): boolean {
   return activeModules.value.includes(module);
+}
+
+async function fetchModules() {
+  try {
+    //hard coded URL for now
+    const response = await fetch('http://localhost:8000/api/courses?university=hochschule_fuer_technik_und_wirtschaft_berlin&degree=bachelor&subject=wirtschaftsinformatik');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    modules.value = data.courses.map((course: string) => course.replace(/_/g, ' '));
+  } catch (error) {
+    console.error('There has been a problem with your fetch operation:', error);
+  }
 }
 
 // Computed property for filtered modules
@@ -166,12 +173,6 @@ const filteredModules = computed(() => {
 
   return [...active, ...inactive.sort()];
 });
-
-const courseKeyMapping: { [key: string]: string } = {
-  'Grundlagen der Programmierung': 'grundlagen_der_programmierung',
-  // 'Statistik': 'statistik',
-  // Remove other mappings as needed
-};
 
 // Utility functions to manage current module and mode
 const getCurrentModule = (): string | null => {
@@ -193,11 +194,18 @@ const setCurrentMode = (mode: string) => {
 // Initialize useThread hook
 const { clearThread, initializeThread } = useThread(ref(undefined), () => {}); // Initialize useThread and get clearThread
 
+const courseKeyMapping: { [key: string]: string } = {
+  'Grundlagen der Programmierung': 'Grundlagen_der_Programmierung',
+  // 'Statistik': 'Statistik',
+  // Remove other mappings as needed
+};
+
 // Function to select a module
 async function selectModule(module: string) {
   if (!isModuleActive(module)) {
     return;
   }
+  console.log('Selected module:', module);
 
   const modeName = selectedMode.value;
   const courseName =
@@ -255,6 +263,10 @@ function focusInput() {
 function toggleInfo() {
   showInfo.value = !showInfo.value;
 }
+
+onMounted(() => {
+  fetchModules();
+});
 </script>
 
 <style scoped>
