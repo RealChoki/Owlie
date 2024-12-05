@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, onUnmounted } from 'vue';
 import type { ComponentPublicInstance } from 'vue';
 
 import Navbar from '../components/Navbar.vue';
@@ -31,11 +31,13 @@ import type { RunStatus } from '../api/restService';
 import chatService from '@/services/chatService';
 import { useThread } from '../hooks/useThread';
 import { fetchModules, fetchAssistantIds } from '@/services/moduleService';
+import { getSelectedModuleLS, setSelectedModuleLS, getCurrentModeLS } from '@/services/localStorageService';
 
 const isExpandedInput = ref(false);
 const isOpenBurgerMenu = ref(false);
 const chatMessages = computed(() => chatService.getMessages());
-const selectedModule = ref(localStorage.getItem('selectedModule') || '');
+const selectedModule = ref(getSelectedModuleLS()); // Initialized once
+
 const burgerMenuRef = ref<ComponentPublicInstance | null>(null);
 
 const run = ref<RunStatus | undefined>(undefined);
@@ -45,8 +47,7 @@ const setRun = (data: RunStatus | undefined) => {
 
 function handleModuleSelected(moduleNameWithMode: string) {
   selectedModule.value = moduleNameWithMode;
-  localStorage.setItem('selectedModule', moduleNameWithMode);
-  // Clear previous messages or thread if necessary
+  setSelectedModuleLS(moduleNameWithMode);
 }
 
 const { initializeThread } = useThread(run, setRun);
@@ -79,13 +80,14 @@ function handleClickOutside(event: MouseEvent) {
 
 onMounted(async () => {
   document.addEventListener('click', handleClickOutside);
-  selectedModule.value = localStorage.getItem('selectedModule') || 'Grundlagen der Programmierung';
+  
   fetchModules();
 
   try {
+    const selectedModuleValue = getSelectedModuleLS();
     await fetchAssistantIds(
-      localStorage.getItem('selectedModule')?.replace(/ /g, '_') || 'Grundlagen_der_Programmierung',
-      localStorage.getItem('selectedMode') || 'general'
+      selectedModuleValue?.replace(/ /g, '_'),
+      getCurrentModeLS()
     );
     await initializeThread();
   } catch (error) {
@@ -93,7 +95,7 @@ onMounted(async () => {
   }
 });
 
-onBeforeUnmount(() => {
+onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
 </script>

@@ -1,6 +1,7 @@
 import { ref, watch, type Ref } from 'vue';
 import { createNewThread, fetchThread } from "../api/restService";
 import { runFinishedStates } from "./constants";
+import { getAssistantIdLS, setThreadIdLS, removeThreadIdLS } from "../services/localStorageService"
 import type { RunStatus, Thread, ThreadMessage, CreateThreadResponse } from "../api/restService";
 
 export const useThread = (
@@ -39,7 +40,7 @@ export const useThread = (
 
   const initializeThread = async () => {
     threadId.value = undefined; // Reset threadId to force new thread creation
-    const assistant_id = localStorage.getItem('assistant_id');
+    const assistant_id = getAssistantIdLS();
     if (!assistant_id) {
       console.error('Assistant ID is not available.');
       return;
@@ -49,7 +50,7 @@ export const useThread = (
     if (data) {
       setRun(data);
       threadId.value = data.thread_id;
-      localStorage.setItem("thread_id", data.thread_id);
+      setThreadIdLS(data.thread_id);
       console.log(`Created new thread ${data.thread_id}`);
     }
   };
@@ -84,7 +85,7 @@ export const useThread = (
   };
 
   const clearThread = () => {
-    localStorage.removeItem("thread_id");
+    removeThreadIdLS();
     threadId.value = undefined;
     thread.value = undefined;
     setRun(undefined);

@@ -62,13 +62,12 @@ export interface FetchRunResponse extends RunStatus {}
 
 export interface PostMessageResponse extends RunStatus {}
 
+import { getAssistantIdLS } from '../services/localStorageService';
+
 // REST Service functions
-
-// const storedData = localStorage.getItem('newThreadData');
-
 export const createNewThread = async (): Promise<CreateThreadResponse | undefined> => {
     try {
-        const assistant_id = localStorage.getItem('assistant_id');
+        const assistant_id = getAssistantIdLS();
         if (!assistant_id) {
             throw new Error('Assistant ID is not available.');
         }
@@ -78,7 +77,7 @@ export const createNewThread = async (): Promise<CreateThreadResponse | undefine
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ assistant_id }),
+            body: JSON.stringify({ assistant_id, thread_id: "" }),
         });
         if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);

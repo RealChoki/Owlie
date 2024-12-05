@@ -42,7 +42,7 @@ app.add_middleware(
 
 assistant_id = None
 vector_store_id = None
-current_course = None
+current_module = None
 current_mode = None
 assistant_cache = {}  # Cache assistants for reuse
 FILES_DIR = ""
@@ -256,17 +256,121 @@ async def get_assistant_ids_endpoint(course_name: str, mode_name: str):
     except ValueError as e:
         return {"error": str(e)}
 
+
 @app.post("/api/upload")
 async def upload_files(
     thread_id: str = Form(...),
     vector_store_id: str = Form(...),
-    files: List[UploadFile] = File(...)
+    files: List[UploadFile] = File(...),
+    current_module: str = Form(...),
+    current_mode: str = Form(...)
 ):
-    print(f"Thread ID: {thread_id}")
-    print(f"Vector Store ID: {vector_store_id}")
+    global assistant_cache  # Use assistant_cache to store assistants per thread
+
+    if not files:
+        return {"error": "No files uploaded"}
+
+    file_ids = []
+
     for uploaded_file in files:
-        print(f"Filename: {uploaded_file.filename}")
-    return {"message": "Files received successfully"}
+        # Get the system's temporary directory
+        temp_dir = tempfile.gettempdir()
+        temp_file_path = os.path.join(temp_dir, uploaded_file.filename)
+
+        # Save the file temporarily
+        with open(temp_file_path, "wb") as buffer:
+            shutil.copyfileobj(uploaded_file.file, buffer)
+
+        # Upload the file to OpenAI
+        with open(temp_file_path, "rb") as f:
+            _file = client.files.create(file=f, purpose="assistants")
+            file_ids.append(_file.id)
+            print(f"Uploaded file: {_file.id} - {uploaded_file.filename}")
+
+        # Optionally delete the temp file after upload
+        os.remove(temp_file_path)
+
+    # Retrieve file IDs from the default vector store
+    default_files = client.beta.vector_stores.files.list(vector_store_id)
+    default_file_ids = [file.id for file in default_files.data]
+
+    # Combine file IDs
+    combined_file_ids = default_file_ids + file_ids
+
+    # Create a new vector store with combined files
+    vector_store = client.beta.vector_stores.create(
+        name=f"Temporary Vector Store for Thread {thread_id}",
+        file_ids=combined_file_ids
+    )
+    temporary_vector_store_id = vector_store.id
+    print(f"Created temporary vector store: {temporary_vector_store_id}")
+
+    # Retrieve assistant configuration from config.json
+    mode_config = get_course_config(current_module, current_mode)
+    instructions = mode_config['instructions']
+    tools = mode_config['tools']
+    model = mode_config['model']
+
+    # Update tool resources to include the new vector store ID
+    tool_resources = {
+        "file_search": {
+            "vector_store_ids": [temporary_vector_store_id]
+        }
+    }
+    
+    # Create a new temporary assistant using the configuration
+    temporary_assistant = client.beta.assistants.create(
+        instructions=instructions,
+        name=f"Temporary Assistant for Thread {thread_id}",
+        tools=tools,
+        tool_resources=tool_resources,
+        model=model
+    )
+    temporary_assistant_id = temporary_assistant.id
+    print(f"Created temporary assistant: {temporary_assistant_id}")
+
+    # Associate the temporary assistant with the thread
+    assistant_cache[thread_id] = {
+        "assistant_id": temporary_assistant_id,
+        "vector_store_id": temporary_vector_store_id
+    }
+
+    return {
+        "message": "Temporary assistant created and files uploaded successfully",
+        "assistant_id": temporary_assistant_id
+    }
+
+
+@app.post("/api/change_thread")
+async def change_thread(request: Request):
+    data = await request.json()
+    old_thread_id = data.get('old_thread_id')
+
+    if not old_thread_id:
+        return {"error": "Old thread ID is required."}
+
+    # Check if there's a temporary assistant associated with this thread
+    assistant_info = assistant_cache.get(old_thread_id)
+    if assistant_info:
+        # Delete the temporary assistant
+        try:
+            client.beta.assistants.delete(assistant_info['assistant_id'])
+            print(f"Deleted temporary assistant: {assistant_info['assistant_id']}")
+        except Exception as e:
+            print(f"Error deleting assistant: {e}")
+
+        # Delete the temporary vector store
+        try:
+            client.beta.vector_stores.delete(assistant_info['vector_store_id'])
+            print(f"Deleted temporary vector store: {assistant_info['vector_store_id']}")
+        except Exception as e:
+            print(f"Error deleting vector store: {e}")
+
+        # Remove from cache
+        del assistant_cache[old_thread_id]
+
+    return {"message": f"Switched from thread {old_thread_id}"}
+
 
 # validating	the input file is being validated before the batch can begin
 # failed	the input file has failed the validation process

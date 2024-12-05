@@ -105,8 +105,14 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlass, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { VBtn, VBtnToggle } from 'vuetify/components';
 import { useThread } from '../hooks/useThread';
-import { clearMessages } from '../services/chatService'; 
+import { clearMessages } from '../services/chatService';
 import { fetchAssistantIds, modules } from '../services/moduleService';
+import {
+  getCurrentModuleLS,
+  setCurrentModuleLS,
+  getCurrentModeLS,
+  setCurrentModeLS,
+} from '../services/localStorageService';
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
@@ -134,17 +140,12 @@ watch(
   }
 );
 
-// List of active (clickable) modules
-const activeModules = ref<string[]>([
-  'Grundlagen der Programmierung',
-]);
+const activeModules = ref<string[]>(['Grundlagen der Programmierung']);
 
-// Function to check if a module is active
 function isModuleActive(module: string): boolean {
   return activeModules.value.includes(module);
 }
 
-// Computed property for filtered modules
 const filteredModules = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const filtered = modules.value.filter((module) =>
@@ -157,27 +158,8 @@ const filteredModules = computed(() => {
   return [...active, ...inactive.sort()];
 });
 
-// Utility functions to manage current module and mode
-const getCurrentModule = (): string | null => {
-  return localStorage.getItem('currentModule');
-};
-
-const setCurrentModule = (module: string) => {
-  localStorage.setItem('currentModule', module);
-};
-
-const getCurrentMode = (): string | null => {
-  return localStorage.getItem('currentMode');
-};
-
-const setCurrentMode = (mode: string) => {
-  localStorage.setItem('currentMode', mode);
-};
-
-// Initialize useThread hook
 const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
-// Function to select a module
 async function selectModule(module: string) {
   if (!isModuleActive(module)) {
     return;
@@ -187,10 +169,9 @@ async function selectModule(module: string) {
   const modeName = selectedMode.value;
   const courseName = module.replace(/ /g, '_');
 
-  const currentModule = getCurrentModule();
-  const currentMode = getCurrentMode();
+  const currentModule = getCurrentModuleLS();
+  const currentMode = getCurrentModeLS();
 
-  // Check if the selected module or mode has changed
   if (module !== currentModule || modeName !== currentMode) {
     console.log('Module or mode changed. Resetting thread and messages.');
 
@@ -200,11 +181,9 @@ async function selectModule(module: string) {
     try {
       await fetchAssistantIds(courseName, modeName);
 
-      // Store the IDs and current selections locally
-      setCurrentModule(module);
-      setCurrentMode(modeName);
+      setCurrentModuleLS(module);
+      setCurrentModeLS(modeName);
 
-      // Initialize a new thread
       await initializeThread();
     } catch (error) {
       console.error('Error initializing thread:', error);
@@ -214,7 +193,6 @@ async function selectModule(module: string) {
     console.log('Same module and mode selected. No action taken.');
   }
 
-  // Emit the selected module and mode
   const moduleNameWithMode =
     modeName === 'testing' ? `${module} (Test)` : module;
   emit('moduleSelected', moduleNameWithMode);

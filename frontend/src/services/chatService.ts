@@ -1,5 +1,13 @@
 import { reactive, ref, watch } from 'vue';
 import axios from 'axios';
+import { 
+  getAssistantIdLS,
+  getHeartCountLS,
+  setHeartCountLS,
+  getMessageCountLS,
+  setMessageCountLS,
+  getThreadIdLS 
+} from '../services/localStorageService';
 
 // Reactive state
 const chatState = reactive({
@@ -9,16 +17,16 @@ const chatState = reactive({
 });
 
 // Reactive references
-export const heartCount = ref(getStoredValue('heartCount', 5));
-export const messageCount = ref(getStoredValue('messageCount', 0));
+export const heartCount = ref(getHeartCountLS());
+export const messageCount = ref(getMessageCountLS());
 
-// Watchers to update localStorage
+// Watchers to update local storage
 watch(heartCount, (newValue) => {
-  localStorage.setItem('heartCount', newValue.toString());
+  setHeartCountLS(newValue);
 });
 
 watch(messageCount, (newValue) => {
-  localStorage.setItem('messageCount', newValue.toString());
+  setMessageCountLS(newValue);
 });
 
 // No hearts messages
@@ -34,26 +42,28 @@ const noHeartsMessages = [
 ];
 
 // Utility functions
-function getStoredValue(key: string, defaultValue: number): number {
-  const storedValue = localStorage.getItem(key);
-  return storedValue !== null ? parseFloat(storedValue) : defaultValue;
-}
-
 function getRandomNoHeartsMessage() {
   const randomIndex = Math.floor(Math.random() * noHeartsMessages.length);
   return noHeartsMessages[randomIndex];
 }
 
 function getThreadId(): string {
-  const threadId = localStorage.getItem('thread_id');
+  const threadId = getThreadIdLS();
   if (!threadId) {
     throw new Error('Thread ID not found in localStorage');
   }
   return threadId;
 }
 
+function resetCounts() {
+  heartCount.value = 5;
+  messageCount.value = 0;
+  setHeartCountLS(heartCount.value);
+  setMessageCountLS(messageCount.value);
+}
+
 async function sendToThread(threadId: string, content: string) {
-  const assistant_id = localStorage.getItem('assistant_id');
+  const assistant_id = getAssistantIdLS();
   if (!assistant_id) {
     throw new Error('Assistant ID not found.');
   }
@@ -142,13 +152,6 @@ export function clearMessages(resetCount: boolean = true) {
   }
   chatState.thinking = false;
   chatState.currentMessage = "";
-}
-
-function resetCounts() {
-  heartCount.value = 5;
-  messageCount.value = 0;
-  localStorage.setItem('heartCount', heartCount.value.toString());
-  localStorage.setItem('messageCount', messageCount.value.toString());
 }
 
 export function getThinking() {

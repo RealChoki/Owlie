@@ -1,5 +1,6 @@
 import { reactive } from 'vue'
 import axios from 'axios'
+import { getThreadIdLS, getVectorStoreIdLS, getCurrentModeLS, getCurrentModuleLS  } from './localStorageService';
 
 const fileState = reactive({
   files: [] as string[],
@@ -12,17 +13,16 @@ export async function uploadFiles(filesToUpload: File[]) {
     filesToUpload.forEach(file => fileState.files.push(file.name));
     fileState.currentFile = '';
 
-    const vectorId = localStorage.getItem('vector_store_id') || '';
-    const threadId = localStorage.getItem('thread_id') || '';
-
     // Create FormData to send files
     const formData = new FormData();
     for (const file of filesToUpload) {
       formData.append('files', file);
     }
 
-    formData.append('thread_id', threadId);
-    formData.append('vector_store_id', vectorId);
+    formData.append('thread_id', getThreadIdLS());
+    formData.append('vector_store_id',  getVectorStoreIdLS());
+    formData.append('current_module', getCurrentModuleLS().replace(/ /g, '_'));
+    formData.append('current_mode',  getCurrentModeLS());
 
     // Send the files to the FastAPI backend
     console.log('Uploading files:', filesToUpload);

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { ref } from "vue";
+import { setAssistantIdLS, setVectorStoreIdLS } from "../services/localStorageService";
 
 const activeModules = ref<string[]>(["Grundlagen der Programmierung"]);
 export const modules = ref<string[]>([]);
@@ -37,8 +38,8 @@ export async function fetchAssistantIds(courseName: string, modeName: string) {
     if (!assistant_id || !vector_store_id) {
       throw new Error("Assistant ID or vector store ID not found");
     }
-    localStorage.setItem("assistant_id", assistant_id);
-    localStorage.setItem("vector_store_id", vector_store_id);
+    setAssistantIdLS(assistant_id);
+    setVectorStoreIdLS(vector_store_id);
 
     return response.data; 
   } catch (error) {

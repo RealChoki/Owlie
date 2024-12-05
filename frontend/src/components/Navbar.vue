@@ -29,21 +29,26 @@ import { ref, defineEmits, computed, onMounted, onUnmounted, watch } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPenToSquare, faCalendarDays, faHeart } from '@fortawesome/free-solid-svg-icons';
-import { useThread } from '../hooks/useThread'; // Adjust the import path accordingly
-import { heartCount, messageCount, clearMessages } from '../services/chatService'; // Use heartCount instead of messageCount
-import axios from 'axios';
+import { useThread } from '../hooks/useThread';
+import { heartCount, messageCount, clearMessages } from '../services/chatService';
+import { 
+  getHeartCountLS, 
+  setHeartCountLS, 
+  getMessageCountLS, 
+  setMessageCountLS 
+} from '../services/localStorageService';
 
 library.add(faPenToSquare, faCalendarDays, faHeart);
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
-  selectedModule: String, // Add selectedModule prop
+  selectedModule: String,
 });
 
 const menuToggleRef = ref(null);
 const emit = defineEmits(['toggleBurgerMenu']);
 
-const { clearThread, initializeThread } = useThread(ref(undefined), () => {}); // Initialize useThread and get clearThread
+const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
 const toggleBurgerMenu = () => {
   emit('toggleBurgerMenu', !props.isOpenBurgerMenu);
@@ -58,11 +63,9 @@ const handlePenClick = async () => {
 };
 
 const totalHearts = 5;
-const messagesPerHalfHeart = 3;
 
 const heartClasses = computed(() => {
   const classes = [];
-  const totalHalves = totalHearts * 2; // 10 halves for 5 hearts
   const halvesRemaining = heartCount.value * 2; // Convert heartCount to halves
 
   for (let index = 1; index <= totalHearts; index++) {
@@ -78,33 +81,17 @@ const heartClasses = computed(() => {
   return classes;
 });
 
-// Watch for changes in heartCount and save to local storage
 watch(heartCount, (newValue) => {
-  localStorage.setItem('heartCount', newValue.toString());
+  setHeartCountLS(newValue);
 });
 
-// Watch for changes in messageCount and save to local storage
 watch(messageCount, (newValue) => {
-  localStorage.setItem('messageCount', newValue.toString());
+  setMessageCountLS(newValue);
 });
 
-// Initialize heartCount from localStorage
-const storedHeartCount = localStorage.getItem('heartCount');
-if (storedHeartCount !== null) {
-  heartCount.value = parseFloat(storedHeartCount);
-} else {
-  heartCount.value = totalHearts;
-}
+heartCount.value = getHeartCountLS();
+messageCount.value = getMessageCountLS();
 
-// Initialize messageCount from localStorage
-const storedMessageCount = localStorage.getItem('messageCount');
-if (storedMessageCount !== null) {
-  messageCount.value = parseInt(storedMessageCount, 10);
-} else {
-  messageCount.value = 0;
-}
-
-// Regenerate a half heart every 3 minutes
 onMounted(() => {
   const regenInterval = setInterval(() => {
     if (heartCount.value < totalHearts) {
@@ -116,13 +103,11 @@ onMounted(() => {
     }
   }, 3 * 60 * 1000); // Every 3 minutes
 
-  // Clear interval on component unmount
   onUnmounted(() => {
     clearInterval(regenInterval);
   });
 });
 </script>
-
 <style scoped>
 .navbar {
   background-color: #131213;
