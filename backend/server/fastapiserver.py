@@ -256,14 +256,14 @@ async def get_assistant_ids_endpoint(course_name: str, mode_name: str):
     except ValueError as e:
         return {"error": str(e)}
 
-
 @app.post("/api/upload")
 async def upload_files(
     thread_id: str = Form(...),
     vector_store_id: str = Form(...),
     files: List[UploadFile] = File(...),
     current_module: str = Form(...),
-    current_mode: str = Form(...)
+    current_mode: str = Form(...),
+    assistant_id: Optional[str] = Form(None)  # Optional parameter
 ):
     global assistant_cache  # Use assistant_cache to store assistants per thread
 
@@ -305,29 +305,42 @@ async def upload_files(
     temporary_vector_store_id = vector_store.id
     print(f"Created temporary vector store: {temporary_vector_store_id}")
 
-    # Retrieve assistant configuration from config.json
-    mode_config = get_course_config(current_module, current_mode)
-    instructions = mode_config['instructions']
-    tools = mode_config['tools']
-    model = mode_config['model']
+    if assistant_id:
+        # Update the existing assistant with the new vector store files
+        client.beta.assistants.update(
+            assistant_id=assistant_id,
+            tool_resources={
+                "file_search": {
+                    "vector_store_ids": [temporary_vector_store_id]
+                }
+            }
+        )
+        print(f"Updated assistant: {assistant_id}")
+        temporary_assistant_id = assistant_id
+    else:
+        # Retrieve assistant configuration from config.json
+        mode_config = get_course_config(current_module, current_mode)
+        instructions = mode_config['instructions']
+        tools = mode_config['tools']
+        model = mode_config['model']
 
-    # Update tool resources to include the new vector store ID
-    tool_resources = {
-        "file_search": {
-            "vector_store_ids": [temporary_vector_store_id]
+        # Update tool resources to include the new vector store ID
+        tool_resources = {
+            "file_search": {
+                "vector_store_ids": [temporary_vector_store_id]
+            }
         }
-    }
-    
-    # Create a new temporary assistant using the configuration
-    temporary_assistant = client.beta.assistants.create(
-        instructions=instructions,
-        name=f"Temporary Assistant for Thread {thread_id}",
-        tools=tools,
-        tool_resources=tool_resources,
-        model=model
-    )
-    temporary_assistant_id = temporary_assistant.id
-    print(f"Created temporary assistant: {temporary_assistant_id}")
+        
+        # Create a new temporary assistant using the configuration
+        temporary_assistant = client.beta.assistants.create(
+            instructions=instructions,
+            name=f"Temporary Assistant for Thread {thread_id}",
+            tools=tools,
+            tool_resources=tool_resources,
+            model=model
+        )
+        temporary_assistant_id = temporary_assistant.id
+        print(f"Created temporary assistant: {temporary_assistant_id}")
 
     # Associate the temporary assistant with the thread
     assistant_cache[thread_id] = {
@@ -337,9 +350,8 @@ async def upload_files(
 
     return {
         "message": "Temporary assistant created and files uploaded successfully",
-        "assistant_id": temporary_assistant_id
+        "temporary_assistant_id": temporary_assistant_id
     }
-
 
 @app.post("/api/change_thread")
 async def change_thread(request: Request):

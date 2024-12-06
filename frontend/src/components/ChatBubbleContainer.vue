@@ -1,5 +1,5 @@
 <template>
-  <div ref="chatContainer" class="chat-bubble-container my-4 pb-5">
+  <div ref="chatContainer" class="chat-bubble-container mb-4 mt-3 pb-5">
     <div v-for="(message, index) in messages" :key="message.id || index">
       <div v-if="message.role === 'user'" class="d-flex justify-content-end">
         <div

@@ -1,3 +1,4 @@
+import filesService from '../services/filesService';
 import { ref, watch, type Ref } from 'vue';
 import { createNewThread, fetchThread } from "../api/restService";
 import { runFinishedStates } from "./constants";
@@ -83,8 +84,9 @@ export const useThread = (
   const setActionMessages = (newMessages: ThreadMessage[]) => {
     actionMessages.value = newMessages;
   };
-
+  
   const clearThread = () => {
+    filesService.resetFileService();
     removeThreadIdLS();
     threadId.value = undefined;
     thread.value = undefined;

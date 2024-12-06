@@ -1,15 +1,121 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light sticky-top">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-      <img src="../icons/MenuOpen.png" style="cursor: pointer" ref="menuToggleRef" @click="toggleBurgerMenu" />
+    <div
+      class="container-fluid d-flex justify-content-between align-items-center"
+    >
+      <img
+        src="../icons/MenuOpen.png"
+        style="cursor: pointer"
+        ref="menuToggleRef"
+        @click="toggleBurgerMenu"
+      />
       <div class="d-flex flex-column align-items-center position-relative w-50">
         <div class="hearts-container">
           <span
             v-for="(heartClass, index) in heartClasses"
             :key="index"
-            :class="['heart-icon', heartClass]"
+            class="heart-icon"
           >
-            ♥
+            <template v-if="heartClass === 'heart-filled'">
+              <!-- Full Heart -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="30"
+                height="30"
+              >
+                <defs>
+                  <linearGradient
+                    id="heartGradient"
+                    gradientUnits="userSpaceOnUse"
+                    x1="0"
+                    y1="0"
+                    x2="24"
+                    y2="0"
+                  >
+                    <stop offset="0%" stop-color="white" />
+                    <stop offset="100%" stop-color="#5b5b5b" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M16.4,4C14.6,4,13,4.9,12,6.3C11,4.9,9.4,4,7.6,4C4.5,4,2,6.5,2,9.6C2,14,12,22,12,22s10-8,10-12.4C22,6.5,19.5,4,16.4,4z"
+                  fill="url(#heartGradient)"
+                  stroke="url(#heartGradient)"
+                  stroke-width="2"
+                />
+              </svg>
+            </template>
+
+            <template v-else-if="heartClass === 'heart-half-filled'">
+              <!-- Half-Filled Heart -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="30"
+                height="30"
+              >
+                <defs>
+                  <linearGradient
+                    id="halfHeartGradient"
+                    gradientUnits="userSpaceOnUse"
+                    x1="0"
+                    y1="0"
+                    x2="24"
+                    y2="0"
+                  >
+                    <stop offset="0%" stop-color="white" />
+                    <stop offset="100%" stop-color="#5b5b5b" />
+                  </linearGradient>
+                  <clipPath id="leftHalf">
+                    <rect x="0" y="0" width="12" height="24"></rect>
+                  </clipPath>
+                </defs>
+                <path
+                  d="M16.4,4C14.6,4,13,4.9,12,6.3C11,4.9,9.4,4,7.6,4C4.5,4,2,6.5,2,9.6C2,14,12,22,12,22s10-8,10-12.4C22,6.5,19.5,4,16.4,4z"
+                  fill="url(#halfHeartGradient)"
+                  clip-path="url(#leftHalf)"
+                  stroke="url(#halfHeartGradient)"
+                  stroke-width="2"
+                />
+                <!-- Border for the Right Side -->
+                <path
+                  d="M16.4,4C14.6,4,13,4.9,12,6.3C11,4.9,9.4,4,7.6,4C4.5,4,2,6.5,2,9.6C2,14,12,22,12,22s10-8,10-12.4C22,6.5,19.5,4,16.4,4z"
+                  fill="none"
+                  stroke="url(#halfHeartGradient)"
+                  stroke-width="2"
+                />
+              </svg>
+            </template>
+
+            <template v-else>
+              <!-- Empty Heart -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="30"
+                height="30"
+              >
+                <defs>
+                  <linearGradient
+                    id="emptyHeartGradient"
+                    gradientUnits="userSpaceOnUse"
+                    x1="0"
+                    y1="0"
+                    x2="24"
+                    y2="0"
+                  >
+                    <stop offset="0%" stop-color="white" />
+                    <stop offset="100%" stop-color="#5b5b5b" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M16.4,4C14.6,4,13,4.9,12,6.3C11,4.9,9.4,4,7.6,4C4.5,4,2,6.5,2,9.6C2,14,12,22,12,22s10-8,10-12.4C22,6.5,19.5,4,16.4,4z"
+                  fill="none"
+                  stroke="url(#emptyHeartGradient)"
+                  stroke-width="2"
+                />
+              </svg>
+            </template>
           </span>
         </div>
         <p class="assistant-title">{{ props.selectedModule }}</p>
@@ -25,18 +131,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, computed, onMounted, onUnmounted, watch } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPenToSquare, faCalendarDays, faHeart } from '@fortawesome/free-solid-svg-icons';
-import { useThread } from '../hooks/useThread';
-import { heartCount, messageCount, clearMessages } from '../services/chatService';
-import { 
-  getHeartCountLS, 
-  setHeartCountLS, 
-  getMessageCountLS, 
-  setMessageCountLS 
-} from '../services/localStorageService';
+import { ref, defineEmits, computed, onMounted, onUnmounted, watch } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faPenToSquare,
+  faCalendarDays,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
+import { useThread } from "../hooks/useThread";
+import {
+  heartCount,
+  messageCount,
+  clearMessages,
+} from "../services/chatService";
+import {
+  getHeartCountLS,
+  setHeartCountLS,
+  getMessageCountLS,
+  setMessageCountLS,
+} from "../services/localStorageService";
 
 library.add(faPenToSquare, faCalendarDays, faHeart);
 
@@ -46,12 +160,12 @@ const props = defineProps({
 });
 
 const menuToggleRef = ref(null);
-const emit = defineEmits(['toggleBurgerMenu']);
+const emit = defineEmits(["toggleBurgerMenu"]);
 
 const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
 const toggleBurgerMenu = () => {
-  emit('toggleBurgerMenu', !props.isOpenBurgerMenu);
+  emit("toggleBurgerMenu", !props.isOpenBurgerMenu);
 };
 
 const handlePenClick = async () => {
@@ -69,13 +183,13 @@ const heartClasses = computed(() => {
   const halvesRemaining = heartCount.value * 2; // Convert heartCount to halves
 
   for (let index = 1; index <= totalHearts; index++) {
-    const heartPosition = index * 2; // Positions 2,4,6,8,10
+    const heartPosition = index * 2; // Positions 2, 4, 6, 8, 10
     if (heartPosition - 1 < halvesRemaining) {
-      classes.push('heart-filled');
+      classes.push("heart-filled");
     } else if (heartPosition - 2 < halvesRemaining) {
-      classes.push('heart-half-filled');
+      classes.push("heart-half-filled");
     } else {
-      classes.push('heart-empty');
+      classes.push("heart-empty");
     }
   }
   return classes;
@@ -99,7 +213,9 @@ onMounted(() => {
       if (heartCount.value > totalHearts) {
         heartCount.value = totalHearts; // Cap at totalHearts
       }
-      console.log(`[Navbar.vue] Regenerated half a heart. New heartCount: ${heartCount.value}`);
+      console.log(
+        `[Navbar.vue] Regenerated half a heart. New heartCount: ${heartCount.value}`
+      );
     }
   }, 3 * 60 * 1000); // Every 3 minutes
 
@@ -118,38 +234,12 @@ onMounted(() => {
   align-items: center;
 }
 
-.heart-icon {
-  font-size: 2rem;
-  padding: 0;
-  margin: 0 2px;
-  line-height: 1; /* Ensure no extra space around the icon */
+.heart-icon svg {
+  transition: transform 0.3s ease;
 }
 
-.heart-filled {
-  background: linear-gradient(to right, white, #5b5b5b);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.heart-half-filled {
-  background: linear-gradient(to right, white, #5b5b5b);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  position: relative;
-}
-
-.heart-half-filled::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 50%;
-  height: 100%;
-  background-color: #131213; /* Match the background color */
-}
-
-.heart-empty {
-  color: #131213; 
+.heart-icon svg:hover {
+  transform: scale(1.1);
 }
 
 .calendar-days {

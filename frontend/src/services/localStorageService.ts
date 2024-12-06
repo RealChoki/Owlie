@@ -36,6 +36,7 @@ const keys = {
     defaultValue: "Grundlagen der Programmierung",
   },
   assistantId: { key: "assistant_id", defaultValue: null },
+  oldAssistantId: { key: "old_assistant_id", defaultValue: null },
   threadId: { key: "thread_id", defaultValue: null },
   vectorStoreId: { key: "vector_store_id", defaultValue: null },
 };
@@ -81,6 +82,15 @@ export const getAssistantIdLS = () =>
   localStorageUtils.get(keys.assistantId.key, keys.assistantId.defaultValue);
 export const setAssistantIdLS = (value: string) =>
   localStorageUtils.set(keys.assistantId.key, value);
+export const removeAssistantIdLS = () =>
+  localStorageUtils.remove(keys.assistantId.key);
+
+// Old / Main Assistant ID (to hold the original assistant ID)
+export const getOldAssistantIdLS = () => localStorageUtils.get(keys.oldAssistantId.key, keys.oldAssistantId.defaultValue);
+export const setOldAssistantIdLS = (value: string) =>
+  localStorageUtils.set(keys.oldAssistantId.key, value);
+export const removeOldAssistantIdLS = () =>
+  localStorageUtils.remove(keys.oldAssistantId.key);
 
 // Thread ID
 export const getThreadIdLS = () =>
@@ -98,6 +108,8 @@ export const getVectorStoreIdLS = () =>
   );
 export const setVectorStoreIdLS = (value: string) =>
   localStorageUtils.set(keys.vectorStoreId.key, value);
+export const removeVectorStoreIdLS = () =>
+  localStorageUtils.remove(keys.vectorStoreId.key);
 
 // Utility to remove an item if needed
 export const removeLocalStorageItem = localStorageUtils.remove;
