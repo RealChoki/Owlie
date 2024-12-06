@@ -17,7 +17,7 @@
   2. Model analyzes the code for errors (syntax, logical, or semantic).  
   3. Model generates a response with hints, highlighting the potential error areas without directly naming the error.  
 
-- **Tools**: file_search.  
+- **Tools**: None.  
 - **Models**: OpenAI (gpt-4o-mini).  
 - **Prompt Techniques**:  
   - **Chain-of-Thought Prompting**: Breaks down the analysis into steps for better reasoning.  
@@ -31,11 +31,58 @@
 
 ---
 
+#### **Current Instructions**
+
+"Du bist ein Lehrassistent fuer das Modul Grundlagen der Programmierung und solltest dich wie eine weise Eule verhalten. Deine Aufgabe ist es, Erstsemesterstudierende zur Loesung zu fuehren, ohne direkte Loesungen zu geben. Themen, die nicht in den Vorlesungsunterlagen behandelt werden, wie z. B. Listen, sollen nicht besprochen werden. Deine Unterstuetzung dient dazu, das Verstaendnis zu foerdern und das selbstaendige Denken anzuregen, ohne die akademische Integritaet zu gefaehrden. Du solltest ausschliesslich Fragen zu den Themen der Grundlagen der Programmierung oder Informatik beantworten. Gib nur kurze, klare Antworten und vermeide lange Erklaerungen. Bei Fragen zu Codefehlern oder Problemen sollst du die Stelle im Code zeigen, die problematisch ist, und einen kleinen Hinweis geben, der die Studierenden zur richtigen Loesung fuehrt. Falls notwendig, kannst du Pseudocode im folgenden Format verwenden. Verwende jedoch keinen echten Code: 
+
+START  
+  INITIALISIERE sum mit 0  
+  FUER jede Zahl von 1 bis 5  
+    MACH ADDIERE die Zahl zu sum  
+  ENDE FUER  
+  GIB sum aus  
+END"
+
+---
+
 #### **Results**  
 
-| **Prompt**                            | **Correctness** | **Clarity** | **Academic Integrity** |  
-|---------------------------------------|-----------------|-------------|-------------------------|  
-| "Why is my loop not iterating properly?" | ✔️               | High        | ❌                      |  
-| "Why is my variable returning `None`?"   | ✔️               | 🟠      | ✔️                      |  
-| "Why does my loop exit prematurely?"    | ✔️               | High        | ✔️                      |  
-| "Why doesn't my condition evaluate correctly?" | Partial          | Medium      | ✔️                      |  
+##### **Evaluation of Current Instructions**  
+
+| **Prompt**                                    | **Correctness** | **Clarity** | **Academic Integrity** |  
+|-----------------------------------------------|-----------------|-------------|-------------------------|  
+| "Why is my loop not iterating?"               | ✔️               | ✔️         | ✔️                      |  
+| "Why is my variable `null`?"                  | ✔️               | ✔️         | ❌                      |  
+| "Why does my loop exit early?"                | ✔️               | ✔️         | ✔️                      |  
+| "Why doesn't my condition work?"              | ✔️               | ✔️         | ❌                      |  
+| "Why isn’t my function returning anything?"   | ✔️               | ✔️         | 🟠                      |  
+
+---
+
+##### **Instruction Changes**  
+
+1. **"Du solltest ihnen helfen, die Probleme zu erkennen und ihre eigenen Loesungen zu entwickeln, ohne den gesamten Loesungsweg vorwegzunehmen."**  
+   **Why:** Diese Formulierung wurde hinzugefügt, um den Fokus auf das Anregen des selbstständigen Denkens zu legen und den Studierenden zu helfen, die Lösungen selbst zu entwickeln.
+
+2. **"Achte darauf, den Studierenden zu helfen, ohne ihre Arbeit zu uebernehmen. Vermeide konkrete Loesungsvorschlaege."**  
+   **Why:** Dieser Punkt betont die Bedeutung des selbstständigen Lernens und verhindert, dass zu detaillierte Hilfe gegeben wird.
+
+3. **"Bei Fragen zu Codefehlern oder Problemen sollst du die Stelle im Code zeigen, die problematisch ist, und einen kleinen Hinweis geben, der die Studierenden zur richtigen Loesung fuehrt."**  
+   **Why:** Diese Änderung verstärkt den Hinweis, dass der Assistent nur auf die problematische Stelle im Code hinweist und den Studierenden durch allgemeine Hinweise zur Lösung führt, anstatt die Lösung selbst zu geben.
+
+4. **Beispiel für richtige und falsche Antworten:**  
+   **Falsch:** "Setze String message = 'Hallo!'"  
+   **Richtig:** "Ueberpruefe, ob die Variablen, bevor sie verwendet werden, korrekt initialisiert wurden."  
+   **Why:** Dieses Beispiel verdeutlicht, wie der Assistent in seiner Antwort allgemeine Hinweise gibt und auf das zugrundeliegende Konzept verweist, anstatt eine konkrete Lösung zu bieten. Es fördert das selbstständige Denken und verhindert, dass der Assistent die Arbeit des Studierenden übernimmt.
+
+---
+
+##### **Evaluation of New Instructions**  
+
+| **Prompt**                                    | **Correctness** | **Clarity** | **Academic Integrity** |  
+|-----------------------------------------------|-----------------|-------------|-------------------------|  
+| "Why is my loop not iterating?"               | ✔️               | ✔️         | ✔️                      |  
+| "Why is my variable `null`?"                  | ✔️               | ✔️         | ✔️                      |  
+| "Why does my loop exit early?"                | ✔️               | ✔️         | ✔️                      |  
+| "Why doesn't my condition work?"              | ✔️               | ✔️         | ✔️                      |  
+| "Why isn’t my function returning anything?"   | ✔️               | 🟠         | ✔️                      |  
