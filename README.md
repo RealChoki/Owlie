@@ -31,9 +31,9 @@ Key goals:
 
 #### **General Mode**  
 1. **Debugging Assistance**: Hints or points at potential error causes in code without revealing solutions or explicitly identifying the issue.  
-2. **Concept Clarification**: Explains programming fundamentals in a simple, beginner-friendly way, tailored for first-semester students and aligned with lecture materials.  
-3. **Course-Specific Answers**: Offers information tied strictly to course content, avoiding irrelevant or advanced topics.  
-4. **Academic Integrity**: Guides students to solve tasks using pseudocode and problem-solving strategies, ensuring independent learning.  
+2. **Independent Problem-Solving**: Encourages students to solve programming tasks independently by offering guidance that fosters critical thinking and conceptual understanding.  
+3. **Concept Clarification**: Explains programming fundamentals in a simple, beginner-friendly way, tailored for first-semester students and aligned with lecture materials.  
+4. **Course-Specific Answers**: Offers information tied strictly to course content, avoiding irrelevant or advanced topics.  
 
 #### **Test Mode**  
 5. **Test Preparation**: Asks targeted questions to address weak areas, offering exercises and hints to help master concepts.  
