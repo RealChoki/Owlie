@@ -71,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, computed, watch } from "vue";
+import { ref, defineEmits, computed, watch, nextTick } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -95,7 +95,7 @@ const props = defineProps({
   isOpenBurgerMenu: Boolean,
 });
 
-const MAX_MESSAGE_LENGTH = 2000; // Set your desired maximum message length
+const MAX_MESSAGE_LENGTH = 2000;
 
 const isSearchFocused = ref(false);
 const textarea = ref<HTMLTextAreaElement | null>(null)
@@ -138,16 +138,19 @@ function sendMessage() {
 
 const showResizeIcon = ref(false);
 
-function resizeTextarea(event: Event) {
-  const target = event.target as HTMLTextAreaElement;
-  target.style.height = "45px";
+const resizeTextarea = () => {
+  const target = textarea.value;
+  if (!target) return;
+
+  target.style.height = '45px';
   target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
-  if (parseInt(target.style.height) <= 91 || !message) {
+
+  if (parseInt(target.style.height) <= 91 || !message.value) {
     showResizeIcon.value = false;
   } else {
     showResizeIcon.value = true;
   }
-}
+};
 
 const fileCount = ref(0);
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -173,9 +176,9 @@ function handleFileChange(event: Event) {
     });
     if (newFiles.length > 0) {
       uploadChatFiles(newFiles);
-      fileCount.value += newFiles.length; // Increment the file count
+      fileCount.value += newFiles.length;
     }
-    input.value = ""; // Reset the input after files are selected
+    input.value = "";
   }
 }
 
@@ -221,8 +224,9 @@ watch(message, (newValue) => {
     }
     showResizeIcon.value = false
   } else {
-    resizeTextarea({ target: textarea.value } as Event)
-    console.log('Resizing textarea')
+    nextTick(() => {
+    resizeTextarea();
+    });
   }
 })
 </script>

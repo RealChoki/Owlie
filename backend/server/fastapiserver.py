@@ -9,7 +9,6 @@ from pydantic import BaseModel
 from openai import OpenAI, AssistantEventHandler
 from openai.types.beta.threads.run import RequiredAction, LastError
 from openai.types.beta.threads.run_submit_tool_outputs_params import ToolOutput
-# from tools.function_calling import get_moodle_course_content, fetch_and_cache_course_content
 from fernet import encrypt_data, decrypt_data
 import logging
 import shutil
@@ -169,12 +168,6 @@ async def post_thread(thread_id: str, message: CreateMessage):
     decrypted_thread_id = decrypt_data(thread_id)
     decrypted_assistant_id = decrypt_data(assistant_id)
 
-    # # Fetch Moodle course content if needed
-    # if "courseid" in message.content:
-    #     courseid = message.content["courseid"]
-    #     course_content = fetch_and_cache_course_content(courseid)
-    #     message.content += f"\nCourse Content: {course_content}"
-
     client.beta.threads.messages.create(
         thread_id=decrypted_thread_id,
         content=message.content,
@@ -206,12 +199,6 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
     # Decrypt the thread_id and assistant_id
     decrypted_thread_id = decrypt_data(thread_id)
     decrypted_assistant_id = decrypt_data(assistant_id)
-
-    # # Fetch Moodle course content if needed
-    # if "courseid" in message.content:
-    #     courseid = message.content["courseid"]
-    #     course_content = fetch_and_cache_course_content(courseid)
-    #     message.content += f"\nCourse Content: {course_content}"
 
     # Post the message to the thread
     client.beta.threads.messages.create(
