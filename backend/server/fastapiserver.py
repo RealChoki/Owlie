@@ -9,7 +9,8 @@ from pydantic import BaseModel
 from openai import OpenAI, AssistantEventHandler
 from openai.types.beta.threads.run import RequiredAction, LastError
 from openai.types.beta.threads.run_submit_tool_outputs_params import ToolOutput
-from tools.function_calling import get_moodle_course_content
+# from tools.function_calling import get_moodle_course_content, fetch_and_cache_course_content
+from fernet import encrypt_data, decrypt_data
 import logging
 import shutil
 import tempfile  # Add this import
@@ -109,7 +110,12 @@ async def post_new(request: Request):
     if not assistant_id:
         return {"error": "Assistant ID is required."}
 
+    # Encrypt the assistant_id
+    decrypted_assistant_id = decrypt_data(assistant_id)
+
     thread = client.beta.threads.create()
+    encrypted_thread_id = encrypt_data(thread.id)
+
     client.beta.threads.messages.create(
         thread_id=thread.id,
         content="Greet the user and tell them about yourself and ask what they are looking for.",
@@ -118,22 +124,24 @@ async def post_new(request: Request):
     )
     run = client.beta.threads.runs.create(
         thread_id=thread.id,
-        assistant_id=assistant_id
+        assistant_id=decrypted_assistant_id
     )
     return RunStatus(
         run_id=run.id,
-        thread_id=thread.id,
+        thread_id=encrypted_thread_id,
         status=run.status,
         required_action=run.required_action,
         last_error=run.last_error
     )
 
-
 @app.get("/api/threads/{thread_id}")
 async def get_thread(thread_id: str):
+    # Decrypt the thread_id
+    decrypted_thread_id = decrypt_data(thread_id)
+    
     # Synchronously list messages
     messages = client.beta.threads.messages.list(
-        thread_id=thread_id
+        thread_id=decrypted_thread_id
     )
 
     result = [
@@ -153,22 +161,37 @@ async def get_thread(thread_id: str):
 
 @app.post("/api/threads/{thread_id}")
 async def post_thread(thread_id: str, message: CreateMessage):
-    if assistant_id is None:
-        return {"error": "Assistant is not initialized. Please set the assistant using /api/set_assistant."}
+    assistant_id = message.assistant_id
+    if not assistant_id:
+        return {"error": "Assistant ID is required."}
+
+    # Decrypt the thread_id and assistant_id
+    decrypted_thread_id = decrypt_data(thread_id)
+    decrypted_assistant_id = decrypt_data(assistant_id)
+
+    # # Fetch Moodle course content if needed
+    # if "courseid" in message.content:
+    #     courseid = message.content["courseid"]
+    #     course_content = fetch_and_cache_course_content(courseid)
+    #     message.content += f"\nCourse Content: {course_content}"
+
     client.beta.threads.messages.create(
-        thread_id=thread_id,
+        thread_id=decrypted_thread_id,
         content=message.content,
         role="user"
     )
 
     run = client.beta.threads.runs.create(
-        thread_id=thread_id,
-        assistant_id=assistant_id
+        thread_id=decrypted_thread_id,
+        assistant_id=decrypted_assistant_id
     )
+
+    # Encrypt the thread_id before returning it
+    encrypted_thread_id = encrypt_data(decrypted_thread_id)
 
     return RunStatus(
         run_id=run.id,
-        thread_id=thread_id,
+        thread_id=encrypted_thread_id,
         status=run.status,
         required_action=run.required_action,
         last_error=run.last_error
@@ -180,17 +203,27 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
     if not assistant_id:
         return {"error": "Assistant ID is required."}
 
+    # Decrypt the thread_id and assistant_id
+    decrypted_thread_id = decrypt_data(thread_id)
+    decrypted_assistant_id = decrypt_data(assistant_id)
+
+    # # Fetch Moodle course content if needed
+    # if "courseid" in message.content:
+    #     courseid = message.content["courseid"]
+    #     course_content = fetch_and_cache_course_content(courseid)
+    #     message.content += f"\nCourse Content: {course_content}"
+
     # Post the message to the thread
     client.beta.threads.messages.create(
-        thread_id=thread_id,
+        thread_id=decrypted_thread_id,
         content=message.content,
         role="user"
     )
 
     # Start the conversation run with the provided assistant_id
     client.beta.threads.runs.create(
-        thread_id=thread_id,
-        assistant_id=assistant_id
+        thread_id=decrypted_thread_id,
+        assistant_id=decrypted_assistant_id
     )
 
     # Step 2: Wait for the assistant's response indefinitely
@@ -201,7 +234,7 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
 
         # Fetch the latest messages
         messages = client.beta.threads.messages.list(
-            thread_id=thread_id
+            thread_id=decrypted_thread_id
         )
         
         if messages.data:
@@ -248,11 +281,17 @@ async def get_courses(university: str, degree: str, subject: str):
     except KeyError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
+
 @app.get("/api/get_assistant_ids")
 async def get_assistant_ids_endpoint(course_name: str, mode_name: str):
     try:
         assistant_id, vector_store_id = get_assistant_ids(course_name, mode_name)
-        return {"assistant_id": assistant_id, "vector_store_id": vector_store_id}
+        
+        # Encrypt the assistant_id and vector_store_id before returning them
+        encrypted_assistant_id = encrypt_data(assistant_id)
+        encrypted_vector_store_id = encrypt_data(vector_store_id)
+        
+        return {"assistant_id": encrypted_assistant_id, "vector_store_id": encrypted_vector_store_id}
     except ValueError as e:
         return {"error": str(e)}
 
@@ -269,6 +308,11 @@ async def upload_files(
 
     if not files:
         return {"error": "No files uploaded"}
+
+    # Decrypt the thread_id, vector_store_id, and assistant_id if provided
+    decrypted_thread_id = decrypt_data(thread_id)
+    decrypted_vector_store_id = decrypt_data(vector_store_id)
+    decrypted_assistant_id = decrypt_data(assistant_id) if assistant_id else None
 
     file_ids = []
 
@@ -291,7 +335,7 @@ async def upload_files(
         os.remove(temp_file_path)
 
     # Retrieve file IDs from the default vector store
-    default_files = client.beta.vector_stores.files.list(vector_store_id)
+    default_files = client.beta.vector_stores.files.list(decrypted_vector_store_id)
     default_file_ids = [file.id for file in default_files.data]
 
     # Combine file IDs
@@ -299,24 +343,24 @@ async def upload_files(
 
     # Create a new vector store with combined files
     vector_store = client.beta.vector_stores.create(
-        name=f"Temporary Vector Store for Thread {thread_id}",
+        name=f"Temporary Vector Store for Thread {decrypted_thread_id}",
         file_ids=combined_file_ids
     )
     temporary_vector_store_id = vector_store.id
     print(f"Created temporary vector store: {temporary_vector_store_id}")
 
-    if assistant_id:
+    if decrypted_assistant_id:
         # Update the existing assistant with the new vector store files
         client.beta.assistants.update(
-            assistant_id=assistant_id,
+            assistant_id=decrypted_assistant_id,
             tool_resources={
                 "file_search": {
                     "vector_store_ids": [temporary_vector_store_id]
                 }
             }
         )
-        print(f"Updated assistant: {assistant_id}")
-        temporary_assistant_id = assistant_id
+        print(f"Updated assistant: {decrypted_assistant_id}")
+        temporary_assistant_id = decrypted_assistant_id
     else:
         # Retrieve assistant configuration from config.json
         mode_config = get_course_config(current_module, current_mode)
@@ -334,7 +378,7 @@ async def upload_files(
         # Create a new temporary assistant using the configuration
         temporary_assistant = client.beta.assistants.create(
             instructions=instructions,
-            name=f"Temporary Assistant for Thread {thread_id}",
+            name=f"Temporary Assistant for Thread {decrypted_thread_id}",
             tools=tools,
             tool_resources=tool_resources,
             model=model
@@ -343,14 +387,21 @@ async def upload_files(
         print(f"Created temporary assistant: {temporary_assistant_id}")
 
     # Associate the temporary assistant with the thread
-    assistant_cache[thread_id] = {
+    assistant_cache[decrypted_thread_id] = {
         "assistant_id": temporary_assistant_id,
         "vector_store_id": temporary_vector_store_id
     }
 
+    # Encrypt the thread_id, assistant_id, and vector_store_id before returning them
+    encrypted_thread_id = encrypt_data(decrypted_thread_id)
+    encrypted_assistant_id = encrypt_data(temporary_assistant_id)
+    encrypted_vector_store_id = encrypt_data(temporary_vector_store_id)
+
     return {
         "message": "Temporary assistant created and files uploaded successfully",
-        "temporary_assistant_id": temporary_assistant_id
+        "temporary_assistant_id": encrypted_assistant_id,
+        "thread_id": encrypted_thread_id,
+        "vector_store_id": encrypted_vector_store_id
     }
 
 @app.post("/api/change_thread")

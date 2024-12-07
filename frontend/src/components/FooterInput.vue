@@ -40,6 +40,9 @@
         @click="toggleOverlay"
         :class="{ 'blur-effect': isOpenBurgerMenu }"
       />
+      <div v-if="isMessageTooLong" class="character-count">
+        <span :class="{ 'text-danger': isMessageTooLong }">{{ messageLength }}</span> / {{ MAX_MESSAGE_LENGTH }}
+      </div>
     </div>
     <div class="input-actions align-bottom d-flex gap-2">
       <font-awesome-icon
@@ -92,6 +95,8 @@ const props = defineProps({
   isOpenBurgerMenu: Boolean,
 });
 
+const MAX_MESSAGE_LENGTH = 2000; // Set your desired maximum message length
+
 const isSearchFocused = ref(false);
 const textarea = ref<HTMLTextAreaElement | null>(null)
 const emit = defineEmits(["toggle-overlay", "send-message"]);
@@ -100,6 +105,9 @@ const message = computed({
   get: () => getCurrentMessage(),
   set: (newMessage) => setCurrentMessage(newMessage),
 });
+
+const messageLength = computed(() => message.value.length);
+const isMessageTooLong = computed(() => messageLength.value > MAX_MESSAGE_LENGTH);
 
 const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
 
@@ -113,7 +121,10 @@ function disableSendButton() {
   const isMessageNotEmpty = message.value.trim() !== "";
   const hasFilesAttached = fileCount.value > 0;
 
-  return !(isLastMessageFromAssistant && (isMessageNotEmpty || hasFilesAttached));
+  return (
+    !(isLastMessageFromAssistant && (isMessageNotEmpty || hasFilesAttached)) ||
+    isMessageTooLong.value
+  );
 }
 
 function sendMessage() {
@@ -182,7 +193,7 @@ function readLatestAssistantMessage() {
       // Customize the speech properties
       utterance.lang = 'de-DE'; // Set language to German
       utterance.pitch = 1.1;
-      utterance.rate = 1.1;
+      utterance.rate = 1.2;
       utterance.volume = 1;
 
       // Select a female voice
@@ -209,6 +220,9 @@ watch(message, (newValue) => {
       textarea.value.style.height = '45px'
     }
     showResizeIcon.value = false
+  } else {
+    resizeTextarea({ target: textarea.value } as Event)
+    console.log('Resizing textarea')
   }
 })
 </script>
@@ -235,7 +249,7 @@ watch(message, (newValue) => {
 }
 
 .btn-disabled {
-  opacity: 0.7;
+  background-color: rgb(196, 195, 195) !important;
   cursor: default;
 }
 
@@ -312,5 +326,17 @@ watch(message, (newValue) => {
   align-items: center;
   justify-content: center;
   font-size: 0.8rem;
+}
+
+.character-count {
+  font-size: 12px;
+  color: white;
+  position: absolute;
+  top: -20px;
+  left: 20px;
+}
+
+.text-danger {
+  color: red !important;
 }
 </style>

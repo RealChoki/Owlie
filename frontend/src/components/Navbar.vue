@@ -232,6 +232,7 @@ onMounted(() => {
 .hearts-container {
   display: flex;
   align-items: center;
+  gap: 0.1em;
 }
 
 .heart-icon svg {

@@ -10,18 +10,21 @@
           />
         </div>
         <textarea
-          class="full-screen-textarea flex-grow-1 mt-3"
+          class="full-screen-textarea flex-grow-1"
           style="background-color: #232323"
           placeholder="Type a message..."
           aria-label="Message input"
           v-model="message"
         ></textarea>
+        <div class="character-count">
+          <span :class="{ 'text-danger': isMessageTooLong }">{{ messageLength }}</span> / {{ MAX_MESSAGE_LENGTH }}
+        </div>
         <font-awesome-icon
           class="btn-circle bg-white"
           :icon="['fas', 'arrow-up']"
           :class="{
-            'cursor-pointer': message,
-            'btn-disabled': !message
+            'cursor-pointer': !disableSendButton(),
+            'btn-disabled': disableSendButton()
           }"
           style="position: fixed; bottom: 10px; right: 10px; z-index: 10"
           @click="sendMessage"
@@ -37,10 +40,10 @@ import { computed } from 'vue'
 import chatService from '../services/chatService'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faDownLeftAndUpRightToCenter } from '@fortawesome/free-solid-svg-icons'
+import { faDownLeftAndUpRightToCenter, faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { sendMessage as sendChatMessage } from '../services/chatService'
 
-library.add(faDownLeftAndUpRightToCenter)
+library.add(faDownLeftAndUpRightToCenter, faArrowUp)
 
 const props = defineProps({
   isExpandedInput: Boolean
@@ -48,17 +51,26 @@ const props = defineProps({
 
 const emit = defineEmits(['closeExpandedInput'])
 
+const MAX_MESSAGE_LENGTH = 2000; // Maximum allowed message length
+
 const message = computed({
   get: () => chatService.getCurrentMessage(),
   set: (newMessage) => chatService.setCurrentMessage(newMessage)
 })
 
+const messageLength = computed(() => message.value.length)
+const isMessageTooLong = computed(() => messageLength.value > MAX_MESSAGE_LENGTH)
+
 function closeExpandedInput() {
   emit('closeExpandedInput')
 }
 
+function disableSendButton() {
+  return isMessageTooLong.value || message.value.trim() === ''
+}
+
 function sendMessage() {
-  if (message.value.trim()) {
+  if (!disableSendButton()) {
     sendChatMessage(message.value)
     message.value = ''
     closeExpandedInput()
@@ -81,6 +93,7 @@ function sendMessage() {
   color: #ffffff;
   cursor: pointer;
   font-size: 1.5rem;
+  margin-right: 0.1em;
 }
 
 .full-screen-textarea {
@@ -90,11 +103,17 @@ function sendMessage() {
   border: none;
   outline: none;
   color: #ffffff;
-  padding: 1rem;
+  padding: 0 1em;
   font-size: 1rem;
   resize: none;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  margin-top: 2.3em;
+  margin-bottom: 1em;
+}
+
+.full-screen-textarea::placeholder {
+  color: white !important;
 }
 
 .full-screen-textarea::-webkit-scrollbar {
@@ -110,10 +129,25 @@ function sendMessage() {
   min-width: 25px;
   min-height: 25px;
   padding: 0.5em;
+  margin-right: -0.4em;
 }
 
 .btn-disabled {
-  opacity: 0.7;
+  background-color: rgb(196, 195, 195) !important;
   cursor: default;
 }
+
+.character-count {
+  font-size: 14px;
+  color: white;
+  position: absolute;
+  top: 1.4em;
+  left: 2.7em;
+}
+
+.text-danger {
+  color: red !important;
+}
+
+
 </style>

@@ -67,7 +67,7 @@ import { getAssistantIdLS } from '../services/localStorageService';
 // REST Service functions
 export const createNewThread = async (): Promise<CreateThreadResponse | undefined> => {
     try {
-        const assistant_id = getAssistantIdLS();
+        const assistant_id = getAssistantIdLS(); 
         if (!assistant_id) {
             throw new Error('Assistant ID is not available.');
         }

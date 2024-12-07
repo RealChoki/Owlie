@@ -116,7 +116,7 @@ export async function sendMessage(messageToSend: string) {
 
   incrementMessageCount();
 
-  if (messageCount.value >= 3) {
+  if (messageCount.value >= 2) {
     consumeHalfHeart();
   }
 
