@@ -6,7 +6,7 @@
           :class="[
             'chat-bubble user-msg',
             { 'blur-effect': props.isOpenBurgerMenu },
-            index === 0 ? 'mt-2 mb-4' : 'my-4'
+            index === 0 ? 'mt-3 mb-4' : 'my-4'
           ]"
         >
           {{ message.content }}

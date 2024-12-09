@@ -8,7 +8,8 @@
       'gap-2',
       'pb-2',
       'px-0',
-      isMessageTooLong ? 'pt-4' : 'pt-2'
+      isMessageTooLong ? 'pt-4' : 'pt-2',
+      { 'fixed-grow-0': !messages.length, 'mt-auto': !messages.length}
     ]"
   >
     <div class="position-relative">
@@ -61,7 +62,7 @@
         :icon="['fas', 'arrow-up']"
         :class="{
           'cursor-pointer': !disableSendButton(),
-          'btn-disabled': !message && fileCount === 0 || disableSendButton(),
+          'btn-disabled': disableSendButton(),
           'blur-effect': isOpenBurgerMenu,
         }"
         @click="sendMessage"
@@ -70,19 +71,19 @@
       <!-- Text to speech when there's no message -->
       <font-awesome-icon
         v-else
-        :icon="['fas', 'volume-high']"
+        :icon="isTTSPlaying ? ['fas', 'volume-xmark'] : ['fas', 'volume-high']"
         :class="{
           'cursor-pointer btn-circle bg-light align-bottom': true,
           'blur-effect': isOpenBurgerMenu,
         }"
-        @click="readLatestAssistantMessage"
+        @click="toggleTTS"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, computed, watch, nextTick } from "vue";
+import { ref, defineEmits, computed, watch, nextTick, onMounted, onBeforeUnmount } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -90,6 +91,7 @@ import {
   faPlus,
   faArrowUp,
   faVolumeHigh,
+  faVolumeXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { getMessages } from '../services/chatService';
 import {
@@ -99,11 +101,16 @@ import {
 } from "../services/chatService";
 import { uploadFiles as uploadChatFiles } from "../services/filesService";
 import fileService from "../services/filesService";
-library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh);
+import { franc } from 'franc-min';
+library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh, faVolumeXmark);
 
 const props = defineProps({
   isExpandedInput: Boolean,
   isOpenBurgerMenu: Boolean,
+  messages: {
+    type: Array,
+    required: true,
+  },
 });
 
 const MAX_MESSAGE_LENGTH = 2000;
@@ -121,6 +128,44 @@ const messageLength = computed(() => message.value.length);
 const isMessageTooLong = computed(() => messageLength.value > MAX_MESSAGE_LENGTH);
 
 const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
+
+const isTTSPlaying = ref(false);
+let utterance: SpeechSynthesisUtterance | null = null;
+const availableVoices = ref<SpeechSynthesisVoice[]>([]);
+
+// Function to load voices
+const loadVoices = () => {
+  availableVoices.value = window.speechSynthesis.getVoices();
+};
+
+// Language detection function using franc-min
+function detectLanguage(text: string): string {
+  const langCode = franc(text, { only: ['deu', 'eng'] });
+  console.log('Detected language code:', langCode); // Debugging log
+
+  if (langCode === 'deu') {
+    return 'de-DE';
+  } else if (langCode === 'eng') {
+    return 'en-US';
+  } else {
+    console.warn(`Language detection failed for text: "${text}". Defaulting to 'de-DE'.`);
+    return 'de-DE'; // Fallback to English if undetermined
+  }
+}
+
+const femaleVoicesMap: { [key: string]: string } = {
+  'en-US': 'Microsoft Zira - English (United States)', // Example female English voice
+  'de-DE': 'Microsoft Katja - German (Germany)'      // Example female German voice
+};
+
+onMounted(() => {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = () => {
+    loadVoices();
+    console.log('Voices updated:', availableVoices.value.map(voice => `${voice.name} (${voice.lang})`));
+  };
+  window.addEventListener('beforeunload', stopTTS);
+});
 
 function isFirstMessage() {
   return getMessages()[getMessages().length - 1] === undefined
@@ -194,7 +239,7 @@ function handleFileChange(event: Event) {
 }
 
 function readLatestAssistantMessage() {
-  if (!props.isOpenBurgerMenu) {
+  if (!props.isOpenBurgerMenu && !isTTSPlaying.value) {
     console.log('readLatestAssistantMessage called');
     const messages = getMessages();
     const assistantMessages = messages.filter(message => message.role === 'assistant');
@@ -202,29 +247,65 @@ function readLatestAssistantMessage() {
     if (assistantMessages.length > 0) {
       const latestMessage = assistantMessages[assistantMessages.length - 1];
       console.log('Latest Assistant Message:', latestMessage.content);
-      const utterance = new SpeechSynthesisUtterance(latestMessage.content);
+      const detectedLang = detectLanguage(latestMessage.content);
+      console.log('Detected Language:', detectedLang);
+
+      utterance = new SpeechSynthesisUtterance(latestMessage.content);
       
-      // Customize the speech properties
-      utterance.lang = 'de-DE'; // Set language to German
+      // Set language based on detection
+      utterance.lang = detectedLang;
       utterance.pitch = 1.1;
-      utterance.rate = 1.2;
+      utterance.rate = 1.3;
       utterance.volume = 1;
 
-      // Select a female voice
-      const voices = window.speechSynthesis.getVoices();
-      const femaleGermanVoice = voices.find(voice => voice.lang === 'de-DE' && voice.name.includes('female'));
-      if (femaleGermanVoice) {
-        utterance.voice = femaleGermanVoice;
-        console.log('Selected voice:', femaleGermanVoice.name);
+      // Log available voices
+      console.log('Available Voices:', availableVoices.value.map(voice => voice.name));
+
+      // Select female voice based on detected language
+      const selectedVoiceName = femaleVoicesMap[detectedLang];
+      const selectedVoice = availableVoices.value.find(voice => voice.name === selectedVoiceName);
+
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+        console.log('Selected voice:', selectedVoice.name);
+      } else {
+        console.warn(`No female voice found for language ${detectedLang}. Using default voice.`);
       }
+
+      utterance.onend = () => {
+        isTTSPlaying.value = false;
+        console.log('TTS playback ended.');
+      };
 
       window.speechSynthesis.cancel(); // Clear any pending speeches
       window.speechSynthesis.speak(utterance);
+      isTTSPlaying.value = true;
+      console.log('TTS playback started.');
     } else {
       console.log('No assistant messages to read.');
     }
   }
 }
+
+function stopTTS() {
+  if (utterance) {
+    window.speechSynthesis.cancel();
+    isTTSPlaying.value = false;
+    console.log('TTS stopped');
+  }
+}
+
+function toggleTTS() {
+  if (isTTSPlaying.value) {
+    stopTTS();
+  } else {
+    readLatestAssistantMessage();
+  }
+}
+
+watch(() => props.messages, () => {
+  stopTTS();
+}, { deep: true });
 
 const showFileCount = computed(() => fileCount.value > 0);
 

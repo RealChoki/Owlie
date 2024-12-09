@@ -4,9 +4,9 @@
     <div v-if="!chatMessages.length" class="position-absolute start-50 translate-middle" style="top: 45%;">
       <img src="../icons/OwlLogo.png" style="width: 75px;" />
     </div>
-    <div class="chat-wrapper">
+    <div class="chat-wrapper flex-grow-1">
       <ChatBubbleContainer v-if="chatMessages.length" :chatMessages="chatMessages" :isOpenBurgerMenu="isOpenBurgerMenu" />
-      <FooterInput :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
+      <FooterInput :messages="chatMessages" :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
     </div>
     <ExpandedInput v-if="isExpandedInput" @closeExpandedInput="closeExpandedInput" />
     <transition name="slide">

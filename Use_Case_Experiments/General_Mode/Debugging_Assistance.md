@@ -46,12 +46,12 @@ END
 ##### **Evaluation of Current Instructions**  
 
 | **Prompt**                                    | **Correctness** | **Clarity** | **Academic Integrity** |  
-|-----------------------------------------------|-----------------|-------------|-------------------------|  
-| "Why is my loop not iterating?"               | ✔️               | ✔️         | ✔️                      |  
-| "Why is my variable `null`?"                  | ✔️               | ✔️         | ❌                      |  
-| "Why does my loop exit early?"                | ✔️               | ✔️         | ✔️                      |  
-| "Why doesn't my condition work?"              | ✔️               | ✔️         | ❌                      |  
-| "Why isn’t my function returning anything?"   | ✔️               | ✔️         | 🟠                      |  
+|-----------------------------------------------|-----------------|-------------|-------------------------|    
+| "Warum iteriert meine Schleife nicht?"         | ✔️              | ✔️          | ✔️                         |  
+| "Warum ist meine Variable `null`?"            | ✔️              | ✔️          | ❌                         |  
+| "Warum beendet sich meine Schleife frühzeitig?"| ✔️              | ✔️          | ✔️                         |  
+| "Warum funktioniert meine Bedingung nicht?"   | ✔️              | ✔️          | ❌                         |  
+| "Warum gibt meine Funktion nichts zurück?"    | ✔️              | ✔️          | 🟠                         |  
 
 ---
 
@@ -77,8 +77,8 @@ END
 
 | **Prompt**                                    | **Correctness** | **Clarity** | **Academic Integrity** |  
 |-----------------------------------------------|-----------------|-------------|-------------------------|  
-| "Why is my loop not iterating?"               | ✔️               | ✔️         | ✔️                      |  
-| "Why is my variable `null`?"                  | ✔️               | ✔️         | ✔️                      |  
-| "Why does my loop exit early?"                | ✔️               | ✔️         | ✔️                      |  
-| "Why doesn't my condition work?"              | ✔️               | ✔️         | ✔️                      |  
-| "Why isn’t my function returning anything?"   | ✔️               | 🟠         | ✔️                      |  
+| "Warum iteriert meine Schleife nicht?"               | ✔️               | ✔️         | ✔️                      |  
+| "Warum ist meine Variable `null`?"                  | ✔️               | ✔️         | ✔️                      |  
+| "Warum beendet sich meine Schleife frühzeitig?"                | ✔️               | ✔️         | ✔️                      |  
+| "Warum funktioniert meine Bedingung nicht?"              | ✔️               | ✔️         | ✔️                      |  
+| "Warum gibt meine Funktion nichts zurück?"   | ✔️               | 🟠         | ✔️                      |  

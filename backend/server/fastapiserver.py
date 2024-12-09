@@ -10,6 +10,8 @@ from openai import OpenAI, AssistantEventHandler
 from openai.types.beta.threads.run import RequiredAction, LastError
 from openai.types.beta.threads.run_submit_tool_outputs_params import ToolOutput
 from fernet import encrypt_data, decrypt_data
+from tools.function_calling import get_moodle_course_content
+import time
 import logging
 import shutil
 import tempfile  # Add this import
@@ -168,20 +170,71 @@ async def post_thread(thread_id: str, message: CreateMessage):
     decrypted_thread_id = decrypt_data(thread_id)
     decrypted_assistant_id = decrypt_data(assistant_id)
 
+    # Add user message to the thread
     client.beta.threads.messages.create(
         thread_id=decrypted_thread_id,
         content=message.content,
         role="user"
     )
 
+    # Trigger the assistant to generate a response
     run = client.beta.threads.runs.create(
         thread_id=decrypted_thread_id,
         assistant_id=decrypted_assistant_id
     )
 
+    # Poll for run status updates
+    while run.status in ["queued", "processing", "in_progress"]:
+        time.sleep(1)  # Wait for 1 second before polling again
+        run = client.beta.threads.runs.retrieve(thread_id= decrypted_thread_id, run_id=run.id)
+
+    # Check if the run requires action
+    if run.status == "requires_action":
+        print("Processing required actions...")
+        
+        tool_outputs = []
+
+        # Check if there are required actions to submit tool outputs
+        if run.required_action and run.required_action.type == "submit_tool_outputs":
+            tool_calls = run.required_action.submit_tool_outputs.tool_calls
+            # Process each tool call
+            for tool_call in tool_calls:
+                if tool_call.function.name == "get_moodle_course_content":
+                    course_id = "51589"  # Hardcoded for now
+                    if course_id:
+                        content = get_moodle_course_content(courseid=course_id)
+
+                        # Prepare the tool output with the fetched content
+                        print("tool_call.id:", tool_call.id)
+                        tool_outputs.append({
+                            "tool_call_id": tool_call.id,
+                            "output": content
+                        })
+                    else:
+                        print("Course ID is missing in the function arguments.")
+
+            # Submit all tool outputs at once after collecting them in a list
+            if tool_outputs:
+                print("Submitting tool outputs...")
+                try:
+                    # Submit tool outputs and poll for the result
+                    run = client.beta.threads.runs.submit_tool_outputs_and_poll(
+                        thread_id=decrypted_thread_id,
+                        run_id=run.id,
+                        tool_outputs=tool_outputs
+                    )
+                    print("Tool outputs submitted successfully.")
+                except Exception as e:
+                    print(f"Failed to submit tool outputs: {e}")
+            else:
+                print("No tool outputs to submit.")
+        else:
+            print("No required actions to process.")
+
     # Encrypt the thread_id before returning it
     encrypted_thread_id = encrypt_data(decrypted_thread_id)
 
+    # Return the run status
     return RunStatus(
         run_id=run.id,
         thread_id=encrypted_thread_id,
@@ -189,6 +242,70 @@ async def post_thread(thread_id: str, message: CreateMessage):
         required_action=run.required_action,
         last_error=run.last_error
     )
+
+# run = client.beta.threads.runs.create_and_poll(
+#   thread_id=thread.id,
+#   assistant_id=assistant.id,
+# )
+ 
+# if run.status == 'completed':
+#   messages = client.beta.threads.messages.list(
+#     thread_id=thread.id
+#   )
+#   print(messages)
+# else:
+#   print(run.status)
+ 
+# # Define the list to store tool outputs
+# tool_outputs = []
+ 
+# # Loop through each tool in the required action section
+# for tool in run.required_action.submit_tool_outputs.tool_calls:
+#   if tool.function.name == "get_current_temperature":
+#     tool_outputs.append({
+#       "tool_call_id": tool.id,
+#       "output": "57"
+#     })
+#   elif tool.function.name == "get_rain_probability":
+#     tool_outputs.append({
+#       "tool_call_id": tool.id,
+#       "output": "0.06"
+#     })
+ 
+# # Submit all tool outputs at once after collecting them in a list
+# if tool_outputs:
+#   try:
+#     run = client.beta.threads.runs.submit_tool_outputs_and_poll(
+#       thread_id=thread.id,
+#       run_id=run.id,
+#       tool_outputs=tool_outputs
+#     )
+#     print("Tool outputs submitted successfully.")
+#   except Exception as e:
+#     print("Failed to submit tool outputs:", e)
+# else:
+#   print("No tool outputs to submit.")
+ 
+# if run.status == 'completed':
+#   messages = client.beta.threads.messages.list(
+#     thread_id=thread.id
+#   )
+#   print(messages)
+# else:
+#   print(run.status)
+
+
+@app.post("/api/tools/get_moodle_course_content")
+async def handle_get_moodle_course_content(request: Request):
+    data = await request.json()
+    courseid = data.get("courseid")
+    if not courseid:
+        return {"error": "Course ID is required."}
+    try:
+        content = get_moodle_course_content(courseid)
+        return {"status": "success", "content": content}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 @app.get("/api/runs/{thread_id}/{run_id}")
@@ -207,7 +324,6 @@ async def get_run_status(thread_id: str, run_id: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @app.post("/api/threads/{thread_id}/send_and_wait")
 async def send_message_and_wait_for_response(thread_id: str, message: CreateMessage):
@@ -231,6 +347,12 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
         thread_id=decrypted_thread_id,
         assistant_id=decrypted_assistant_id
     )
+    
+    # Poll for run status updates
+    while run.status in ["queued", "processing"]:
+        time.sleep(1)  # Wait for 1 second before polling again
+        run = client.beta.threads.runs.retrieve(thread_id= decrypted_thread_id, run_id=run.id)
+
 
     # Step 2: Wait for the assistant's response indefinitely
     wait_interval = 5
