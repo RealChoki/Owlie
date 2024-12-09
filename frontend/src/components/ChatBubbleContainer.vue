@@ -163,12 +163,8 @@ watch(
   pointer-events: none;
 }
 
-::v-deep p {
-  margin-bottom: 0;
-}
-
 ::v-deep p:last-of-type {
-  margin-bottom: 10px; /* Adjust the value as needed */
+  margin-bottom: 10px;
 }
 
 .no-scroll {
