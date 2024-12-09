@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+  <nav class="navbar navbar-expand-lg navbar-light sticky-top pb-4">
     <div
       class="container-fluid d-flex justify-content-between align-items-center"
     >
@@ -14,8 +14,8 @@
           <span
             v-for="(heartClass, index) in heartClasses"
             :key="index"
-            class="heart-icon"
-          >
+            :class="['heart-icon', { 'blur-effect': isOpenBurgerMenu }]"
+            >
             <template v-if="heartClass === 'heart-filled'">
               <!-- Full Heart -->
               <svg
@@ -118,7 +118,9 @@
             </template>
           </span>
         </div>
-        <p class="assistant-title">{{ props.selectedModule }}</p>
+        <p :class="['assistant-title', { 'blur-effect': isOpenBurgerMenu }]">
+          {{ props.selectedModule }}
+        </p>      
       </div>
       <font-awesome-icon
         :icon="['fas', 'pen-to-square']"

@@ -1,5 +1,5 @@
 <template>
-  <div ref="chatContainer" class="chat-bubble-container mt-3 py-0">
+  <div ref="chatContainer" :class="['chat-bubble-container', 'py-0', { 'no-scroll': props.isOpenBurgerMenu }]">
     <div v-for="(message, index) in messages" :key="message.id || index">
       <div v-if="message.role === 'user'" class="d-flex justify-content-end">
         <div
@@ -60,7 +60,10 @@ const renderedMessages = computed(() => {
 });
 
 const props = defineProps({
-  isOpenBurgerMenu: Boolean,
+  isOpenBurgerMenu: {
+    type: Boolean,
+    required: true,
+  }
 });
 
 // Watch for changes in messages to scroll to the latest message
@@ -163,6 +166,14 @@ watch(
   margin-bottom: 10px; /* Adjust the value as needed */
 }
 
+.no-scroll {
+  overflow: hidden; /* Disable scrolling when this class is applied */
+}
+
+/* Optional: Prevent user from selecting text while scrolled */
+.no-scroll * {
+  user-select: none;
+}
 
 /* Assistant message styles (change)
 .assistant-msg pre {
