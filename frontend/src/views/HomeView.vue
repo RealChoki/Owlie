@@ -4,8 +4,10 @@
     <div v-if="!chatMessages.length" class="position-absolute start-50 translate-middle" style="top: 45%;">
       <img src="../icons/OwlLogo.png" style="width: 75px;" />
     </div>
-    <ChatBubbleContainer v-if="chatMessages.length" :chatMessages="chatMessages" :isOpenBurgerMenu="isOpenBurgerMenu" />
-    <FooterInput :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
+    <div class="chat-wrapper">
+      <ChatBubbleContainer v-if="chatMessages.length" :chatMessages="chatMessages" :isOpenBurgerMenu="isOpenBurgerMenu" />
+      <FooterInput :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
+    </div>
     <ExpandedInput v-if="isExpandedInput" @closeExpandedInput="closeExpandedInput" />
     <transition name="slide">
       <BurgerMenu
@@ -120,5 +122,19 @@ onUnmounted(() => {
 
 .slide-leave-to {
   transform: translateX(-100%);
+}
+
+.chat-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full viewport height */
+  width: 100%;
 }
 </style>

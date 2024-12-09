@@ -1,16 +1,16 @@
 <template>
-  <div ref="chatContainer" class="chat-bubble-container mb-4 mt-3 pb-5">
+  <div ref="chatContainer" class="chat-bubble-container mt-3 py-0">
     <div v-for="(message, index) in messages" :key="message.id || index">
       <div v-if="message.role === 'user'" class="d-flex justify-content-end">
         <div
-          :class="['chat-bubble user-msg my-3', { 'blur-effect': props.isOpenBurgerMenu }]">
+          :class="['chat-bubble user-msg my-4', { 'blur-effect': props.isOpenBurgerMenu }]">
           {{ message.content }}
         </div>
       </div>
 
       <div
         v-else-if="message.role === 'assistant'"
-        :class="['assistant-msg text-white p-2 my-2', { 'blur-effect': props.isOpenBurgerMenu }]"
+        :class="['assistant-msg text-white', { 'blur-effect': props.isOpenBurgerMenu }]"
       >
         <img
           src="../icons/OwlLogo.png"
@@ -93,6 +93,7 @@ watch(
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  flex-grow: 1;
 }
 
 .chat-bubble-container::-webkit-scrollbar {
@@ -153,6 +154,15 @@ watch(
   filter: blur(1.5px);
   pointer-events: none;
 }
+
+::v-deep p {
+  margin-bottom: 0;
+}
+
+::v-deep p:last-of-type {
+  margin-bottom: 10px; /* Adjust the value as needed */
+}
+
 
 /* Assistant message styles (change)
 .assistant-msg pre {

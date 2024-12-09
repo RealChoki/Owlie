@@ -1,5 +1,16 @@
 <template>
-  <div class="sticky-footer container-fluid d-flex align-items-end gap-2 py-2">
+  <div
+    :class="[
+      'sticky-footer',
+      'container-fluid',
+      'd-flex',
+      'align-items-end',
+      'gap-2',
+      'pb-2',
+      'px-0',
+      isMessageTooLong ? 'pt-4' : 'pt-2'
+    ]"
+  >
     <div class="position-relative">
       <font-awesome-icon
         :icon="['fas', 'plus']"
@@ -233,12 +244,13 @@ watch(message, (newValue) => {
 
 <style scoped>
 .sticky-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
+  /* Remove position: fixed */
   width: 100%;
   background-color: #131213;
   z-index: 1000;
+  /* Add display flex to help with alignment */
+  display: flex;
+  align-items: center;
 }
 
 .btn-circle {
