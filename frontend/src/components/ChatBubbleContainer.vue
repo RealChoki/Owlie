@@ -3,7 +3,12 @@
     <div v-for="(message, index) in messages" :key="message.id || index">
       <div v-if="message.role === 'user'" class="d-flex justify-content-end">
         <div
-          :class="['chat-bubble user-msg my-4', { 'blur-effect': props.isOpenBurgerMenu }]">
+          :class="[
+            'chat-bubble user-msg',
+            { 'blur-effect': props.isOpenBurgerMenu },
+            index === 0 ? 'mt-2 mb-4' : 'my-4'
+          ]"
+        >
           {{ message.content }}
         </div>
       </div>
