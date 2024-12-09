@@ -207,17 +207,42 @@ heartCount.value = getHeartCountLS();
 messageCount.value = getMessageCountLS();
 
 onMounted(() => {
+  const lastRegenTimeKey = 'lastRegenTime';
+  const regenIntervalMs = 3 * 60 * 1000; // 3 minutes in milliseconds
+
+  // Retrieve the last regeneration timestamp from localStorage
+  const lastRegenTime = parseInt(localStorage.getItem(lastRegenTimeKey) || '0', 10);
+  const currentTime = Date.now();
+
+  // Calculate the number of intervals that have passed
+  let intervalsPassed = Math.floor((currentTime - lastRegenTime) / regenIntervalMs);
+
+  // Update the heart count based on the intervals passed
+  if (intervalsPassed > 0 && heartCount.value < totalHearts) {
+    let heartsToAdd = intervalsPassed * 0.5; // Each interval adds 0.5 heart
+    heartCount.value += heartsToAdd;
+    if (heartCount.value > totalHearts) {
+      heartCount.value = totalHearts; // Cap at totalHearts
+    }
+    setHeartCountLS(heartCount.value);
+  }
+
+  // Update the last regeneration time
+  localStorage.setItem(lastRegenTimeKey, currentTime.toString());
+
+  // Start the interval for future regeneration
   const regenInterval = setInterval(() => {
     if (heartCount.value < totalHearts) {
       heartCount.value += 0.5; // Regenerate half a heart
       if (heartCount.value > totalHearts) {
         heartCount.value = totalHearts; // Cap at totalHearts
       }
-      console.log(
-        `[Navbar.vue] Regenerated half a heart. New heartCount: ${heartCount.value}`
-      );
+      setHeartCountLS(heartCount.value);
+
+      // Update the last regeneration time
+      localStorage.setItem(lastRegenTimeKey, Date.now().toString());
     }
-  }, 3 * 60 * 1000); // Every 3 minutes
+  }, regenIntervalMs);
 
   onUnmounted(() => {
     clearInterval(regenInterval);

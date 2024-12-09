@@ -190,6 +190,25 @@ async def post_thread(thread_id: str, message: CreateMessage):
         last_error=run.last_error
     )
 
+
+@app.get("/api/runs/{thread_id}/{run_id}")
+async def get_run_status(thread_id: str, run_id: str):
+    try:
+        # Fetch run details using both `thread_id` and `run_id`
+        decrypted_thread_id = decrypt_data(thread_id)
+        run_details = client.beta.threads.runs.retrieve(thread_id=decrypted_thread_id, run_id=run_id)
+
+        return {
+            "run_id": run_details.id,
+            "thread_id": run_details.thread_id,
+            "status": run_details.status,
+            "required_action": run_details.required_action,
+            "last_error": run_details.last_error
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/api/threads/{thread_id}/send_and_wait")
 async def send_message_and_wait_for_response(thread_id: str, message: CreateMessage):
     assistant_id = message.assistant_id
