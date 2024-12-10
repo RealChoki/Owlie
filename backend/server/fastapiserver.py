@@ -1,14 +1,12 @@
 import os
 import json
-import asyncio
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, File, UploadFile, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
-from openai import OpenAI, AssistantEventHandler
+from openai import OpenAI
 from openai.types.beta.threads.run import RequiredAction, LastError
-from openai.types.beta.threads.run_submit_tool_outputs_params import ToolOutput
 from fernet import encrypt_data, decrypt_data
 from tools.function_calling import get_moodle_course_content
 import time
@@ -324,7 +322,6 @@ async def get_run_status(thread_id: str, run_id: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 @app.post("/api/threads/{thread_id}/send_and_wait")
 async def send_message_and_wait_for_response(thread_id: str, message: CreateMessage):
     assistant_id = message.assistant_id
@@ -343,50 +340,77 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
     )
 
     # Start the conversation run with the provided assistant_id
-    client.beta.threads.runs.create(
+    run = client.beta.threads.runs.create(
         thread_id=decrypted_thread_id,
         assistant_id=decrypted_assistant_id
     )
-    
-    # Poll for run status updates
-    while run.status in ["queued", "processing"]:
+
+    # Step 1: Poll for run status updates
+    while run.status in ["queued", "processing", "in_progress"]:
         time.sleep(1)  # Wait for 1 second before polling again
-        run = client.beta.threads.runs.retrieve(thread_id= decrypted_thread_id, run_id=run.id)
+        run = client.beta.threads.runs.retrieve(thread_id=decrypted_thread_id, run_id=run.id)
 
+    # Step 2: Handle actions if required
+    if run.status == "requires_action":
+        print("Processing required actions...")
+        tool_outputs = []
 
-    # Step 2: Wait for the assistant's response indefinitely
-    wait_interval = 5
+        if run.required_action and run.required_action.type == "submit_tool_outputs":
+            tool_calls = run.required_action.submit_tool_outputs.tool_calls
+            for tool_call in tool_calls:
+                if tool_call.function.name == "get_moodle_course_content":
+                    course_id = "51589"  # Hardcoded for now
+                    if course_id:
+                        content = get_moodle_course_content(courseid=course_id)
 
-    while True:
-        await asyncio.sleep(wait_interval)
+                        # Prepare the tool output with the fetched content
+                        print("tool_call.id:", tool_call.id)
+                        tool_outputs.append({
+                            "tool_call_id": tool_call.id,
+                            "output": content
+                        })
+                    else:
+                        print("Course ID is missing in the function arguments.")
 
-        # Fetch the latest messages
-        messages = client.beta.threads.messages.list(
-            thread_id=decrypted_thread_id
-        )
-        
-        if messages.data:
-            # Look for the first assistant response
-            for latest_message in messages.data:
-                if latest_message.role == "assistant":
-                    # Attempt to extract the content safely
-                    content = "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
-                    
-                    # Directly access content attributes if it's a TextContentBlock object
-                    if hasattr(latest_message, 'content') and latest_message.content:
-                        if isinstance(latest_message.content, list) and latest_message.content:
-                            # Access the first content block
-                            content_block = latest_message.content[0]
-                            if hasattr(content_block, 'text') and hasattr(content_block.text, 'value'):
-                                content = content_block.text.value
-                        
-                    return ThreadMessage(
-                        content=content,
-                        role=latest_message.role,
-                        hidden="type" in latest_message.metadata and latest_message.metadata.get("type") == "hidden",
-                        id=latest_message.id,
-                        created_at=latest_message.created_at
+            if tool_outputs:
+                print("Submitting tool outputs...")
+                try:
+                    run = client.beta.threads.runs.submit_tool_outputs_and_poll(
+                        thread_id=decrypted_thread_id,
+                        run_id=run.id,
+                        tool_outputs=tool_outputs
                     )
+                    print("Tool outputs submitted successfully.")
+                except Exception as e:
+                    print(f"Failed to submit tool outputs: {e}")
+            else:
+                print("No tool outputs to submit.")
+        else:
+            print("No required actions to process.")
+
+    # Step 3: Fetch the latest assistant messages
+    messages = client.beta.threads.messages.list(thread_id=decrypted_thread_id)
+
+    if messages.data:
+        for latest_message in messages.data:
+            if latest_message.role == "assistant":
+                content = "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+                
+                if hasattr(latest_message, 'content') and latest_message.content:
+                    if isinstance(latest_message.content, list) and latest_message.content:
+                        content_block = latest_message.content[0]
+                        if hasattr(content_block, 'text') and hasattr(content_block.text, 'value'):
+                            content = content_block.text.value
+
+                return ThreadMessage(
+                    content=content,
+                    role=latest_message.role,
+                    hidden="type" in latest_message.metadata and latest_message.metadata.get("type") == "hidden",
+                    id=latest_message.id,
+                    created_at=latest_message.created_at
+                )
+
+    return {"error": "No assistant response found."}
 
 @app.get("/api/courses")
 async def get_courses(university: str, degree: str, subject: str):

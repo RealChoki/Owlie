@@ -19,7 +19,7 @@
     "@mdi/font": "^7.4.47",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
-    "dompurify": "^3.2.2",
+    "dompurify": "^3.2.3",
     "franc-min": "^6.2.0",
     "frontend": "file:",
     "markdown-it": "^14.1.0",
