@@ -52,10 +52,9 @@ END
 | "Welche Themen wurden im Vorlesungsskript zum Thema Arrays behandelt?" | 🟠               | ✔️         | 🟠            |  
 | "Wie wurde der Begriff *Variable* in der Vorlesung erklärt?" | ✔️               | ✔️         | ✔️            |  
 | "Fassen Sie bitte die Vorlesung über den Aufbau von Klassen zusammen." | ✔️               | ✔️         | 🟠            |  
-| "Wird das Thema *Interfaces* im Kurs *Grundlagen der Programmierung* behandelt?" | ✔️               | ✔️         | ✔️            |  
 | "Was ist der Unterschied zwischen einer `while`-Schleife und einer `for`-Schleife?" | ✔️               | ❌         | ✔️            |  
 | "Wie wird ein Objekt in der Programmierung erzeugt?" | ✔️               | ❌         | ✔️            |  
-Wie wurde der Aufbau von Klassen in der Vorlesung erklärt?
+
 ---  
 
 ##### **Instruction Changes**  
@@ -83,9 +82,9 @@ Wie wurde der Aufbau von Klassen in der Vorlesung erklärt?
 
 | **Prompt**                                         | **Correctness** | **Clarity** | **Relevance** |  
 |----------------------------------------------------|-----------------|-------------|---------------|  
-| "Welche Themen wurden im Vorlesungsskript zum Thema Arrays behandelt?" | 🟠               | ✔️         | 🟠            |  (NOT TESTED)
+| "Welche Themen wurden im Vorlesungsskript zum Thema Arrays behandelt?" | ✔️               | ✔️         | ✔️            |
 | "Wie wurde der Begriff *Variable* in der Vorlesung erklärt?" | ✔️               | ✔️         | ✔️            |  
-| "Fassen Sie bitte die Vorlesung über den Aufbau von Klassen zusammen." | ✔️               | ✔️         | 🟠            |  (NOT TESTED)
+| "Fassen Sie bitte die Vorlesung über den Aufbau von Klassen zusammen." | ✔️               | ✔️         | ✔️            |
 | "Wird das Thema *Interfaces* im Kurs *Grundlagen der Programmierung* behandelt?" | ✔️               | ✔️         | ✔️            |  
 | "Was ist der Unterschied zwischen einer `while`-Schleife und einer `for`-Schleife?" | ✔️               | ✔️         | ✔️            |  
 | "Wie wird ein Objekt in der Programmierung erzeugt?" | ✔️               | ✔️         | ✔️            |   

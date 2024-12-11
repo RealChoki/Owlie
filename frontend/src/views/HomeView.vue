@@ -1,39 +1,67 @@
 <template>
-  <div class="container d-flex flex-column min-vh-100 h-100">
-    <Navbar :isOpenBurgerMenu="isOpenBurgerMenu" @toggleBurgerMenu="toggleBurgerMenu" :selectedModule="selectedModule" />
-    <div v-if="!chatMessages.length" class="position-absolute start-50 translate-middle" style="top: 45%;">
-      <img src="../icons/OwlLogo.png" style="width: 75px;" />
-    </div>
-    <div class="chat-wrapper flex-grow-1">
-      <ChatBubbleContainer v-if="chatMessages.length" :chatMessages="chatMessages" :isOpenBurgerMenu="isOpenBurgerMenu" />
-      <FooterInput :messages="chatMessages" :isOpenBurgerMenu="isOpenBurgerMenu" @toggleOverlay="toggleOverlay" />
-    </div>
-    <ExpandedInput v-if="isExpandedInput" @closeExpandedInput="closeExpandedInput" />
-    <transition name="slide">
-      <BurgerMenu
-        v-if="isOpenBurgerMenu"
-        @closeBurgerMenu="closeBurgerMenu"
-        @moduleSelected="handleModuleSelected"
-        ref="burgerMenuRef"
+  <div class="d-flex">
+    <Sidebar v-if="isWideScreen" />
+    <div class="container d-flex flex-column">
+      <Navbar
+        :isOpenBurgerMenu="isOpenBurgerMenu"
+        @toggleBurgerMenu="toggleBurgerMenu"
+        :selectedModule="selectedModule"
       />
-    </transition>
+      <div
+        v-if="!chatMessages.length"
+        class="position-absolute start-50 translate-middle"
+        style="top: 45%"
+      >
+        <img src="../icons/OwlLogo.png" style="width: 75px" />
+      </div>
+      <div class="chat-wrapper flex-grow-1">
+        <ChatBubbleContainer
+          v-if="chatMessages.length"
+          :chatMessages="chatMessages"
+          :isOpenBurgerMenu="isOpenBurgerMenu"
+        />
+        <FooterInput
+          :messages="chatMessages"
+          :isOpenBurgerMenu="isOpenBurgerMenu"
+          @toggleOverlay="toggleOverlay"
+        />
+      </div>
+      <ExpandedInput
+        v-if="isExpandedInput"
+        @closeExpandedInput="closeExpandedInput"
+      />
+      <transition name="slide">
+        <BurgerMenu
+          v-if="isOpenBurgerMenu"
+          @closeBurgerMenu="closeBurgerMenu"
+          @moduleSelected="handleModuleSelected"
+          ref="burgerMenuRef"
+        />
+      </transition>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed, onUnmounted } from 'vue';
-import type { ComponentPublicInstance } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, onUnmounted } from "vue";
+import type { ComponentPublicInstance } from "vue";
 
-import Navbar from '../components/Navbar.vue';
-import FooterInput from '../components/FooterInput.vue';
-import ExpandedInput from '../components/ExpandedInput.vue';
-import BurgerMenu from '../components/BurgerMenu.vue';
-import ChatBubbleContainer from '../components/ChatBubbleContainer.vue';
-import type { RunStatus } from '../api/restService';
-import chatService from '@/services/chatService';
-import { useThread } from '../hooks/useThread';
-import { fetchModules, fetchAssistantIds } from '@/services/moduleService';
-import { getSelectedModuleLS, setSelectedModuleLS, getCurrentModeLS } from '@/services/localStorageService';
+import Navbar from "../components/Navbar.vue";
+import FooterInput from "../components/FooterInput.vue";
+import ExpandedInput from "../components/ExpandedInput.vue";
+import BurgerMenu from "../components/BurgerMenu.vue";
+import Sidebar from "@/components/Sidebar.vue";
+import ChatBubbleContainer from "../components/ChatBubbleContainer.vue";
+import type { RunStatus } from "../api/restService";
+import chatService from "@/services/chatService";
+import { useThread } from "../hooks/useThread";
+import { fetchModules, fetchAssistantIds } from "@/services/moduleService";
+import {
+  getSelectedModuleLS,
+  setSelectedModuleLS,
+  getCurrentModeLS,
+} from "@/services/localStorageService";
+import { useScreenWidth } from "../utils/useScreenWidth";
 
 const isExpandedInput = ref(false);
 const isOpenBurgerMenu = ref(false);
@@ -74,32 +102,35 @@ function handleClickOutside(event: MouseEvent) {
   if (
     burgerMenuRef.value &&
     !burgerMenuRef.value.$el.contains(event.target) &&
-    !(event.target as Element).closest('.navbar')
+    !(event.target as Element).closest(".navbar")
   ) {
     closeBurgerMenu();
   }
 }
 
 onMounted(async () => {
-  document.addEventListener('click', handleClickOutside);
-  
+  document.addEventListener("click", handleClickOutside);
+
   fetchModules();
 
   try {
     const selectedModuleValue = getSelectedModuleLS();
     await fetchAssistantIds(
-      selectedModuleValue?.replace(/ /g, '_'),
+      selectedModuleValue?.replace(/ /g, "_"),
       getCurrentModeLS()
     );
     await initializeThread();
   } catch (error) {
-    console.error('Error during initialization:', error);
+    console.error("Error during initialization:", error);
   }
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener("click", handleClickOutside);
 });
+
+// Use the imported useScreenWidth function
+const { isWideScreen } = useScreenWidth();
 </script>
 
 <style>

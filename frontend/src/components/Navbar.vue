@@ -1,21 +1,23 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light sticky-top pb-4">
+  <nav class="navbar navbar-expand-lg navbar-light pb-4">
     <div
       class="container-fluid d-flex justify-content-between align-items-center"
     >
       <img
+      v-if="!isWideScreen"
         src="../icons/MenuOpen.png"
         style="cursor: pointer"
         ref="menuToggleRef"
         @click="toggleBurgerMenu"
       />
+      <div v-else></div>
       <div class="d-flex flex-column align-items-center position-relative w-50">
         <div class="hearts-container">
           <span
             v-for="(heartClass, index) in heartClasses"
             :key="index"
             :class="['heart-icon', { 'blur-effect': isOpenBurgerMenu }]"
-            >
+          >
             <template v-if="heartClass === 'heart-filled'">
               <!-- Full Heart -->
               <svg
@@ -120,7 +122,7 @@
         </div>
         <p :class="['assistant-title', { 'blur-effect': isOpenBurgerMenu }]">
           {{ props.selectedModule }}
-        </p>      
+        </p>
       </div>
       <font-awesome-icon
         :icon="['fas', 'pen-to-square']"
@@ -153,6 +155,7 @@ import {
   getMessageCountLS,
   setMessageCountLS,
 } from "../services/localStorageService";
+import { useScreenWidth } from "../utils/useScreenWidth";
 
 library.add(faPenToSquare, faCalendarDays, faHeart);
 
@@ -208,16 +211,23 @@ watch(messageCount, (newValue) => {
 heartCount.value = getHeartCountLS();
 messageCount.value = getMessageCountLS();
 
+const { isWideScreen } = useScreenWidth();
+
 onMounted(() => {
-  const lastRegenTimeKey = 'lastRegenTime';
+  const lastRegenTimeKey = "lastRegenTime";
   const regenIntervalMs = 3 * 60 * 1000; // 3 minutes in milliseconds
 
   // Retrieve the last regeneration timestamp from localStorage
-  const lastRegenTime = parseInt(localStorage.getItem(lastRegenTimeKey) || '0', 10);
+  const lastRegenTime = parseInt(
+    localStorage.getItem(lastRegenTimeKey) || "0",
+    10
+  );
   const currentTime = Date.now();
 
   // Calculate the number of intervals that have passed
-  let intervalsPassed = Math.floor((currentTime - lastRegenTime) / regenIntervalMs);
+  let intervalsPassed = Math.floor(
+    (currentTime - lastRegenTime) / regenIntervalMs
+  );
 
   // Update the heart count based on the intervals passed
   if (intervalsPassed > 0 && heartCount.value < totalHearts) {
