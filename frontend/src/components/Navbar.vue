@@ -200,6 +200,15 @@ const heartClasses = computed(() => {
   return classes;
 });
 
+const handleStorageChange = (event: StorageEvent) => {
+  if (event.key === 'heartCount') {
+    const newHeartCount = parseFloat(event.newValue || '');
+    if (!isNaN(newHeartCount)) {
+      heartCount.value = newHeartCount;
+    }
+  }
+};
+
 watch(heartCount, (newValue) => {
   setHeartCountLS(newValue);
 });
@@ -241,7 +250,7 @@ onMounted(() => {
 
   // Update the last regeneration time
   localStorage.setItem(lastRegenTimeKey, currentTime.toString());
-
+  window.addEventListener('storage', handleStorageChange);
   // Start the interval for future regeneration
   const regenInterval = setInterval(() => {
     if (heartCount.value < totalHearts) {
@@ -257,6 +266,7 @@ onMounted(() => {
   }, regenIntervalMs);
 
   onUnmounted(() => {
+    window.removeEventListener('storage', handleStorageChange);
     clearInterval(regenInterval);
   });
 });

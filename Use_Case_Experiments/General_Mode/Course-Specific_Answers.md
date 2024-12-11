@@ -1,10 +1,10 @@
 ### **Course-Specific Answers**  
-**Use Case**: Offers information tied strictly to course content, avoiding irrelevant or advanced topics.
+**Use Case**: Provides information strictly aligned with the course content. Avoids irrelevant topics and notifies students when a topic exceeds the scope of the course or is too advanced before providing a response.
 
 #### **Tasks**  
 - **Task 1**: Determines if the query is relevant to the course material. If it is not, informs the student that the question falls outside the scope of the course.  
 - **Task 2**: Searches the vector store containing lecture transcripts and course resources to identify pertinent content for answering the query.  
-- **Task 3**: Crafts responses that strictly reflect course coverage, avoiding speculation or introducing topics beyond the course's scope.  
+- **Task 3**: Crafts responses that strictly reflect course coverage, avoiding speculation or introducing topics beyond the course's scope without stating so to the student.  
 
 ---  
 
@@ -27,9 +27,9 @@
 - **Models**: OpenAI (gpt-4o-mini).  
 
 - **Evaluation Criteria**:  
-  - **Correctness**: Does the response accurately represent the course material?  
+  - **Correctness**: Does the response correct?  
   - **Clarity**: Is the explanation clear and student-friendly?  
-  - **Relevance**: Does the response align strictly with the course material?  
+  - **Relevance**: Does the assistant inform the student when a question is irrelevant to the course?  
 
 --- 
 
@@ -68,7 +68,7 @@ END
 1. **"Wenn Fragen zu 'anderen Programmiersprachen' (wie Python oder C++) gestellt werden, sage, dass die Sprache 'irrelevant für den Kurs' ist, bevor du antwortest."**
 - **Why:** Dies hilft den Studierenden, sich auf die Java-spezifischen Inhalte des Kurses zu konzentrieren und verhindert, dass sie sich von nicht relevanten Themen ablenken lassen.
 
-2. **"Bei Fragen zu 'fortgeschrittenen Java-Themen' (wie Interfaces, Listen oder Design Patterns), erinnere die Studierenden daran, dass diese Themen 'nicht Teil des Grundlagen der Programmierung-Kurses' sind, sondern im 'zweiten Semester' in 'Angewandte Programmierung' behandelt werden."**
+2. **"Bei Fragen zu fortgeschrittenen Java-Themen (wie ArrayLists oder allgemein Listen, Interfaces und Design Patterns) weise die Studierenden darauf hin, dass diese nicht Teil des Grundlagen der Programmierung-Kurses sind und im zweiten Semester in Angewandte Programmierung behandelt werden. Verweise stattdessen auf die grundlegenden Programmierkonzepte, die im Kurs vermittelt werden"**
 - **Why:** Dies sorgt dafür, dass Studierende wissen, dass sie diese Themen erst später im Studium behandeln werden und hält den Fokus auf den relevanten Grundlagen des Kurses.
 
 3. **"'Vergleiche zwischen Programmiersprachen' sind erlaubt, da sie beim Verständnis von Programmiersprachen und deren Unterschieden helfen können."**
@@ -89,4 +89,4 @@ END
 | "Wie erstellt man Python-Dictionaries?"           | ✔️               | ✔️         | ✔️            |  
 | "Wie sieht eine schleife in Python zum vergleich zu Java?"           | ✔️               | ✔️         | ✔️            |  
 | "Wie fügt man eine Zahl in ein Array ein oder entfernt sie?" | ✔️               | ✔️         | ✔️            |  
-| "Warum ist eine `ArrayList` im Vergleich zu Arrays vorteilhafter?" | ✔️               | ✔️         | 🟠            |   
+| "Warum ist eine `ArrayList` im Vergleich zu Arrays vorteilhafter?" | ✔️               | ✔️         | ✔️            |   
