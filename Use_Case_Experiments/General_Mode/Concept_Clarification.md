@@ -60,21 +60,21 @@ END
 ##### **Instruction Changes**  
 
 1. **"Nutze den Vorlesungsinhalt aus der Vektor-Datenbank, um gezielte und relevante Antworten zu geben."**  
-   **Why:** Diese Ergänzung stellt sicher, dass Konzepte auf die gleiche Weise erklärt werden wie in der Vorlesung, sodass die Antworten konsistent mit dem Vorlesungsinhalt sind. Sie sorgt auch dafür, dass der Assistent bei spezifischen Fragen zu Vorlesungsinhalten – wie zum Beispiel, was in einer bestimmten Vorlesung behandelt wurde – keine falschen oder erfundenen Antworten gibt, sondern präzise und auf dem Kursmaterial basierende Antworten liefert.
+- **Why:** Diese Ergänzung stellt sicher, dass Konzepte auf die gleiche Weise erklärt werden wie in der Vorlesung, sodass die Antworten konsistent mit dem Vorlesungsinhalt sind. Sie sorgt auch dafür, dass der Assistent bei spezifischen Fragen zu Vorlesungsinhalten – wie zum Beispiel, was in einer bestimmten Vorlesung behandelt wurde – keine falschen oder erfundenen Antworten gibt, sondern präzise und auf dem Kursmaterial basierende Antworten liefert.
 
 2. **"Achte darauf, dass die Erklärung aus einfachen, verständlichen Begriffen besteht und Beispiele enthält, die die Studierenden leicht nachvollziehen können."**  
-   **Why:** Diese Änderung betont die Bedeutung von Klarheit und Nachvollziehbarkeit in den Antworten.
+- **Why:** Diese Änderung betont die Bedeutung von Klarheit und Nachvollziehbarkeit in den Antworten.
 
 3. **"Falls erforderlich, nutze Pseudocode oder bildhafte Analogien, um abstrakte Konzepte verständlich zu machen."**  
-   **Why:** Dies stellt sicher, dass auch schwer verständliche Themen in einfacher Sprache vermittelt werden können.
+- **Why:** Dies stellt sicher, dass auch schwer verständliche Themen in einfacher Sprache vermittelt werden können.
 
 4. **"Wenn der Benutzer die Syntax sehen möchte, zeige ein Beispiel mit echtem Code, aber stelle sicher, dass es nicht relevant für die Aufgabe ist, sondern nur dazu dient, die Syntax zu veranschaulichen."**  
-   **Why:** So können Studierende die korrekte Syntax sehen, ohne dass sie durch die Beispielantworten eine Lösung für eine spezifische Aufgabe erhalten. Dies hilft, den Fokus auf das Verständnis der Syntax zu legen, ohne die Lösung für eine konkrete Aufgabe vorwegzunehmen.
+- **Why:** So können Studierende die korrekte Syntax sehen, ohne dass sie durch die Beispielantworten eine Lösung für eine spezifische Aufgabe erhalten. Dies hilft, den Fokus auf das Verständnis der Syntax zu legen, ohne die Lösung für eine konkrete Aufgabe vorwegzunehmen.
 
 5. **Beispiel für eine gute Antwort:**   
-   **Falsch:** "Eine Schleife ist eine Kontrollstruktur, die eine Reihe von Anweisungen wiederholt, bis eine bestimmte Bedingung erfüllt ist."  
-   **Richtig:** "Stell dir eine Schleife wie einen Roboter vor, der denselben Schritt immer wieder ausführt, bis er ein bestimmtes Ziel erreicht, wie z. B. fünf Schritte gegangen ist."   
-   **Why:** Das richtige Beispiel verwendet eine greifbare Metapher, die für Anfänger leichter verständlich ist.
+- **Falsch:** "Eine Schleife ist eine Kontrollstruktur, die eine Reihe von Anweisungen wiederholt, bis eine bestimmte Bedingung erfüllt ist."  
+- **Richtig:** "Stell dir eine Schleife wie einen Roboter vor, der denselben Schritt immer wieder ausführt, bis er ein bestimmtes Ziel erreicht, wie z. B. fünf Schritte gegangen ist."   
+- **Why:** Das richtige Beispiel verwendet eine greifbare Metapher, die für Anfänger leichter verständlich ist.
 
 ---  
 

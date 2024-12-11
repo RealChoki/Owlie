@@ -65,25 +65,17 @@ END
 
 #### **Instruction Changes**  
 
+1. **"Wenn Fragen zu 'anderen Programmiersprachen' (wie Python oder C++) gestellt werden, sage, dass die Sprache 'irrelevant für den Kurs' ist, bevor du antwortest."**
+- **Why:** Dies hilft den Studierenden, sich auf die Java-spezifischen Inhalte des Kurses zu konzentrieren und verhindert, dass sie sich von nicht relevanten Themen ablenken lassen.
 
-### **1. Umgang mit Fragen zu anderen Programmiersprachen**
+2. **"Bei Fragen zu 'fortgeschrittenen Java-Themen' (wie Interfaces, Listen oder Design Patterns), erinnere die Studierenden daran, dass diese Themen 'nicht Teil des Grundlagen der Programmierung-Kurses' sind, sondern im 'zweiten Semester' in 'Angewandte Programmierung' behandelt werden."**
+- **Why:** Dies sorgt dafür, dass Studierende wissen, dass sie diese Themen erst später im Studium behandeln werden und hält den Fokus auf den relevanten Grundlagen des Kurses.
 
-- **Anweisung:** Wenn Fragen zu **anderen Programmiersprachen** (wie Python oder C++) gestellt werden, sage, dass die Sprache **irrelevant für den Kurs** ist, bevor du antwortest.
-- **Warum:** Dies hilft den Studierenden, sich auf die Java-spezifischen Inhalte des Kurses zu konzentrieren und verhindert, dass sie sich von nicht relevanten Themen ablenken lassen.
+3. **"'Vergleiche zwischen Programmiersprachen' sind erlaubt, da sie beim Verständnis von Programmiersprachen und deren Unterschieden helfen können."**
+- **Why:** Der Vergleich von Programmiersprachen fördert das Verständnis für die Funktionsweise von Java im Kontext anderer Sprachen, was für die Studierenden von Vorteil sein kann. Am meisten wenn Sie kenntnisse in andere Sprachen schon haben.
 
-
-
-### **2. Umgang mit fortgeschrittenen Java-Themen**
-
-- **Anweisung:** Bei Fragen zu **fortgeschrittenen Java-Themen** (wie Interfaces, Listen oder Design Patterns), erinnere die Studierenden daran, dass diese Themen **nicht Teil des Grundlagen der Programmierung-Kurses** sind, sondern im **zweiten Semester** in *Angewandte Programmierung* behandelt werden.
-- **Warum:** Dies sorgt dafür, dass Studierende wissen, dass sie diese Themen erst später im Studium behandeln werden und hält den Fokus auf den relevanten Grundlagen des Kurses.
-
-
-
-### **3. Vergleiche zwischen Programmiersprachen**
-
-- **Anweisung:** **Vergleiche zwischen Programmiersprachen** sind erlaubt, da sie beim Verständnis von Programmiersprachen und deren Unterschieden helfen können.
-- **Warum:** Der Vergleich von Programmiersprachen fördert das Verständnis für die Funktionsweise von Java im Kontext anderer Sprachen, was für die Studierenden von Vorteil sein kann.
+4. **"Die Instruktionen wurden besser formatiert, sodass sie nicht mehr ein riesiger Fließtext sind."**  
+- **Why:** Die strukturierte Darstellung der Instruktionen hat dazu beigetragen, dass der Assistent die Anweisungen besser versteht, sich leichter merken kann und die Anforderungen effizienter umsetzt. Dadurch konnten Tests reibungsloser durchgeführt und konsistente Ergebnisse erzielt werden.
 
 ---  
 

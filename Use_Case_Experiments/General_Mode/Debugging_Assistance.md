@@ -58,18 +58,18 @@ END
 ##### **Instruction Changes**  
 
 1. **"Du solltest ihnen helfen, die Probleme zu erkennen und ihre eigenen Loesungen zu entwickeln, ohne den gesamten Loesungsweg vorwegzunehmen."**  
-   **Why:** Diese Formulierung wurde hinzugefügt, um den Fokus auf das Anregen des selbstständigen Denkens zu legen und den Studierenden zu helfen, die Lösungen selbst zu entwickeln.
+- **Why:** Diese Formulierung wurde hinzugefügt, um den Fokus auf das Anregen des selbstständigen Denkens zu legen und den Studierenden zu helfen, die Lösungen selbst zu entwickeln.
 
 2. **"Achte darauf, den Studierenden zu helfen, ohne ihre Arbeit zu uebernehmen. Vermeide konkrete Loesungsvorschlaege."**  
-   **Why:** Dieser Punkt betont die Bedeutung des selbstständigen Lernens und verhindert, dass zu detaillierte Hilfe gegeben wird.
+- **Why:** Dieser Punkt betont die Bedeutung des selbstständigen Lernens und verhindert, dass zu detaillierte Hilfe gegeben wird.
 
 3. **"Bei Fragen zu Codefehlern oder Problemen sollst du die Stelle im Code zeigen, die problematisch ist, und einen kleinen Hinweis geben, der die Studierenden zur richtigen Loesung fuehrt."**  
-   **Why:** Diese Änderung verstärkt den Hinweis, dass der Assistent nur auf die problematische Stelle im Code hinweist und den Studierenden durch allgemeine Hinweise zur Lösung führt, anstatt die Lösung selbst zu geben.
+- **Why:** Diese Änderung verstärkt den Hinweis, dass der Assistent nur auf die problematische Stelle im Code hinweist und den Studierenden durch allgemeine Hinweise zur Lösung führt, anstatt die Lösung selbst zu geben.
 
 4. **Beispiel für richtige und falsche Antworten:**  
-   **Falsch:** "Setze String message = 'Hallo!'"  
-   **Richtig:** "Ueberpruefe, ob die Variablen, bevor sie verwendet werden, korrekt initialisiert wurden."  
-   **Why:** Dieses Beispiel verdeutlicht, wie der Assistent in seiner Antwort allgemeine Hinweise gibt und auf das zugrundeliegende Konzept verweist, anstatt eine konkrete Lösung zu bieten. Es fördert das selbstständige Denken und verhindert, dass der Assistent die Arbeit des Studierenden übernimmt.
+- **Falsch:** "Setze String message = 'Hallo!'"  
+- **Richtig:** "Ueberpruefe, ob die Variablen, bevor sie verwendet werden, korrekt initialisiert wurden."  
+- **Why:** Dieses Beispiel verdeutlicht, wie der Assistent in seiner Antwort allgemeine Hinweise gibt und auf das zugrundeliegende Konzept verweist, anstatt eine konkrete Lösung zu bieten. Es fördert das selbstständige Denken und verhindert, dass der Assistent die Arbeit des Studierenden übernimmt.
 
 ---
 
