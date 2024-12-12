@@ -2,7 +2,6 @@ import { reactive } from 'vue';
 import axios from 'axios';
 import {
   getThreadIdLS,
-  getVectorStoreIdLS,
   getCurrentModeLS,
   getCurrentModuleLS,
   getAssistantIdLS,
@@ -10,7 +9,6 @@ import {
   getOldAssistantIdLS,
   setOldAssistantIdLS,
   removeOldAssistantIdLS,
-  removeVectorStoreIdLS,
   removeThreadIdLS,
 } from './localStorageService';
 
@@ -33,7 +31,6 @@ export async function uploadFiles(filesToUpload: File[]) {
     }
 
     formData.append('thread_id', getThreadIdLS());
-    formData.append('vector_store_id',  getVectorStoreIdLS());
     formData.append('current_module', getCurrentModuleLS().replace(/ /g, '_'));
     formData.append('current_mode',  getCurrentModeLS());
     
@@ -91,15 +88,13 @@ export async function resetFileService() {
   if (oldThreadId) {
     try {
       // Call the backend API to delete the temporary assistant and vector store
-      await axios.post('http://localhost:8000/api/change_thread', {
+      await axios.post('http://localhost:8000/api/delete_temp_assistant', {
         old_thread_id: oldThreadId,
       });
-      console.log(`Switched from thread ${oldThreadId}`);
     } catch (error) {
-      console.error('Error changing thread:', error);
+      console.error('Error deleting tempassistant:', error);
     } finally {
       // Clear relevant entries from local storage
-      removeVectorStoreIdLS();
       removeThreadIdLS();
     }
   }

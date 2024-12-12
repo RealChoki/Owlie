@@ -67,10 +67,9 @@ def get_course_id(config, university, degree, subject, course):
 def get_assistant_ids(course_name, mode_name):
     mode_config = get_course_config(course_name, mode_name)
     assistant_id = mode_config.get('assistant_id')
-    vector_store_id = mode_config.get('vector_store_id')
-    if not assistant_id or not vector_store_id:
+    if not assistant_id:
         raise ValueError('Assistant IDs not found in configuration.')
-    return assistant_id, vector_store_id
+    return assistant_id
 
 
 
@@ -437,20 +436,18 @@ async def get_courses(university: str, degree: str, subject: str):
 @app.get("/api/get_assistant_ids")
 async def get_assistant_ids_endpoint(course_name: str, mode_name: str):
     try:
-        assistant_id, vector_store_id = get_assistant_ids(course_name, mode_name)
+        assistant_id = get_assistant_ids(course_name, mode_name)
         
-        # Encrypt the assistant_id and vector_store_id before returning them
+        # Encrypt the assistant_id and before returning them
         encrypted_assistant_id = encrypt_data(assistant_id)
-        encrypted_vector_store_id = encrypt_data(vector_store_id)
         
-        return {"assistant_id": encrypted_assistant_id, "vector_store_id": encrypted_vector_store_id}
+        return {"assistant_id": encrypted_assistant_id,}
     except ValueError as e:
         return {"error": str(e)}
 
 @app.post("/api/upload")
 async def upload_files(
     thread_id: str = Form(...),
-    vector_store_id: str = Form(...),
     files: List[UploadFile] = File(...),
     current_module: str = Form(...),
     current_mode: str = Form(...),
@@ -460,10 +457,12 @@ async def upload_files(
 
     if not files:
         return {"error": "No files uploaded"}
+        
+    mode_config = get_course_config(current_module, current_mode)
+    vector_store_id = mode_config.get('vector_store_id')
 
     # Decrypt the thread_id, vector_store_id, and assistant_id if provided
     decrypted_thread_id = decrypt_data(thread_id)
-    decrypted_vector_store_id = decrypt_data(vector_store_id)
     decrypted_assistant_id = decrypt_data(assistant_id) if assistant_id else None
 
     file_ids = []
@@ -487,7 +486,7 @@ async def upload_files(
         os.remove(temp_file_path)
 
     # Retrieve file IDs from the default vector store
-    default_files = client.beta.vector_stores.files.list(decrypted_vector_store_id)
+    default_files = client.beta.vector_stores.files.list(vector_store_id)
     default_file_ids = [file.id for file in default_files.data]
 
     # Combine file IDs
@@ -556,10 +555,10 @@ async def upload_files(
         "vector_store_id": encrypted_vector_store_id
     }
 
-@app.post("/api/change_thread")
-async def change_thread(request: Request):
+@app.post("/api/delete_temp_assistant")
+async def delete_temp_assistant(request: Request):
     data = await request.json()
-    old_thread_id = data.get('old_thread_id')
+    old_thread_id = decrypt_data(data.get('old_thread_id'))
 
     if not old_thread_id:
         return {"error": "Old thread ID is required."}

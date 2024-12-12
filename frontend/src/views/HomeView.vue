@@ -1,20 +1,34 @@
 <template>
   <div class="d-flex">
-    <Sidebar v-if="isWideScreen" />
-    <div class="container d-flex flex-column">
+    <transition name="slide">
+      <Sidebar
+        v-if="isWideScreen && isOpenSidebar"
+        @closeSidebar="closeSidebar"
+        @moduleSelected="handleModuleSelected"
+      />
+    </transition>
+    <div
+      class="container d-flex flex-column vh-100"
+      :style="{
+        position: !isOpenSidebar ? 'fixed' : 'relative',
+        left: !isOpenSidebar ? '50%' : 'auto',
+        transform: !isOpenSidebar ? 'translateX(-50%)' : 'none',
+      }"
+    >
       <Navbar
         :isOpenBurgerMenu="isOpenBurgerMenu"
+        :isOpenSidebar="isOpenSidebar"
         @toggleBurgerMenu="toggleBurgerMenu"
+        @toggleSidebar="toggleSidebar"
         :selectedModule="selectedModule"
       />
       <div
         v-if="!chatMessages.length"
-        class="position-absolute start-50 translate-middle"
-        style="top: 45%"
+        class="d-flex justify-content-center align-items-center h-75"
       >
         <img src="../icons/OwlLogo.png" style="width: 75px" />
       </div>
-      <div class="chat-wrapper flex-grow-1">
+      <div class="chat-wrapper flex-grow-1 d-flex flex-column overflow-hidden">
         <ChatBubbleContainer
           v-if="chatMessages.length"
           :chatMessages="chatMessages"
@@ -43,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import type { ComponentPublicInstance } from "vue";
 
 import Navbar from "../components/Navbar.vue";
@@ -65,8 +79,9 @@ import { useScreenWidth } from "../utils/useScreenWidth";
 
 const isExpandedInput = ref(false);
 const isOpenBurgerMenu = ref(false);
+const isOpenSidebar = ref(true);
 const chatMessages = computed(() => chatService.getMessages());
-const selectedModule = ref(getSelectedModuleLS()); // Initialized once
+const selectedModule = ref(getSelectedModuleLS());
 
 const burgerMenuRef = ref<ComponentPublicInstance | null>(null);
 
@@ -80,7 +95,7 @@ function handleModuleSelected(moduleNameWithMode: string) {
   setSelectedModuleLS(moduleNameWithMode);
 }
 
-const { initializeThread } = useThread(run, setRun);
+const { clearThread, initializeThread } = useThread(run, setRun);
 
 function toggleBurgerMenu(newState: boolean) {
   isOpenBurgerMenu.value = newState;
@@ -88,6 +103,14 @@ function toggleBurgerMenu(newState: boolean) {
 
 function closeBurgerMenu() {
   isOpenBurgerMenu.value = false;
+}
+
+function closeSidebar() {
+  isOpenSidebar.value = false;
+}
+
+function toggleSidebar(newState: boolean) {
+  isOpenSidebar.value = newState;
 }
 
 function closeExpandedInput() {
@@ -109,10 +132,9 @@ function handleClickOutside(event: MouseEvent) {
 }
 
 onMounted(async () => {
+  clearThread();
   document.addEventListener("click", handleClickOutside);
-
   fetchModules();
-
   try {
     const selectedModuleValue = getSelectedModuleLS();
     await fetchAssistantIds(
@@ -139,33 +161,21 @@ const { isWideScreen } = useScreenWidth();
   transition: transform 0.5s ease;
 }
 
-.slide-enter-from {
-  transform: translateX(-100%);
-}
-
-.slide-enter-to {
-  transform: translateX(0);
-}
-
-.slide-leave-from {
-  transform: translateX(0);
-}
-
+.slide-enter-from,
 .slide-leave-to {
   transform: translateX(-100%);
 }
 
-.chat-wrapper {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+.slide-enter-to,
+.slide-leave-from {
+  transform: translateX(0);
 }
 
 .container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh; /* Full viewport height */
-  width: 100%;
+  background-color: #131213;
+  transition: transform 0.5s ease;
+  position: absolute;  /* Position absolutely to overlap the left element */
+  top: 0;
+  right: 0;
 }
 </style>

@@ -18,6 +18,12 @@
         style="cursor: pointer"
         @click="focusInput"
       />
+      <img
+        src="../icons/MenuClose.png"
+        class="ms-3"
+        style="cursor: pointer"
+        @click="closeSidebar"
+      />
     </div>
 
     <!-- Scrollable Module List -->
@@ -26,15 +32,15 @@
         <li
           v-for="(module, index) in filteredModules"
           :key="index"
-          :class="[ 
-            'list-item-hover', 
-            'rounded', 
-            'text-white', 
-            'py-1', 
+          :class="[
+            'list-item-hover',
+            'rounded',
+            'text-white',
+            'py-1',
             {
               inactive: !isModuleActive(module),
               'cursor-pointer': isModuleActive(module),
-            }
+            },
           ]"
           @click="isModuleActive(module) ? selectModule(module) : null"
         >
@@ -53,7 +59,9 @@
       </ul>
     </div>
 
-    <div class="mode-toggle d-flex flex-column align-items-center modes_container p-3 pt-2">
+    <div
+      class="mode-toggle d-flex flex-column align-items-center modes_container p-3 pt-2"
+    >
       <div class="d-flex gap-2">
         <h6 class="m-0">
           Select a mode
@@ -65,8 +73,8 @@
         </h6>
       </div>
       <div v-if="showInfo" class="small mt-1 text-warning text-center">
-        Testing mode: A quiz feature that assesses knowledge, tracks performance,
-        and provides personalized feedback.
+        Testing mode: A quiz feature that assesses knowledge, tracks
+        performance, and provides personalized feedback.
       </div>
 
       <div
@@ -87,40 +95,42 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits, watch } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faMagnifyingGlass, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
-import { VBtn, VBtnToggle } from 'vuetify/components';
-import { useThread } from '../hooks/useThread';
-import { clearMessages } from '../services/chatService';
-import { fetchAssistantIds, modules } from '../services/moduleService';
+import { ref, computed, defineProps, defineEmits, watch } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faMagnifyingGlass,
+  faCircleInfo,
+} from "@fortawesome/free-solid-svg-icons";
+import { VBtn, VBtnToggle } from "vuetify/components";
+import { useThread } from "../hooks/useThread";
+import { clearMessages } from "../services/chatService";
+import { fetchAssistantIds, modules } from "../services/moduleService";
 import {
   getCurrentModuleLS,
   setCurrentModuleLS,
   getCurrentModeLS,
   setCurrentModeLS,
-} from '../services/localStorageService';
+} from "../services/localStorageService";
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
 const props = defineProps({
-  isOpenBurgerMenu: Boolean,
+  isOpenSidebar: Boolean,
   currentMode: {
     type: String,
-    default: 'general',
+    default: "general",
   },
 });
 
-const emit = defineEmits(['moduleSelected']);
+const emit = defineEmits(["closeSidebar", "moduleSelected"]);
 
-const searchQuery = ref('');
+const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref('general');
+const selectedMode = ref("general");
 const showInfo = ref(false);
 
 watch(
@@ -130,7 +140,7 @@ watch(
   }
 );
 
-const activeModules = ref<string[]>(['Grundlagen der Programmierung']);
+const activeModules = ref<string[]>(["Grundlagen der Programmierung"]);
 
 function isModuleActive(module: string): boolean {
   return activeModules.value.includes(module);
@@ -154,19 +164,18 @@ async function selectModule(module: string) {
   if (!isModuleActive(module)) {
     return;
   }
-  console.log('Selected module:', module);
+  console.log("Selected module:", module);
 
   const modeName = selectedMode.value;
-  const courseName = module.replace(/ /g, '_');
+  const courseName = module.replace(/ /g, "_");
 
   const currentModule = getCurrentModuleLS();
   const currentMode = getCurrentModeLS();
 
   if (module !== currentModule || modeName !== currentMode) {
-    console.log('Module or mode changed. Resetting thread and messages.');
+    console.log("Module or mode changed. Resetting thread and messages.");
 
     clearMessages(false);
-    clearThread();
 
     try {
       await fetchAssistantIds(courseName, modeName);
@@ -176,16 +185,20 @@ async function selectModule(module: string) {
 
       await initializeThread();
     } catch (error) {
-      console.error('Error initializing thread:', error);
+      console.error("Error initializing thread:", error);
       return;
     }
   } else {
-    console.log('Same module and mode selected. No action taken.');
+    console.log("Same module and mode selected. No action taken.");
   }
 
   const moduleNameWithMode =
-    modeName === 'testing' ? `${module} (Test)` : module;
-  emit('moduleSelected', moduleNameWithMode);
+    modeName === "testing" ? `${module} (Test)` : module;
+  emit("moduleSelected", moduleNameWithMode);
+}
+
+function closeSidebar() {
+  emit("closeSidebar");
 }
 
 function focusInput() {
@@ -197,13 +210,13 @@ function toggleInfo() {
 }
 </script>
 
-
 <style scoped>
 .sidebar {
-  width: 300px;
   height: 100vh;
-  z-index: 9999;
   overflow-y: auto;
+  min-width: 305px;
+  position: relative;
+  z-index: 1000;
 }
 
 .sidebar-search-bar {
@@ -219,22 +232,39 @@ function toggleInfo() {
   outline: none;
 }
 
+.sidebar-search-bar::placeholder {
+  transition: color 0.2s ease;
+}
+
+.input-focused::placeholder {
+  color: white !important;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  background-color: #000000;
+  padding-bottom: 1em;
+}
+
 .magnifying-glass {
   position: absolute;
   font-size: 1.2rem;
   left: 15px;
   color: #5b5b5b;
-  transition: color 0.1s ease;
+  transition: color 0.2s ease;
 }
 
 .module-list-container {
-  max-height: calc(100vh - 200px); /* Adjust based on header/footer size */
+  max-height: 82vh;
   overflow-y: auto;
+  scrollbar-width: none;
 }
 
 .list-item-hover {
   list-style-type: none;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 .list-item-hover:hover {
@@ -258,6 +288,19 @@ function toggleInfo() {
   width: 100%;
 }
 
+.mode-toggle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
 .equal-width-toggle {
   display: flex;
   justify-content: center;
@@ -273,9 +316,11 @@ function toggleInfo() {
 }
 
 .test-mode-text {
-  font-size: 0.7rem;
-  position: relative;
-  top: -5px;
+  transform: translate(
+    28px,
+    -5px
+  ); /* Adjust alignment relative to the module name */
+  font-size: 0.7rem; /* Make it smaller */
 }
 
 .circle-info {

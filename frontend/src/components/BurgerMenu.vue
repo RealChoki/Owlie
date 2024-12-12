@@ -1,6 +1,5 @@
 <template>
   <div
-    ref="burgerMenuRef"
     class="burger-menu-open p-3 bg-black rounded shadow-sm"
   >
     <div class="search-container">
@@ -176,8 +175,7 @@ async function selectModule(module: string) {
     console.log('Module or mode changed. Resetting thread and messages.');
 
     clearMessages(false);
-    clearThread();
-
+    
     try {
       await fetchAssistantIds(courseName, modeName);
 
@@ -339,11 +337,6 @@ ul.p-0 {
 
 .list-item-hover:hover {
   background-color: #414141 !important;
-}
-
-ul.p-0 {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
 }
 
 .inactive:hover {

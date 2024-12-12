@@ -100,9 +100,10 @@ import {
   setCurrentMessage,
 } from "../services/chatService";
 import { uploadFiles as uploadChatFiles } from "../services/filesService";
-import fileService from "../services/filesService";
 import { franc } from 'franc-min';
 library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh, faVolumeXmark);
+
+import { getThreadIdLS} from '../services/localStorageService';
 
 const props = defineProps({
   isExpandedInput: Boolean,
@@ -170,16 +171,18 @@ onMounted(() => {
 function isFirstMessage() {
   return getMessages()[getMessages().length - 1] === undefined
 }
+
 function disableSendButton() {
   const messages = getMessages();
   const lastMessage = messages[messages.length - 1];
   const isLastMessageFromAssistant = lastMessage?.role === "assistant" || isFirstMessage();
   const isMessageNotEmpty = message.value.trim() !== "";
   const hasFilesAttached = fileCount.value > 0;
+  const isThreadInitialized = getThreadIdLS() !== null;
 
   return (
     !(isLastMessageFromAssistant && (isMessageNotEmpty || hasFilesAttached)) ||
-    isMessageTooLong.value
+    isMessageTooLong.value || !isThreadInitialized
   );
 }
 
@@ -383,6 +386,10 @@ watch(message, (newValue) => {
 
 .custom-input:focus {
   outline: none;
+}
+
+.custom-input::placeholder {
+  transition: color 0.2s ease;
 }
 
 .top-right-icon {

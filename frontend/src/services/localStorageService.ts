@@ -38,7 +38,6 @@ const keys = {
   assistantId: { key: "assistant_id", defaultValue: null },
   oldAssistantId: { key: "old_assistant_id", defaultValue: null },
   threadId: { key: "thread_id", defaultValue: null },
-  vectorStoreId: { key: "vector_store_id", defaultValue: null },
 };
 
 // Heart Count
@@ -99,17 +98,6 @@ export const setThreadIdLS = (value: string) =>
   localStorageUtils.set(keys.threadId.key, value);
 export const removeThreadIdLS = () =>
     localStorageUtils.remove(keys.threadId.key);
-
-// Vector Store ID
-export const getVectorStoreIdLS = () =>
-  localStorageUtils.get(
-    keys.vectorStoreId.key,
-    keys.vectorStoreId.defaultValue
-  );
-export const setVectorStoreIdLS = (value: string) =>
-  localStorageUtils.set(keys.vectorStoreId.key, value);
-export const removeVectorStoreIdLS = () =>
-  localStorageUtils.remove(keys.vectorStoreId.key);
 
 // Utility to remove an item if needed
 export const removeLocalStorageItem = localStorageUtils.remove;

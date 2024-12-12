@@ -1,7 +1,7 @@
 <template>
   <div class="full-screen-overlay">
     <div class="h-100 p-2 pb-2" style="background-color: #232323">
-      <div class="container h-100 d-flex flex-column">
+      <div class="container h-100 d-flex flex-column" style="background-color: #232323">
         <div class="d-flex justify-content-end mt-2 mb-3" style="position: fixed; top: 10px; right: 10px; z-index: 10">
           <font-awesome-icon
             :icon="['fas', 'down-left-and-up-right-to-center']"
@@ -15,6 +15,9 @@
           placeholder="Type a message..."
           aria-label="Message input"
           v-model="message"
+          @focus="isSearchFocused = true"
+          @blur="isSearchFocused = false"
+          :class="{ 'input-focused': isSearchFocused }"
         ></textarea>
         <div class="character-count">
           <span :class="{ 'text-danger': isMessageTooLong }">{{ messageLength }}</span> / {{ MAX_MESSAGE_LENGTH }}
@@ -36,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import {ref, computed } from 'vue'
 import chatService from '../services/chatService'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -48,6 +51,8 @@ library.add(faDownLeftAndUpRightToCenter, faArrowUp)
 const props = defineProps({
   isExpandedInput: Boolean
 })
+
+const isSearchFocused = ref(false);
 
 const emit = defineEmits(['closeExpandedInput'])
 
@@ -85,7 +90,6 @@ function sendMessage() {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.8);
   z-index: 1020;
 }
 
@@ -93,7 +97,7 @@ function sendMessage() {
   color: #ffffff;
   cursor: pointer;
   font-size: 1.5rem;
-  margin-right: 0.1em;
+  margin-right: 0.2em;
 }
 
 .full-screen-textarea {
@@ -113,6 +117,10 @@ function sendMessage() {
 }
 
 .full-screen-textarea::placeholder {
+  transition: color 0.2s ease;
+}
+
+.input-focused::placeholder {
   color: white !important;
 }
 
@@ -129,7 +137,7 @@ function sendMessage() {
   min-width: 25px;
   min-height: 25px;
   padding: 0.5em;
-  margin-right: -0.4em;
+  margin-right: 0.15em;
 }
 
 .btn-disabled {

@@ -7,10 +7,15 @@
       v-if="!isWideScreen"
         src="../icons/MenuOpen.png"
         style="cursor: pointer"
-        ref="menuToggleRef"
         @click="toggleBurgerMenu"
       />
-      <div v-else></div>
+      <img
+      v-else-if="isWideScreen && !isOpenSidebar"
+        src="../icons/MenuOpen.png"
+        style="cursor: pointer"
+        @click="toggleSidebar"
+      />
+      <div v-else class="icon-holder"> </div>
       <div class="d-flex flex-column align-items-center position-relative w-50">
         <div class="hearts-container">
           <span
@@ -161,16 +166,20 @@ library.add(faPenToSquare, faCalendarDays, faHeart);
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
+  isOpenSidebar: Boolean,
   selectedModule: String,
 });
 
-const menuToggleRef = ref(null);
-const emit = defineEmits(["toggleBurgerMenu"]);
+const emit = defineEmits(["toggleBurgerMenu", "toggleSidebar"]);
 
 const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
 const toggleBurgerMenu = () => {
   emit("toggleBurgerMenu", !props.isOpenBurgerMenu);
+};
+
+const toggleSidebar = () => {
+  emit("toggleSidebar", !props.isOpenSidebar);
 };
 
 const handlePenClick = async () => {
@@ -297,6 +306,10 @@ onMounted(() => {
 
 .pen-to-square {
   font-size: 1.8rem;
+}
+
+.icon-holder {
+  width: 29px;
 }
 
 .blur-effect {
