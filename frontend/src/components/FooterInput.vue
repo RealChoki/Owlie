@@ -83,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, computed, watch, nextTick, onMounted, onBeforeUnmount } from "vue";
+import { ref, defineEmits, computed, watch, nextTick, onMounted } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -103,7 +103,7 @@ import { uploadFiles as uploadChatFiles } from "../services/filesService";
 import { franc } from 'franc-min';
 library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh, faVolumeXmark);
 
-import { getThreadIdLS} from '../services/localStorageService';
+import { getThreadIdLS } from '../services/localStorageService';
 
 const props = defineProps({
   isExpandedInput: Boolean,
@@ -179,14 +179,18 @@ function disableSendButton() {
   const isMessageNotEmpty = message.value.trim() !== "";
   const hasFilesAttached = fileCount.value > 0;
   const isThreadInitialized = getThreadIdLS() !== null;
+ 
 
   return (
+    
     !(isLastMessageFromAssistant && (isMessageNotEmpty || hasFilesAttached)) ||
     isMessageTooLong.value || !isThreadInitialized
   );
 }
 
 function sendMessage() {
+  console.log(localStorage.getItem('thread_id'));
+
   if (!disableSendButton()) {
     sendChatMessage(message.value);
     message.value = "";
@@ -201,10 +205,20 @@ const resizeTextarea = () => {
   const target = textarea.value;
   if (!target) return;
 
+  // Reset the height to allow shrinkage
   target.style.height = '45px';
-  target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
 
-  if (parseInt(target.style.height) <= 91 || !message.value) {
+  // Get the computed max-height from CSS
+  const computedStyle = window.getComputedStyle(target);
+  const maxHeight = parseFloat(computedStyle.maxHeight);
+
+  // Calculate the new height, respecting the max-height
+  const newHeight = Math.min(target.scrollHeight, maxHeight);
+
+  target.style.height = `${newHeight}px`;
+
+  // Update the visibility of the resize icon
+  if (newHeight <= 91 || !message.value) {
     showResizeIcon.value = false;
   } else {
     showResizeIcon.value = true;
@@ -367,7 +381,7 @@ watch(message, (newValue) => {
   color: white;
   border-radius: 25px;
   height: 45px;
-  max-height: 200px;
+  max-height: calc(1.5em * 6 + 16px);
   resize: none;
   padding-top: 8px;
   padding-bottom: 8px;
@@ -442,5 +456,11 @@ watch(message, (newValue) => {
 
 .text-danger {
   color: red !important;
+}
+
+@media (min-width: 768px) {
+  .custom-input {
+    max-height: calc(1.5em * 10 + 16px) !important; 
+  }
 }
 </style>

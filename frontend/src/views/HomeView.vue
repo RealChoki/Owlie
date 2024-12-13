@@ -24,11 +24,15 @@
       />
       <div
         v-if="!chatMessages.length"
-        class="d-flex justify-content-center align-items-center h-75"
+        class="d-flex justify-content-center align-items-center h-50 logo-container"
       >
         <img src="../icons/OwlLogo.png" style="width: 75px" />
       </div>
-      <div class="chat-wrapper flex-grow-1 d-flex flex-column overflow-hidden">
+
+      <div
+        class="flex-grow-1 d-flex flex-column overflow-hidden"
+        :class="{ 'chat-wrapper': isWideScreen }"
+      >
         <ChatBubbleContainer
           v-if="chatMessages.length"
           :chatMessages="chatMessages"
@@ -173,9 +177,16 @@ const { isWideScreen } = useScreenWidth();
 
 .container {
   background-color: #131213;
-  transition: transform 0.5s ease;
-  position: absolute;  /* Position absolutely to overlap the left element */
-  top: 0;
-  right: 0;
+  transition: transform 0.7s ease;
+}
+
+.logo-container {
+  margin-top: 6em;
+}
+
+.chat-wrapper {
+  width: 100%;
+  max-width: 800px;
+  align-self: center;
 }
 </style>

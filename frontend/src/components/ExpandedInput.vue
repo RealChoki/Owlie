@@ -138,6 +138,7 @@ function sendMessage() {
   min-height: 25px;
   padding: 0.5em;
   margin-right: 0.15em;
+  margin-bottom: -0.15em;
 }
 
 .btn-disabled {

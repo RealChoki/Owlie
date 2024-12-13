@@ -1,12 +1,19 @@
 <template>
-  <div ref="chatContainer" :class="['chat-bubble-container', 'py-0', { 'no-scroll': props.isOpenBurgerMenu }]">
+  <div
+    ref="chatContainer"
+    :class="[
+      'chat-bubble-container',
+      'py-0',
+      { 'no-scroll': props.isOpenBurgerMenu },
+    ]"
+  >
     <div v-for="(message, index) in messages" :key="message.id || index">
       <div v-if="message.role === 'user'" class="d-flex justify-content-end">
         <div
           :class="[
             'chat-bubble user-msg',
             { 'blur-effect': props.isOpenBurgerMenu },
-            index === 0 ? 'mt-3 mb-4' : 'my-4'
+            index === 0 ? 'mt-3 mb-4' : 'my-4',
           ]"
         >
           {{ message.content }}
@@ -15,15 +22,22 @@
 
       <div
         v-else-if="message.role === 'assistant'"
-        :class="['assistant-msg text-white', { 'blur-effect': props.isOpenBurgerMenu }]"
+        :class="[
+          'assistant-msg text-white',
+          { 'blur-effect': props.isOpenBurgerMenu },
+        ]"
+        :style="isWideScreen ? 'position: relative' : ''"
       >
         <img
           src="../icons/OwlLogo.png"
           alt="assistant"
           class="assistant-pfp p-1 pt-0"
+          :style="isWideScreen ? 'position: absolute; left: 5px; top: 5px' : ''"
         />
-        <!-- Render the markdown content as HTML -->
-        <div v-html="renderedMessages[index]"></div>
+        <div
+          v-html="renderedMessages[index]"
+          :style="isWideScreen ? 'margin-left: 50px' : ''"
+        ></div>
       </div>
     </div>
     <div v-if="thinking">
@@ -43,18 +57,20 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, computed } from "vue";
 import { getMessages, getThinking } from "../services/chatService";
-import MarkdownIt from 'markdown-it';
-import DOMPurify from 'dompurify';
+import { useScreenWidth } from "../utils/useScreenWidth";
+import MarkdownIt from "markdown-it";
+import DOMPurify from "dompurify";
 
 const messages = getMessages();
 const chatContainer = ref<HTMLDivElement | null>(null);
 const thinking = computed(() => getThinking());
 const md = new MarkdownIt();
+const { isWideScreen } = useScreenWidth();
 
 // Convert assistant messages from markdown to HTML
 const renderedMessages = computed(() => {
-  return messages.map(message => {
-    if (message.role === 'assistant') {
+  return messages.map((message) => {
+    if (message.role === "assistant") {
       const markdownContent = md.render(message.content);
       // Sanitize the HTML to prevent XSS attacks
       return DOMPurify.sanitize(markdownContent);
@@ -68,7 +84,7 @@ const props = defineProps({
   isOpenBurgerMenu: {
     type: Boolean,
     required: true,
-  }
+  },
 });
 
 // Watch for changes in messages to scroll to the latest message
@@ -120,8 +136,8 @@ watch(
 }
 
 .assistant-pfp {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   object-fit: cover;
 }
 
