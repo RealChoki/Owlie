@@ -23,11 +23,11 @@
   3. Searches the vector store for relevant lecture material.  
   4. Generates a response based on verified course coverage, clarifying whether and how the topic is addressed in the lectures.  
 
-- **Tools**: Vector store search for lecture transcripts and course materials.  
+- **Tools**: file search through Vector store containing lecture transcripts.  
 - **Models**: OpenAI (gpt-4o-mini).  
 
 - **Evaluation Criteria**:  
-  - **Correctness**: Does the response correct?  
+  - **Correctness**: Is the response correct?  
   - **Clarity**: Is the explanation clear and student-friendly?  
   - **Relevance**: Does the assistant inform the student when a question is irrelevant to the course?  
 
