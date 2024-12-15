@@ -36,10 +36,14 @@ Key goals:
 4. **Course-Specific Answers**: Provides information strictly aligned with the course content. Avoids irrelevant topics and notifies students when a topic exceeds the scope of the course or is too advanced before providing a response.
 
 #### **Test Mode**  
-1. **Professor-Approved Questions**: Uses professor-approved lesson questions to provide practice aligned directly with the course syllabus. 
-2. **Test Preparation**: Asks targeted questions to address weak areas, offering exercises and hints to help master concepts.  
-3. **Progress Tracking**: Adapts tasks based on performance to reinforce weak areas and ensure steady improvement.  
- 
+1. **Instructor-Approved Questions**:  
+   Uses a curated set of instructor-approved questions to ensure alignment with the syllabus and reinforce key exam concepts.  
+2. **Test Preparation**:  
+   Adapts to student struggles by offering follow-up questions, hints, or additional exercises to clarify challenging topics.  
+3. **Progress Tracking**:  
+   Tracks completed and remaining subtopics dynamically, providing clear progress updates to ensure comprehensive coverage of the subject.  
+4. **Dynamic Question Adjustment**:  
+   Adjusts question difficulty based on performance, presenting more challenging problems after success and simpler ones when the student struggles.  
 
 #### **Moodle Integration**  
 8. **Course-Specific Answers via Moodle**: Directly answers questions tied to the Moodle course by accessing and utilizing approved content. Available in both General and Test Modes.  
