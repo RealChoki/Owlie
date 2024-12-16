@@ -1,5 +1,7 @@
 <template>
-  <div class="d-flex">
+  <div     
+    class="d-flex min-width"
+  >
     <transition name="slide">
       <Sidebar
         v-if="isWideScreen && isOpenSidebar"
@@ -10,10 +12,12 @@
     <div
       class="container d-flex flex-column vh-100"
       :style="{
-        position: !isOpenSidebar ? 'fixed' : 'relative',
-        left: !isOpenSidebar ? '50%' : 'auto',
-        transform: !isOpenSidebar ? 'translateX(-50%)' : 'none',
+        position: !isOpenSidebar && !isOpenBurgerMenu ? 'fixed' : 'relative',
+        left: !isOpenSidebar && !isOpenBurgerMenu ? '50%' : 'auto',
+        transform: !isOpenSidebar && !isOpenBurgerMenu ? 'translateX(-50%)' : 'none',
+        transition: isWideScreen ? 'transform 0.7s ease' : 'none',
       }"
+      
     >
       <Navbar
         :isOpenBurgerMenu="isOpenBurgerMenu"
@@ -61,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import type { ComponentPublicInstance } from "vue";
 
 import Navbar from "../components/Navbar.vue";
@@ -78,6 +82,7 @@ import {
   getSelectedModuleLS,
   setSelectedModuleLS,
   getCurrentModeLS,
+  getCurrentModuleLS
 } from "@/services/localStorageService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 
@@ -107,6 +112,10 @@ function toggleBurgerMenu(newState: boolean) {
 
 function closeBurgerMenu() {
   isOpenBurgerMenu.value = false;
+}
+
+function openSidebar() {
+  isOpenSidebar.value = true;
 }
 
 function closeSidebar() {
@@ -140,9 +149,9 @@ onMounted(async () => {
   document.addEventListener("click", handleClickOutside);
   fetchModules();
   try {
-    const selectedModuleValue = getSelectedModuleLS();
+    const currentModul = getCurrentModuleLS();
     await fetchAssistantIds(
-      selectedModuleValue?.replace(/ /g, "_"),
+      currentModul?.replace(/ /g, "_"),
       getCurrentModeLS()
     );
     await initializeThread();
@@ -157,6 +166,13 @@ onUnmounted(() => {
 
 // Use the imported useScreenWidth function
 const { isWideScreen } = useScreenWidth();
+
+watch(isWideScreen, (newVal) => {
+  if (!newVal) {
+    openSidebar();
+  }
+});
+
 </script>
 
 <style>
@@ -177,7 +193,6 @@ const { isWideScreen } = useScreenWidth();
 
 .container {
   background-color: #131213;
-  transition: transform 0.7s ease;
 }
 
 .logo-container {
@@ -188,5 +203,9 @@ const { isWideScreen } = useScreenWidth();
   width: 100%;
   max-width: 800px;
   align-self: center;
+}
+
+.min-width{
+  min-width: 365px;
 }
 </style>

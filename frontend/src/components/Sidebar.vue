@@ -82,13 +82,22 @@
       >
         <v-btn-toggle
           v-model="selectedMode"
+          mandatory
           rounded="x2"
           color="#414141"
           base-color="#2a2a2a"
           class="equal-width-toggle"
         >
-          <v-btn value="general" class="equal-width-btn">General</v-btn>
-          <v-btn value="testing" class="equal-width-btn">Testing</v-btn>
+        <v-btn
+            value="general"
+            class="equal-width-btn"
+            >General</v-btn
+          >
+          <v-btn
+            value="testing"
+            class="equal-width-btn"
+            >Testing</v-btn
+          >
         </v-btn-toggle>
       </div>
     </div>
@@ -118,10 +127,6 @@ library.add(faMagnifyingGlass, faCircleInfo);
 
 const props = defineProps({
   isOpenSidebar: Boolean,
-  currentMode: {
-    type: String,
-    default: "general",
-  },
 });
 
 const emit = defineEmits(["closeSidebar", "moduleSelected"]);
@@ -130,15 +135,9 @@ const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref("general");
+const selectedMode = ref(getCurrentModeLS() || 'general');
 const showInfo = ref(false);
 
-watch(
-  () => props.currentMode,
-  (newMode) => {
-    selectedMode.value = newMode;
-  }
-);
 
 const activeModules = ref<string[]>(["Grundlagen der Programmierung"]);
 
@@ -166,6 +165,7 @@ async function selectModule(module: string) {
   }
   console.log("Selected module:", module);
 
+
   const modeName = selectedMode.value;
   const courseName = module.replace(/ /g, "_");
 
@@ -174,7 +174,7 @@ async function selectModule(module: string) {
 
   if (module !== currentModule || modeName !== currentMode) {
     console.log("Module or mode changed. Resetting thread and messages.");
-
+    clearThread();
     clearMessages(false);
 
     try {

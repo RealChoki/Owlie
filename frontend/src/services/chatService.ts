@@ -14,6 +14,7 @@ const chatState = reactive({
   messages: [] as { content: string; role: string; id?: string }[],
   currentMessage: '' as string,
   thinking: false as boolean,
+  currentThreadId: '' as string,
 });
 
 // Reactive references
@@ -47,14 +48,6 @@ function getRandomNoHeartsMessage() {
   return noHeartsMessages[randomIndex];
 }
 
-function getThreadId(): string {
-  const threadId = getThreadIdLS();
-  if (!threadId) {
-    throw new Error('Thread ID not found in localStorage');
-  }
-  return threadId;
-}
-
 function resetCounts() {
   heartCount.value = 5;
   messageCount.value = 0;
@@ -62,16 +55,29 @@ function resetCounts() {
   setMessageCountLS(messageCount.value);
 }
 
-async function sendToThread(threadId: string, content: string) {
+async function sendToThread(content: string) {
   const assistant_id = getAssistantIdLS();
   if (!assistant_id) {
     throw new Error('Assistant ID not found.');
   }
+   
+  const threadId = getThreadIdLS();
+  if (!threadId) {
+    throw new Error('Thread ID not found in localStorage');
+  }
 
-  return axios.post(`http://localhost:8000/api/threads/${threadId}/send_and_wait`, {
+  chatState.currentThreadId = threadId;
+
+  const response = await axios.post(`http://localhost:8000/api/threads/${threadId}/send_and_wait`, {
     content,
     assistant_id,
   });
+
+  if (getThreadIdLS() == chatState.currentThreadId) {
+    addAssistantMessage(response.data.content);
+  } else {
+    console.log('Received message from old thread. Ignoring.');
+  }
 }
 
 function handleSendMessageError(error: any) {
@@ -123,9 +129,7 @@ export async function sendMessage(messageToSend: string) {
   chatState.thinking = true;
 
   try {
-    const threadId = getThreadId();
-    const response = await sendToThread(threadId, messageToSend);
-    addAssistantMessage(response.data.content);
+    const response = await sendToThread(messageToSend);
   } catch (error) {
     handleSendMessageError(error);
   } finally {

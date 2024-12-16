@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="burger-menu-open p-3 bg-black rounded shadow-sm"
-  >
+  <div class="burger-menu-open p-3 bg-black rounded shadow-sm">
     <div class="search-container">
       <input
         ref="searchInput"
@@ -75,8 +73,8 @@
         </h6>
       </div>
       <div v-if="showInfo" class="small mt-1 text-warning text-center">
-        Testing mode: A quiz feature that assesses knowledge, tracks performance,
-        and provides personalized feedback.
+        Testing mode: A quiz feature that assesses knowledge, tracks
+        performance, and provides personalized feedback.
       </div>
 
       <div
@@ -84,13 +82,22 @@
       >
         <v-btn-toggle
           v-model="selectedMode"
+          mandatory
           rounded="x2"
           color="#414141"
           base-color="#2a2a2a"
           class="equal-width-toggle"
         >
-          <v-btn value="general" class="equal-width-btn">General</v-btn>
-          <v-btn value="testing" class="equal-width-btn">Testing</v-btn>
+          <v-btn
+            value="general"
+            class="equal-width-btn"
+            >General</v-btn
+          >
+          <v-btn
+            value="testing"
+            class="equal-width-btn"
+            >Testing</v-btn
+          >
         </v-btn-toggle>
       </div>
     </div>
@@ -98,48 +105,48 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits, watch, onMounted } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faMagnifyingGlass, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
-import { VBtn, VBtnToggle } from 'vuetify/components';
-import { useThread } from '../hooks/useThread';
-import { clearMessages } from '../services/chatService';
-import { fetchAssistantIds, modules } from '../services/moduleService';
+import {
+  ref,
+  computed,
+  defineProps,
+  defineEmits,
+  watch,
+  onMounted,
+  onUnmounted,
+} from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faMagnifyingGlass,
+  faCircleInfo,
+} from "@fortawesome/free-solid-svg-icons";
+import { VBtn, VBtnToggle } from "vuetify/components";
+import { useThread } from "../hooks/useThread";
+import { clearMessages } from "../services/chatService";
+import { fetchAssistantIds, modules } from "../services/moduleService";
 import {
   getCurrentModuleLS,
   setCurrentModuleLS,
   getCurrentModeLS,
   setCurrentModeLS,
-} from '../services/localStorageService';
+} from "../services/localStorageService";
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
-  currentMode: {
-    type: String,
-    default: 'general',
-  },
 });
 
-const emit = defineEmits(['closeBurgerMenu', 'moduleSelected']);
+const emit = defineEmits(["closeBurgerMenu", "moduleSelected"]);
 
-const searchQuery = ref('');
+const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref('general');
+const selectedMode = ref("general");
 const showInfo = ref(false);
 
-watch(
-  () => props.currentMode,
-  (newMode) => {
-    selectedMode.value = newMode;
-  }
-);
-
-const activeModules = ref<string[]>(['Grundlagen der Programmierung']);
+const activeModules = ref<string[]>(["Grundlagen der Programmierung"]);
 
 function isModuleActive(module: string): boolean {
   return activeModules.value.includes(module);
@@ -163,19 +170,19 @@ async function selectModule(module: string) {
   if (!isModuleActive(module)) {
     return;
   }
-  console.log('Selected module:', module);
+  console.log("Selected module:", module);
 
   const modeName = selectedMode.value;
-  const courseName = module.replace(/ /g, '_');
+  const courseName = module.replace(/ /g, "_");
 
   const currentModule = getCurrentModuleLS();
   const currentMode = getCurrentModeLS();
 
   if (module !== currentModule || modeName !== currentMode) {
-    console.log('Module or mode changed. Resetting thread and messages.');
-
+    console.log("Module or mode changed. Resetting thread and messages.");
+    clearThread();
     clearMessages(false);
-    
+
     try {
       await fetchAssistantIds(courseName, modeName);
 
@@ -184,21 +191,21 @@ async function selectModule(module: string) {
 
       await initializeThread();
     } catch (error) {
-      console.error('Error initializing thread:', error);
+      console.error("Error initializing thread:", error);
       return;
     }
   } else {
-    console.log('Same module and mode selected. No action taken.');
+    console.log("Same module and mode selected. No action taken.");
   }
 
   const moduleNameWithMode =
-    modeName === 'testing' ? `${module} (Test)` : module;
-  emit('moduleSelected', moduleNameWithMode);
+    modeName === "testing" ? `${module} (Test)` : module;
+  emit("moduleSelected", moduleNameWithMode);
   closeBurgerMenu();
 }
 
 function closeBurgerMenu() {
-  emit('closeBurgerMenu');
+  emit("closeBurgerMenu");
 }
 
 function focusInput() {
@@ -208,6 +215,22 @@ function focusInput() {
 function toggleInfo() {
   showInfo.value = !showInfo.value;
 }
+
+function handleResize() {
+  if (window.innerWidth >= 768) {
+    emit("closeBurgerMenu");
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("resize", handleResize);
+  handleResize(); // Initial check
+});
+
+// Remove the resize handler when the component is unmounted
+onUnmounted(() => {
+  window.removeEventListener("resize", handleResize);
+});
 </script>
 
 <style scoped>
@@ -218,6 +241,7 @@ function toggleInfo() {
   left: 0;
   width: 80vw;
   z-index: 9999;
+  min-width: 305px;
 }
 
 .module-list-container {
@@ -349,6 +373,10 @@ ul.p-0 {
 
 .modes_container {
   background-color: #000000;
+}
+
+.small{
+  max-width: 285px;
 }
 
 ::v-deep(.test-mode-text) {

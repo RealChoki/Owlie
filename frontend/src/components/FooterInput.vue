@@ -34,6 +34,7 @@
       <textarea
         ref="textarea"
         @input="resizeTextarea"
+        @keydown="handleKeydown"
         placeholder="Type a message..."
         aria-label="Message input"
         v-model="message"
@@ -176,26 +177,33 @@ function disableSendButton() {
   const messages = getMessages();
   const lastMessage = messages[messages.length - 1];
   const isLastMessageFromAssistant = lastMessage?.role === "assistant" || isFirstMessage();
-  const isMessageNotEmpty = message.value.trim() !== "";
+  const isMessageNotEmpty = message.value.trim() !== ""; // Trim whitespace
   const hasFilesAttached = fileCount.value > 0;
   const isThreadInitialized = getThreadIdLS() !== null;
- 
 
   return (
-    
-    !(isLastMessageFromAssistant && (isMessageNotEmpty || hasFilesAttached)) ||
-    isMessageTooLong.value || !isThreadInitialized
+    !(
+      isLastMessageFromAssistant &&
+      (isMessageNotEmpty || hasFilesAttached)
+    ) ||
+    isMessageTooLong.value ||
+    !isThreadInitialized
   );
 }
 
 function sendMessage() {
-  console.log(localStorage.getItem('thread_id'));
-
   if (!disableSendButton()) {
-    sendChatMessage(message.value);
+    sendChatMessage(message.value.trim()); // Trim the message
     message.value = "";
     fileCount.value = 0;
     uploadedFiles.value.clear();
+  }
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === 'Enter' && !event.shiftKey && window.innerWidth > 768) {
+    event.preventDefault(); // Prevent newline on Enter key
+    sendMessage();
   }
 }
 

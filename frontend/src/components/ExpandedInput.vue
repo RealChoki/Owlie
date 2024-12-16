@@ -1,8 +1,8 @@
 <template>
   <div class="full-screen-overlay">
     <div class="h-100 p-2 pb-2" style="background-color: #232323">
-      <div class="container h-100 d-flex flex-column" style="background-color: #232323">
-        <div class="d-flex justify-content-end mt-2 mb-3" style="position: fixed; top: 10px; right: 10px; z-index: 10">
+      <div class="container" style="background-color: #232323">
+        <div class="minimize-screen d-flex justify-content-end mt-2 mb-3" style="position: fixed; top: 10px; right: 10px; z-index: 10">
           <font-awesome-icon
             :icon="['fas', 'down-left-and-up-right-to-center']"
             @click.stop="closeExpandedInput"
@@ -100,10 +100,16 @@ function sendMessage() {
   margin-right: 0.2em;
 }
 
+.container {
+  width: 95%;
+  height: 100%;
+  position: relative;
+}
+
 .full-screen-textarea {
   flex: 1;
   width: 95%;
-  height: 100%;
+  height: 95%;
   border: none;
   outline: none;
   color: #ffffff;
@@ -112,8 +118,7 @@ function sendMessage() {
   resize: none;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  margin-top: 2.3em;
-  margin-bottom: 1em;
+  margin-top: 2em;
 }
 
 .full-screen-textarea::placeholder {
@@ -150,13 +155,32 @@ function sendMessage() {
   font-size: 14px;
   color: white;
   position: absolute;
-  top: 1.4em;
-  left: 2.7em;
+  top: 0.8em;
+  left: 2em;
 }
 
 .text-danger {
   color: red !important;
 }
 
+@media (min-width: 768px) {
+  ::v-deep .minimize-screen {
+    position: absolute !important;
+    right: 0;
+    top: 0.5em;
+  }
+
+  ::v-deep .character-count {
+    position: absolute !important;
+    top: 0.8em;
+    left: 2em;
+  }
+
+  ::v-deep .btn-circle {
+    position: absolute !important;
+    bottom: 0;
+    right: 0;
+  }
+}
 
 </style>
