@@ -30,7 +30,7 @@
         v-if="!chatMessages.length"
         class="d-flex justify-content-center align-items-center h-50 logo-container"
       >
-        <img src="../icons/OwlLogo.png" style="width: 75px" />
+        <img src="../icons/OwlLogo.png" style="width: 75px" @click="handleOwlClick"/>
       </div>
 
       <div
@@ -132,6 +132,25 @@ function closeExpandedInput() {
 
 function toggleOverlay(newState: boolean) {
   isExpandedInput.value = newState;
+}
+
+const clickCount = ref(0);
+
+// Funktion, die aufgerufen wird, wenn das Owl-Bild geklickt wird
+function handleOwlClick() {
+  clickCount.value += 1;
+  console.log(`Owl clicked ${clickCount.value} times`);
+  if (clickCount.value === 40) {
+    triggerSurprise();
+    clickCount.value = 0; // Zähler zurücksetzen
+  }
+}
+
+// Funktion, die die Überraschung auslöst
+function triggerSurprise() {
+  console.log("Surprise triggered!");
+  alert("OwO, what's this? Stwop pewtting me baka UwU");
+  // Hier kannst du weitere überraschende Aktionen hinzufügen, z.B. Animationen, Sounds etc.
 }
 
 function handleClickOutside(event: MouseEvent) {

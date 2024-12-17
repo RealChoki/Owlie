@@ -32,6 +32,8 @@
           src="../icons/OwlLogo.png"
           class="assistant-pfp p-1 pt-0"
           :style="isWideScreen ? 'position: absolute; left: 5px; top: 5px' : ''"
+        @click="handleOwlClick" 
+
         />
         <div
           v-html="renderedMessages[index]"
@@ -44,10 +46,11 @@
         src="../icons/OwlLogo.png"
         alt="assistant"
         class="assistant-pfp p-1 pt-0"
+        @click="handleOwlClick" 
       />
       <span class="thinking-animation text-white fst-italic ms-1"
         >thinking<span class="dot">.</span><span class="dot">.</span
-        ><span class="dot">.</span></span
+        ><span class="dot">...</span></span
       >
     </div>
   </div>
@@ -66,6 +69,33 @@ const thinking = computed(() => getThinking());
 const md = new MarkdownIt();
 const { isWideScreen } = useScreenWidth();
 
+const props = defineProps({
+  isOpenBurgerMenu: {
+    type: Boolean,
+    required: true,
+  },
+});
+
+// Klickzähler für das Owl-Bild
+const clickCount = ref(0);
+
+// Funktion, die aufgerufen wird, wenn das Owl-Bild geklickt wird
+function handleOwlClick() {
+  clickCount.value += 1;
+  console.log(`Owl clicked ${clickCount.value} times`);
+  if (clickCount.value === 40) {
+    triggerSurprise();
+    clickCount.value = 0; // Zähler zurücksetzen
+  }
+}
+
+// Funktion, die die Überraschung auslöst
+function triggerSurprise() {
+  console.log("Surprise triggered!");
+  alert("OwO, what's this? Stwop pewtting me baka UwU");
+  // Hier kannst du weitere überraschende Aktionen hinzufügen, z.B. Animationen, Sounds etc.
+}
+
 // Convert assistant messages from markdown to HTML
 const renderedMessages = computed(() => {
   return messages.map((message) => {
@@ -77,13 +107,6 @@ const renderedMessages = computed(() => {
       return message.content;
     }
   });
-});
-
-const props = defineProps({
-  isOpenBurgerMenu: {
-    type: Boolean,
-    required: true,
-  },
 });
 
 // Watch for changes in messages to scroll to the latest message
@@ -175,7 +198,6 @@ watch(
 
 .blur-effect {
   filter: blur(1.5px);
-  pointer-events: none;
 }
 
 ::v-deep p:last-of-type {
@@ -189,6 +211,16 @@ watch(
 /* Optional: Prevent user from selecting text while scrolled */
 .no-scroll * {
   user-select: none;
+}
+
+.surprise {
+  animation: blink 1s steps(5, start) 3;
+}
+
+@keyframes blink {
+  50% {
+    background-color: yellow;
+  }
 }
 
 /* Assistant message styles (change)
@@ -237,5 +269,5 @@ watch(
   list-style-type: decimal;
   margin-left: 20px;
 }
-  */
+*/
 </style>
