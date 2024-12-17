@@ -30,7 +30,6 @@
       >
         <img
           src="../icons/OwlLogo.png"
-          alt="assistant"
           class="assistant-pfp p-1 pt-0"
           :style="isWideScreen ? 'position: absolute; left: 5px; top: 5px' : ''"
         />

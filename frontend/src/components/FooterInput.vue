@@ -142,22 +142,29 @@ const loadVoices = () => {
 
 // Language detection function using franc-min
 function detectLanguage(text: string): string {
-  const langCode = franc(text, { only: ['deu', 'eng'] });
-  console.log('Detected language code:', langCode); // Debugging log
+  const langCode = franc(text, { only: ['deu', 'eng', 'fra', 'spa'] });
+  console.log('Detected language code:', langCode);
 
-  if (langCode === 'deu') {
-    return 'de-DE';
-  } else if (langCode === 'eng') {
-    return 'en-US';
-  } else {
-    console.warn(`Language detection failed for text: "${text}". Defaulting to 'de-DE'.`);
-    return 'de-DE'; // Fallback to English if undetermined
+  switch (langCode) {
+    case 'deu':
+      return 'de-DE';
+    case 'eng':
+      return 'en-US';
+    case 'fra':
+      return 'fr-FR';
+    case 'spa':
+      return 'es-ES';
+    default:
+      console.warn(`Language detection failed for text: "${text}". Defaulting to 'de-DE'.`);
+      return 'de-DE'; // Fallback language
   }
 }
 
 const femaleVoicesMap: { [key: string]: string } = {
-  'en-US': 'Microsoft Zira - English (United States)', // Example female English voice
-  'de-DE': 'Microsoft Katja - German (Germany)'      // Example female German voice
+  'en-US': 'Microsoft Zira - English (United States)',
+  'de-DE': 'Microsoft Katja - German (Germany)',
+  'fr-FR': 'Microsoft Hortense - French (France)',
+  'es-ES': 'Microsoft Helena - Spanish (Spain)',
 };
 
 onMounted(() => {

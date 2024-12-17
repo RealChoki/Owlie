@@ -7,7 +7,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from openai import OpenAI
 from openai.types.beta.threads.run import RequiredAction, LastError
-from fernet import encrypt_data, decrypt_data
+from tools.fernet import encrypt_data, decrypt_data
 from tools.function_calling import get_moodle_course_content
 import time
 import logging
@@ -20,11 +20,8 @@ load_dotenv()
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Get the directory of the current script
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Construct the path to 'config.json' one level up
-config_path = os.path.join(BASE_DIR, '..', 'config.json')
+# Construct the path to 'config.json' in the same directory as the script
+config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
 
 # Load and parse config.json
 with open(config_path, 'r') as f:

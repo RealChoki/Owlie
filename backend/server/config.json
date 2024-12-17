@@ -86,6 +86,21 @@
                             "tools": [],
                             "model": "gpt-4o-mini"
                         }
+                    },
+                    "Investition_und_Finanzierung": {
+                        "course_id": "50371",
+                        "general": {
+                            "instructions": "Investition und Finanzierung general instructions.",
+                            "data_path": "backend/htw/bachelor/wirtschaftsinformatik/Investition_und_Finanzierung/general_mode/data",
+                            "tools": [],
+                            "model": "gpt-4o-mini"
+                        },
+                        "testing": {
+                            "instructions": "Investition und Finanzierung testing instructions.",
+                            "data_path": "backend/htw/bachelor/wirtschaftsinformatik/Investition_und_Finanzierung/testing_mode/data",
+                            "tools": [],
+                            "model": "gpt-4o-mini"
+                        }
                     }
                 }
             }

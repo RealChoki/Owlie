@@ -39,7 +39,7 @@ Key goals:
 1. **Instructor-Approved Questions**: Uses a curated set of instructor-approved questions to ensure alignment with the syllabus and reinforce key exam concepts.  
 2. **Adaptive Support**: Adapts to student struggles by offering follow-up questions, hints, or additional exercises to clarify challenging topics until the student understands the given topic.  
 3. **Progress Tracking**: Tracks completed and remaining subtopics dynamically, providing clear progress updates to ensure comprehensive coverage of the subject.  
-4. **Dynamic Question Adjustment**: Adjusts question difficulty based on performance, presenting more challenging problems after success and simpler ones when the student struggles.  
+4. **Dynamic Question Adjustment**: Adjusts question difficulty based on performance, presenting more challenging problems after successfully answering multiple questions in a row and simpler ones when the student struggles.  
 
 #### **Moodle Integration**  
 8. **Course-Specific Answers via Moodle**: Directly answers questions tied to the Moodle course by accessing and utilizing approved content. Available in both General and Test Modes.  

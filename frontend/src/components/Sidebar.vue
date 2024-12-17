@@ -37,10 +37,7 @@
             'rounded',
             'text-white',
             'py-1',
-            {
-              inactive: !isModuleActive(module),
-              'cursor-pointer': isModuleActive(module),
-            },
+            { inactive: !isModuleActive(module), 'cursor-pointer': isModuleActive(module), 'active-module': getCurrentModuleLS() === module && getCurrentModeLS() === selectedMode },
           ]"
           @click="isModuleActive(module) ? selectModule(module) : null"
         >
@@ -105,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits, watch } from "vue";
+import { ref, computed, defineProps, defineEmits } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -139,7 +136,7 @@ const selectedMode = ref(getCurrentModeLS() || 'general');
 const showInfo = ref(false);
 
 
-const activeModules = ref<string[]>(["Grundlagen der Programmierung"]);
+const activeModules = ref<string[]>(["Grundlagen der Programmierung", "Englisch fÃ¼r Business Computing", "Statistik"]);
 
 function isModuleActive(module: string): boolean {
   return activeModules.value.includes(module);
@@ -319,11 +316,28 @@ function toggleInfo() {
   transform: translate(
     28px,
     -5px
-  ); /* Adjust alignment relative to the module name */
-  font-size: 0.7rem; /* Make it smaller */
+  );
+  font-size: 0.7rem;
 }
 
 .circle-info {
   cursor: pointer;
+}
+
+.active-module {
+  background-color: #2a2a2a;
+  position: relative; /* Create a positioning context */
+  border-radius: 12px; /* Adjust the value as needed */
+  overflow: hidden; /* Clip the pseudo-element to the border-radius */
+}
+
+.active-module::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px; /* Width of the border */
+  height: 100%;
+  background: linear-gradient(to top, white, #5b5b5b); /* The gradient */
 }
 </style>
