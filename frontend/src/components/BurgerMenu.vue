@@ -392,4 +392,21 @@ ul.p-0 {
   ); /* Adjust alignment relative to the module name */
   font-size: 0.7rem; /* Make it smaller */
 }
+
+.active-module {
+  background-color: #2a2a2a;
+  position: relative; /* Create a positioning context */
+  border-radius: 12px; /* Adjust the value as needed */
+  overflow: hidden; /* Clip the pseudo-element to the border-radius */
+}
+
+.active-module::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px; /* Width of the border */
+  height: 100%;
+  background: linear-gradient(to bottom, white, #5b5b5b); /* The gradient */
+}
 </style>

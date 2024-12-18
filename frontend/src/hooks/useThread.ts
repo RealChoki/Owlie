@@ -3,7 +3,9 @@ import { ref, watch, type Ref } from 'vue';
 import { createNewThread, fetchThread } from "../api/restService";
 import { runFinishedStates } from "./constants";
 import { getAssistantIdLS, setThreadIdLS, removeThreadIdLS } from "../services/localStorageService"
+import { setAssistantThreadId } from '../services/openaiService';
 import type { RunStatus, Thread, ThreadMessage, CreateThreadResponse } from "../api/restService";
+import { getAssistant } from '../services/openaiService';
 
 export const useThread = (
   run: Ref<RunStatus | undefined>,
@@ -41,7 +43,7 @@ export const useThread = (
 
   const initializeThread = async () => {
     threadId.value = undefined; // Reset threadId to force new thread creation
-    const assistant_id = getAssistantIdLS();
+    const assistant_id = getAssistant().id;
     if (!assistant_id) {
       console.error('Assistant ID is not available.');
       return;
@@ -52,6 +54,8 @@ export const useThread = (
       setRun(data);
       threadId.value = data.thread_id;
       setThreadIdLS(data.thread_id);
+      setAssistantThreadId(data.thread_id)
+
       console.log(`Created new thread ${data.thread_id}`);
     }
   };

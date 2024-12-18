@@ -1,16 +1,16 @@
 import { reactive } from 'vue';
 import axios from 'axios';
 import {
-  getThreadIdLS,
   getCurrentModeLS,
   getCurrentModuleLS,
   getAssistantIdLS,
-  setAssistantIdLS,
   getOldAssistantIdLS,
   setOldAssistantIdLS,
   removeOldAssistantIdLS,
   removeThreadIdLS,
 } from './localStorageService';
+import { getAssistant, setAssistantId } from '../services/openaiService';
+
 
 const fileState = reactive({
   files: [] as string[],
@@ -30,7 +30,7 @@ export async function uploadFiles(filesToUpload: File[]) {
       formData.append('files', file);
     }
 
-    formData.append('thread_id', getThreadIdLS());
+    formData.append('thread_id', getAssistant().threadId);
     formData.append('current_module', getCurrentModuleLS().replace(/ /g, '_'));
     formData.append('current_mode',  getCurrentModeLS());
     
@@ -52,7 +52,7 @@ export async function uploadFiles(filesToUpload: File[]) {
     console.log('Server response:', response.data);
     if(!fileState.isTempAssistant){
       setOldAssistantIdLS(getAssistantIdLS());
-      setAssistantIdLS(response.data.temporary_assistant_id);
+      setAssistantId(response.data.temporary_assistant_id);
       fileState.isTempAssistant = true;
     }
     
@@ -83,7 +83,7 @@ export function clearFiles() {
 }
 
 export async function resetFileService() {
-  const oldThreadId = getThreadIdLS();
+  const oldThreadId = getAssistant().threadId;
 
   if (oldThreadId) {
     try {
@@ -107,7 +107,7 @@ export async function resetFileService() {
   // Restore the old assistant ID if it exists
   const oldAssistantId = getOldAssistantIdLS();
   if (oldAssistantId) {
-    setAssistantIdLS(oldAssistantId);
+    setAssistantId(oldAssistantId);
     removeOldAssistantIdLS();
   }
 }

@@ -1,13 +1,13 @@
 import { reactive, ref, watch } from 'vue';
 import axios from 'axios';
 import { 
-  getAssistantIdLS,
   getHeartCountLS,
   setHeartCountLS,
   getMessageCountLS,
-  setMessageCountLS,
-  getThreadIdLS 
+  setMessageCountLS
 } from '../services/localStorageService';
+
+import { getAssistant } from '../services/openaiService';
 
 // Reactive state
 const chatState = reactive({
@@ -56,12 +56,12 @@ function resetCounts() {
 }
 
 async function sendToThread(content: string) {
-  const assistant_id = getAssistantIdLS();
+  const assistant_id = getAssistant().id;
   if (!assistant_id) {
     throw new Error('Assistant ID not found.');
   }
    
-  const threadId = getThreadIdLS();
+  const threadId = getAssistant().threadId;
   if (!threadId) {
     throw new Error('Thread ID not found in localStorage');
   }
@@ -73,7 +73,7 @@ async function sendToThread(content: string) {
     assistant_id,
   });
 
-  if (getThreadIdLS() == chatState.currentThreadId) {
+  if (getAssistant().threadId == chatState.currentThreadId) {
     addAssistantMessage(response.data.content);
   } else {
     console.log('Received message from old thread. Ignoring.');

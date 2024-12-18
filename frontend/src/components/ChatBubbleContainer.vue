@@ -50,7 +50,7 @@
       />
       <span class="thinking-animation text-white fst-italic ms-1"
         >thinking<span class="dot">.</span><span class="dot">.</span
-        ><span class="dot">...</span></span
+        ><span class="dot">.</span></span
       >
     </div>
   </div>

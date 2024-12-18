@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar p-3 bg-black vh-100">
+  <div class="sidebar py-3 px-3 bg-black vh-100">
     <div class="search-container">
       <input
         ref="searchInput"
@@ -37,7 +37,7 @@
             'rounded',
             'text-white',
             'py-1',
-            { inactive: !isModuleActive(module), 'cursor-pointer': isModuleActive(module), 'active-module': getCurrentModuleLS() === module && getCurrentModeLS() === selectedMode },
+            { 'inactive': !isModuleActive(module), 'cursor-pointer': isModuleActive(module), 'active-module': isModuleClicked(module) },
           ]"
           @click="isModuleActive(module) ? selectModule(module) : null"
         >
@@ -102,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from "vue";
+import { ref, computed, defineProps, defineEmits, onMounted } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -133,6 +133,7 @@ const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
 const selectedMode = ref(getCurrentModeLS() || 'general');
+const moduleClicked = ref<{ module: string; mode: string } | null>(null);
 const showInfo = ref(false);
 
 
@@ -140,6 +141,14 @@ const activeModules = ref<string[]>(["Grundlagen der Programmierung", "Englisch 
 
 function isModuleActive(module: string): boolean {
   return activeModules.value.includes(module);
+}
+
+function isModuleClicked(module: string): boolean {
+  return (
+    moduleClicked.value !== null &&
+    module === moduleClicked.value.module &&
+    selectedMode.value === moduleClicked.value.mode
+  );
 }
 
 const filteredModules = computed(() => {
@@ -161,7 +170,7 @@ async function selectModule(module: string) {
     return;
   }
   console.log("Selected module:", module);
-
+  moduleClicked.value = { module, mode: selectedMode.value };
 
   const modeName = selectedMode.value;
   const courseName = module.replace(/ /g, "_");
@@ -189,6 +198,8 @@ async function selectModule(module: string) {
     console.log("Same module and mode selected. No action taken.");
   }
 
+  
+
   const moduleNameWithMode =
     modeName === "testing" ? `${module} (Test)` : module;
   emit("moduleSelected", moduleNameWithMode);
@@ -205,6 +216,15 @@ function focusInput() {
 function toggleInfo() {
   showInfo.value = !showInfo.value;
 }
+
+onMounted(() => {
+  const currentModule = getCurrentModuleLS();
+  const currentMode = getCurrentModeLS();
+  if (currentModule && currentMode) {
+    moduleClicked.value = { module: currentModule, mode: currentMode };
+    selectedMode.value = currentMode;
+  }
+});
 </script>
 
 <style scoped>
@@ -214,6 +234,7 @@ function toggleInfo() {
   min-width: 305px;
   position: relative;
   z-index: 1000;
+  padding-right: 12px !important;
 }
 
 .sidebar-search-bar {
@@ -260,12 +281,31 @@ function toggleInfo() {
 }
 
 .list-item-hover {
+  position: relative;
+  padding-left: 0.2em;
   list-style-type: none;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 .list-item-hover:hover {
   background-color: #414141;
+}
+
+.list-item-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(to bottom, white, #5b5b5b);
+  opacity: 0;
+  transition: width 0.4s ease, opacity 0.4s ease;
+}
+
+.list-item-hover:hover::before {
+  width: 5px;
+  opacity: 1;
 }
 
 .inactive {
@@ -326,9 +366,9 @@ function toggleInfo() {
 
 .active-module {
   background-color: #2a2a2a;
-  position: relative; /* Create a positioning context */
-  border-radius: 12px; /* Adjust the value as needed */
-  overflow: hidden; /* Clip the pseudo-element to the border-radius */
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 .active-module::before {
@@ -336,8 +376,9 @@ function toggleInfo() {
   position: absolute;
   top: 0;
   left: 0;
-  width: 5px; /* Width of the border */
+  width: 5px;
   height: 100%;
-  background: linear-gradient(to top, white, #5b5b5b); /* The gradient */
+  background: linear-gradient(to bottom, white, #5b5b5b);
+  opacity: 1;
 }
 </style>

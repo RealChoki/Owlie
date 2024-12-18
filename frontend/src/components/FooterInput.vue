@@ -104,7 +104,7 @@ import { uploadFiles as uploadChatFiles } from "../services/filesService";
 import { franc } from 'franc-min';
 library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh, faVolumeXmark);
 
-import { getThreadIdLS } from '../services/localStorageService';
+import { getAssistant } from '../services/openaiService';
 
 const props = defineProps({
   isExpandedInput: Boolean,
@@ -186,7 +186,7 @@ function disableSendButton() {
   const isLastMessageFromAssistant = lastMessage?.role === "assistant" || isFirstMessage();
   const isMessageNotEmpty = message.value.trim() !== ""; // Trim whitespace
   const hasFilesAttached = fileCount.value > 0;
-  const isThreadInitialized = getThreadIdLS() !== null;
+  const isThreadInitialized = getAssistant().threadId !== null;
 
   return (
     !(
