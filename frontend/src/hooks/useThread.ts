@@ -2,7 +2,7 @@ import filesService from '../services/filesService';
 import { ref, watch, type Ref } from 'vue';
 import { createNewThread, fetchThread } from "../api/restService";
 import { runFinishedStates } from "./constants";
-import { getAssistantIdLS, setThreadIdLS, removeThreadIdLS } from "../services/localStorageService"
+import { setThreadIdLS, removeThreadIdLS } from "../services/localStorageService"
 import { setAssistantThreadId } from '../services/openaiService';
 import type { RunStatus, Thread, ThreadMessage, CreateThreadResponse } from "../api/restService";
 import { getAssistant } from '../services/openaiService';

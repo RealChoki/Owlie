@@ -1,6 +1,5 @@
 import axios from "axios";
 import { ref } from "vue";
-import { setAssistantIdLS } from "../services/localStorageService";
 import { updateAssistant } from "../services/openaiService";
 
 const activeModules = ref<string[]>(["Grundlagen der Programmierung"]);
@@ -39,7 +38,6 @@ export async function fetchAssistantIds(courseName: string, modeName: string) {
       throw new Error("Assistant ID or vector store ID not found");
     }
 
-    // setAssistantIdLS(assistant_id);
     updateAssistant(assistant_id, courseName, modeName);
 
     return response.data; 

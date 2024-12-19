@@ -3,3 +3,4 @@
 *.vsix
 demo/
 node_modules
+**/__pycache__/

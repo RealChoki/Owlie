@@ -303,10 +303,6 @@ onMounted(() => {
   transition: width 0.4s ease, opacity 0.4s ease;
 }
 
-.list-item-hover:hover::before {
-  width: 5px;
-  opacity: 1;
-}
 
 .inactive {
   opacity: 0.5 !important;

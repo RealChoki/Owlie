@@ -36,6 +36,10 @@ function resetAssistant() {
     assistant.threadId = '';
 }
 
+function getOldAssistantId() {
+    return oldAssistantId.value;
+}
+
 function setNewAssistantIdAndSetOldAssistantId(newId: string) {
     oldAssistantId.value = assistant.id;
     assistant.id = newId;
@@ -49,6 +53,10 @@ function deleteOldAssistantIdAndUpdateAssistantId() {
 // Function to update threadId
 function updateThreadId(newId: string) {
     threadId.value = newId;
+}
+
+function removeAssistantThreadId(){
+    assistant.threadId = '';
 }
 
 // Watcher to log changes to assistantId
@@ -71,5 +79,9 @@ export {
     updateThreadId,
     setAssistantThreadId,
     getAssistant,
-    setAssistantId
+    setAssistantId,
+    getOldAssistantId,
+    setNewAssistantIdAndSetOldAssistantId,
+    deleteOldAssistantIdAndUpdateAssistantId,
+    removeAssistantThreadId
 };

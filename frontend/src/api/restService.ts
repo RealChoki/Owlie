@@ -62,7 +62,6 @@ export interface FetchRunResponse extends RunStatus {}
 
 export interface PostMessageResponse extends RunStatus {}
 
-// import { getAssistantIdLS } from '../services/localStorageService';
 import { getAssistant } from '../services/openaiService';
 
 // REST Service functions

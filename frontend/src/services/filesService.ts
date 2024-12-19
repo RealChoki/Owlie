@@ -3,13 +3,8 @@ import axios from 'axios';
 import {
   getCurrentModeLS,
   getCurrentModuleLS,
-  getAssistantIdLS,
-  getOldAssistantIdLS,
-  setOldAssistantIdLS,
-  removeOldAssistantIdLS,
-  removeThreadIdLS,
 } from './localStorageService';
-import { getAssistant, setAssistantId } from '../services/openaiService';
+import { getAssistant, deleteOldAssistantIdAndUpdateAssistantId, getOldAssistantId, setNewAssistantIdAndSetOldAssistantId, removeAssistantThreadId } from '../services/openaiService';
 
 
 const fileState = reactive({
@@ -35,7 +30,7 @@ export async function uploadFiles(filesToUpload: File[]) {
     formData.append('current_mode',  getCurrentModeLS());
     
     if (fileState.isTempAssistant) {
-      formData.append('assistant_id', getAssistantIdLS());
+      formData.append('assistant_id', getAssistant().id);
     }
     
     // Send the files to the FastAPI backend
@@ -51,8 +46,8 @@ export async function uploadFiles(filesToUpload: File[]) {
     // Log the server response
     console.log('Server response:', response.data);
     if(!fileState.isTempAssistant){
-      setOldAssistantIdLS(getAssistantIdLS());
-      setAssistantId(response.data.temporary_assistant_id);
+      setNewAssistantIdAndSetOldAssistantId(response.data.temporary_assistant_id);
+
       fileState.isTempAssistant = true;
     }
     
@@ -95,7 +90,7 @@ export async function resetFileService() {
       console.error('Error deleting tempassistant:', error);
     } finally {
       // Clear relevant entries from local storage
-      removeThreadIdLS();
+      removeAssistantThreadId();
     }
   }
 
@@ -105,10 +100,9 @@ export async function resetFileService() {
   fileState.isTempAssistant = false;
 
   // Restore the old assistant ID if it exists
-  const oldAssistantId = getOldAssistantIdLS();
+  const oldAssistantId = getOldAssistantId();
   if (oldAssistantId) {
-    setAssistantId(oldAssistantId);
-    removeOldAssistantIdLS();
+    deleteOldAssistantIdAndUpdateAssistantId()
   }
 }
 
