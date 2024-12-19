@@ -26,13 +26,13 @@ const localStorageUtils = {
 const keys = {
   heartCount: { key: "heartCount", defaultValue: 5 },
   messageCount: { key: "messageCount", defaultValue: 0 },
-  currentModule: {
-    key: "currentModule",
+  currentCourse: {
+    key: "currentCourse",
     defaultValue: "Grundlagen der Programmierung",
   },
   currentMode: { key: "currentMode", defaultValue: "general" },
-  selectedModule: {
-    key: "selectedModule",
+  selectedCourse: {
+    key: "selectedCourse",
     defaultValue: "Grundlagen der Programmierung",
   },
   assistantId: { key: "assistant_id", defaultValue: null },
@@ -52,14 +52,14 @@ export const getMessageCountLS = () =>
 export const setMessageCountLS = (value: number) =>
   localStorageUtils.set(keys.messageCount.key, value);
 
-// Current Module
-export const getCurrentModuleLS = () =>
+// Current Course
+export const getCurrentCourseLS = () =>
   localStorageUtils.get(
-    keys.currentModule.key,
-    keys.currentModule.defaultValue
+    keys.currentCourse.key,
+    keys.currentCourse.defaultValue
   );
-export const setCurrentModuleLS = (module: string | null) =>
-  localStorageUtils.set(keys.currentModule.key, module);
+export const setCurrentCourseLS = (course: string | null) =>
+  localStorageUtils.set(keys.currentCourse.key, course);
 
 // Current Mode
 export const getCurrentModeLS = () =>
@@ -67,14 +67,14 @@ export const getCurrentModeLS = () =>
 export const setCurrentModeLS = (mode: string | null) =>
   localStorageUtils.set(keys.currentMode.key, mode);
 
-// Selected Module
-export const getSelectedModuleLS = () =>
+// Selected Course
+export const getSelectedCourseLS = () =>
   localStorageUtils.get(
-    keys.selectedModule.key,
-    keys.selectedModule.defaultValue
+    keys.selectedCourse.key,
+    keys.selectedCourse.defaultValue
   );
-export const setSelectedModuleLS = (module: string | null) =>
-  localStorageUtils.set(keys.selectedModule.key, module);
+export const setSelectedCourseLS = (course: string | null) =>
+  localStorageUtils.set(keys.selectedCourse.key, course);
 
 // Assistant ID
 export const getAssistantIdLS = () =>

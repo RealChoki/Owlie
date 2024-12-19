@@ -39,7 +39,7 @@ app.add_middleware(
 
 assistant_id = None
 vector_store_id = None
-current_module = None
+current_course = None
 current_mode = None
 assistant_cache = {}  # Cache assistants for reuse
 FILES_DIR = ""
@@ -446,7 +446,7 @@ async def get_assistant_ids_endpoint(course_name: str, mode_name: str):
 async def upload_files(
     thread_id: str = Form(...),
     files: List[UploadFile] = File(...),
-    current_module: str = Form(...),
+    current_course: str = Form(...),
     current_mode: str = Form(...),
     assistant_id: Optional[str] = Form(None)  # Optional parameter
 ):
@@ -455,7 +455,7 @@ async def upload_files(
     if not files:
         return {"error": "No files uploaded"}
         
-    mode_config = get_course_config(current_module, current_mode)
+    mode_config = get_course_config(current_course, current_mode)
     vector_store_id = mode_config.get('vector_store_id')
 
     # Decrypt the thread_id, vector_store_id, and assistant_id if provided
@@ -511,7 +511,7 @@ async def upload_files(
         temporary_assistant_id = decrypted_assistant_id
     else:
         # Retrieve assistant configuration from config.json
-        mode_config = get_course_config(current_module, current_mode)
+        mode_config = get_course_config(current_course, current_mode)
         instructions = mode_config['instructions']
         tools = mode_config['tools']
         model = mode_config['model']

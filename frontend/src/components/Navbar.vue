@@ -127,7 +127,7 @@
           </span>
         </div>
         <p :class="['assistant-title', { 'blur-effect': isOpenBurgerMenu }]">
-          {{ props.selectedModule }}
+          {{ props.selectedCourse }}
         </p>
       </div>
       <font-awesome-icon
@@ -168,7 +168,7 @@ library.add(faArrowsRotate, faCalendarDays, faHeart);
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
   isOpenSidebar: Boolean,
-  selectedModule: String,
+  selectedCourse: String,
 });
 
 const emit = defineEmits(["toggleBurgerMenu", "toggleSidebar"]);

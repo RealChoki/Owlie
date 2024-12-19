@@ -118,5 +118,5 @@ def initialize_assistant(course_name, mode_name):
 if __name__ == "__main__":
     # Corrected course name with proper capitalization
     course_name = "Grundlagen_der_Programmierung"
-    mode_name = "testing"
+    mode_name = "quiz"
     initialize_assistant(course_name, mode_name)

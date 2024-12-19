@@ -1,11 +1,11 @@
 import axios from "axios";
 import { ref } from "vue";
-import { updateAssistant } from "../services/openaiService";
+import { updateAssistant } from "./openaiService";
 
-const activeModules = ref<string[]>(["Grundlagen der Programmierung"]);
-export const modules = ref<string[]>([]);
+const activeCourses = ref<string[]>(["Grundlagen der Programmierung"]);
+export const courses = ref<string[]>([]);
 
-export async function fetchModules() {
+export async function fetchCourses() {
   try {
     const response = await fetch(
       "http://localhost:8000/api/courses?university=hochschule_fuer_technik_und_wirtschaft_berlin&degree=bachelor&subject=wirtschaftsinformatik"
@@ -14,7 +14,7 @@ export async function fetchModules() {
       throw new Error("Network response was not ok");
     }
     const data = await response.json();
-    modules.value = data.courses.map((course: string) =>
+    courses.value = data.courses.map((course: string) =>
       course.replace(/_/g, " ")
     );
   } catch (error) {
@@ -47,10 +47,10 @@ export async function fetchAssistantIds(courseName: string, modeName: string) {
   }
 }
 
-export function isModuleActive(module: string): boolean {
-  return activeModules.value.includes(module);
+export function isCourseActive(course: string): boolean {
+  return activeCourses.value.includes(course);
 }
 
-export function formatCourseName(module: string): string {
-  return module.replace(/ /g, "_").toLowerCase();
+export function formatCourseName(course: string): string {
+  return course.replace(/ /g, "_").toLowerCase();
 }

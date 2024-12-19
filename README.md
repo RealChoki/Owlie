@@ -35,7 +35,7 @@ Key goals:
 3. **Concept Clarification**: Explains programming fundamentals in a simple, beginner-friendly way, tailored for first-semester students and aligned with lecture materials.  
 4. **Course-Specific Answers**: Provides information strictly aligned with the course content. Avoids irrelevant topics and notifies students when a topic exceeds the scope of the course or is too advanced before providing a response.
 
-#### **Testing Mode**  
+#### **Quiz Mode**  
 1. **Instructor-Approved Questions**: Uses a curated set of instructor-approved questions to ensure alignment with the syllabus and reinforce key exam concepts.  
 2. **Adaptive Support**: Adapts to student struggles by offering follow-up questions, hints, or additional exercises to clarify challenging topics until the student understands the given topic.  
 3. **Progress Tracking**: Tracks completed and remaining subtopics dynamically, providing clear progress updates to ensure comprehensive coverage of the subject.  

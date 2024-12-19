@@ -6,7 +6,7 @@
         type="text"
         v-model="searchQuery"
         class="burger-menu-search-bar w-100"
-        placeholder="Search modules..."
+        placeholder="Search courses..."
         @focus="isSearchFocused = true"
         @blur="isSearchFocused = false"
         :class="{ 'input-focused': isSearchFocused }"
@@ -26,29 +26,29 @@
       />
     </div>
 
-    <!-- Scrollable Module List -->
-    <div class="module-list-container">
+    <!-- Scrollable Course List -->
+    <div class="course-list-container">
       <ul class="p-0 mt-1">
         <li
-          v-for="(module, index) in filteredModules"
+          v-for="(course, index) in filteredCourses"
           :key="index"
           :class="[
             'list-item-hover',
             'rounded',
             'text-white',
             'py-1',
-            { 'inactive': !isModuleActive(module), 'cursor-pointer': isModuleActive(module), 'active-module': isModuleClicked(module) },
+            { 'inactive': !isCourseActive(course), 'cursor-pointer': isCourseActive(course), 'active-course': isCourseClicked(course) },
           ]"
-          @click="isModuleActive(module) ? selectModule(module) : null"
+          @click="isCourseActive(course) ? selectCourse(course) : null"
         >
           <p class="m-0 py-2 px-2 d-flex align-items-start position-relative">
-            <span class="module-name position-relative">
-              {{ module }}
+            <span class="course-name position-relative">
+              {{ course }}
               <span
                 v-if="selectedMode === 'quiz'"
                 class="test-mode-text text-secondary small position-absolute top-0 end-0"
               >
-                (Test)
+                (Quiz)
               </span>
             </span>
           </p>
@@ -70,7 +70,7 @@
         </h6>
       </div>
       <div v-if="showInfo" class="small mt-1 text-warning text-center">
-        quiz mode: A quiz feature that assesses knowledge, tracks
+        Quiz mode: A quiz feature that assesses knowledge, tracks
         performance, and provides personalized feedback.
       </div>
 
@@ -93,7 +93,7 @@
           <v-btn
             value="quiz"
             class="equal-width-btn"
-            >quiz</v-btn
+            >Quiz</v-btn
           >
         </v-btn-toggle>
       </div>
@@ -119,7 +119,7 @@ import {
 import { VBtn, VBtnToggle } from "vuetify/components";
 import { useThread } from "../hooks/useThread";
 import { clearMessages } from "../services/chatService";
-import { fetchAssistantIds, modules } from "../services/moduleService";
+import { fetchAssistantIds, courses } from "../services/courseService";
 import {
   getAssistantCourseName,
   getAssistantModeName,
@@ -133,84 +133,82 @@ const props = defineProps({
   isOpenBurgerMenu: Boolean,
 });
 
-const emit = defineEmits(["closeBurgerMenu", "moduleSelected"]);
+const emit = defineEmits(["closeBurgerMenu", "courseSelected"]);
 
 const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref(getAssistantModeName() || 'general');
-const moduleClicked = ref<{ module: string; mode: string } | null>(null);
+const selectedMode = ref(getAssistantModeName());
+const courseClicked = ref<{ course: string; mode: string } | null>(null);
 const showInfo = ref(false);
 
-const activeModules = ref<string[]>(["Grundlagen der Programmierung", "Englisch fÃ¼r Business Computing", "Statistik"]);
+const activeCourses = ref<string[]>(["Grundlagen der Programmierung", "Englisch fÃ¼r Business Computing", "Statistik"]);
 
-function isModuleActive(module: string): boolean {
-  return activeModules.value.includes(module);
+function isCourseActive(course: string): boolean {
+  return activeCourses.value.includes(course);
 }
 
-function isModuleClicked(module: string): boolean {
+function isCourseClicked(course: string): boolean {
   return (
-    moduleClicked.value !== null &&
-    module === moduleClicked.value.module &&
-    selectedMode.value === moduleClicked.value.mode
+    courseClicked.value !== null &&
+    course === courseClicked.value.course &&
+    selectedMode.value === courseClicked.value.mode
   );
 }
 
-const filteredModules = computed(() => {
+const filteredCourses = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  const filtered = modules.value.filter((module) =>
-    module.toLowerCase().includes(query)
+  const filtered = courses.value.filter((course) =>
+    course.toLowerCase().includes(query)
   );
 
-  const active = filtered.filter(isModuleActive);
-  const inactive = filtered.filter((module) => !isModuleActive(module));
+  const active = filtered.filter(isCourseActive);
+  const inactive = filtered.filter((course) => !isCourseActive(course));
 
   return [...active, ...inactive.sort()];
 });
 
 const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
-async function selectModule(module: string) {
+async function selectCourse(course: string) {
   setTimeout(() => {
     closeBurgerMenu();
   }, 350);
 
-  if (!isModuleActive(module)) {
+  if (!isCourseActive(course)) {
     return;
   }
-  console.log("Selected module:", module);
-  moduleClicked.value = { module, mode: selectedMode.value };
+  console.log("Selected course:", course);
+  courseClicked.value = { course, mode: selectedMode.value };
 
   const modeName = selectedMode.value;
-  const courseName = module.replace(/ /g, "_");
+  const courseName = course.replace(/ /g, "_");
 
-  const currentModule = getAssistantCourseName();
+  const currentCourse = getAssistantCourseName();
   const currentMode = getAssistantModeName();
 
-  if (module !== currentModule || modeName !== currentMode) {
-    console.log("Module or mode changed. Resetting thread and messages.");
+  if (course !== currentCourse || modeName !== currentMode) {
+    console.log("Course or mode changed. Resetting thread and messages.");
     clearThread();
     clearMessages(false);
+    setAssistantCourseName(course);
+    setAssistantModeName(modeName);
 
     try {
       await fetchAssistantIds(courseName, modeName);
-
-      setAssistantCourseName(module);
-      setAssistantModeName(modeName);
-
       await initializeThread();
     } catch (error) {
       console.error("Error initializing thread:", error);
       return;
     }
   } else {
-    console.log("Same module and mode selected. No action taken.");
+    console.log("Same course and mode selected. No action taken.");
   }
 
-  const moduleNameWithMode =
-    modeName === "quiz" ? `${module} (Test)` : module;
-  emit("moduleSelected", moduleNameWithMode);
+  const courseNameWithMode =
+    modeName === "quiz" ? `${course} (Quiz)` : course;
+  emit("courseSelected", courseNameWithMode);
 }
 
 function closeBurgerMenu() {
@@ -234,10 +232,10 @@ function handleResize() {
 onMounted(() => {
   window.addEventListener("resize", handleResize);
   handleResize(); // Initial check
-  const currentModule = getAssistantCourseName();
+  const currentCourse = getAssistantCourseName();
   const currentMode = getAssistantModeName();
-  if (currentModule && currentMode) {
-    moduleClicked.value = { module: currentModule, mode: currentMode };
+  if (currentCourse && currentMode) {
+    courseClicked.value = { course: currentCourse, mode: currentMode };
     selectedMode.value = currentMode;
   }
 });
@@ -260,7 +258,7 @@ onUnmounted(() => {
   padding-right: 12px !important;
 }
 
-.module-list-container {
+.course-list-container {
   max-height: 82vh;
   overflow-y: auto;
   scrollbar-width: none;
@@ -280,7 +278,7 @@ onUnmounted(() => {
 }
 
 .burger-menu-search-bar::placeholder {
-  transition: color 0.1s ease;
+  transition: color 0.2s ease;
 }
 
 .search-container {
@@ -296,7 +294,7 @@ onUnmounted(() => {
   font-size: 1.2rem;
   left: 15px;
   color: #5b5b5b;
-  transition: color 0.1s ease;
+  transition: color 0.2s ease;
 }
 
 .input-focused::placeholder {
@@ -307,7 +305,7 @@ onUnmounted(() => {
   position: relative;
   padding-left: 0.2em;
   list-style-type: none;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 .list-item-hover:hover {
@@ -323,7 +321,7 @@ onUnmounted(() => {
   height: 100%;
   background: linear-gradient(to bottom, white, #5b5b5b);
   opacity: 0;
-  transition: width 0.4s ease, opacity 0.4s ease;
+  transition: width 0.5s ease, opacity 0.5s ease;
 }
 
 .inactive {
@@ -425,18 +423,18 @@ ul.p-0 {
   transform: translate(
     28px,
     -5px
-  ); /* Adjust alignment relative to the module name */
+  ); /* Adjust alignment relative to the course name */
   font-size: 0.7rem; /* Make it smaller */
 }
 
-.active-module {
+.active-course {
   background-color: #2a2a2a;
   position: relative;
   overflow: hidden;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-.active-module::before {
+.active-course::before {
   content: '';
   position: absolute;
   top: 0;

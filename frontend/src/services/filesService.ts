@@ -31,7 +31,7 @@ export async function uploadFiles(filesToUpload: File[]) {
     }
 
     formData.append('thread_id', getAssistantThreadId());
-    formData.append('current_module', getAssistantCourseName().replace(/ /g, '_'));
+    formData.append('current_course', getAssistantCourseName().replace(/ /g, '_'));
     formData.append('current_mode',  getAssistantModeName());
     
     if (fileState.isTempAssistant) {

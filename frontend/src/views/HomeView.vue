@@ -6,7 +6,7 @@
       <Sidebar
         v-if="isWideScreen && isOpenSidebar"
         @closeSidebar="closeSidebar"
-        @moduleSelected="handleModuleSelected"
+        @courseSelected="handleCourseSelected"
       />
     </transition>
     <div
@@ -24,7 +24,7 @@
         :isOpenSidebar="isOpenSidebar"
         @toggleBurgerMenu="toggleBurgerMenu"
         @toggleSidebar="toggleSidebar"
-        :selectedModule="selectedModule"
+        :selectedCourse="selectedCourse"
       />
       <div
         v-if="!chatMessages.length"
@@ -62,7 +62,7 @@
         <BurgerMenu
           v-if="isOpenBurgerMenu"
           @closeBurgerMenu="closeBurgerMenu"
-          @moduleSelected="handleModuleSelected"
+          @courseSelected="handleCourseSelected"
           ref="burgerMenuRef"
         />
       </transition>
@@ -83,14 +83,11 @@ import ChatBubbleContainer from "../components/ChatBubbleContainer.vue";
 import type { RunStatus } from "../api/restService";
 import chatService from "@/services/chatService";
 import { useThread } from "../hooks/useThread";
-import { fetchModules, fetchAssistantIds } from "@/services/moduleService";
-import {
-  getSelectedModuleLS,
-  setSelectedModuleLS,
-} from "@/services/localStorageService";
+import { fetchCourses, fetchAssistantIds } from "@/services/courseService";
 import {
   getAssistantCourseName,
-  getAssistantModeName
+  getAssistantModeName,
+  setAssistantCourseName,
 } from "@/services/openaiService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 
@@ -98,7 +95,7 @@ const isExpandedInput = ref(false);
 const isOpenBurgerMenu = ref(false);
 const isOpenSidebar = ref(true);
 const chatMessages = computed(() => chatService.getMessages());
-const selectedModule = ref(getSelectedModuleLS());
+const selectedCourse = ref(getAssistantCourseName());
 
 const burgerMenuRef = ref<ComponentPublicInstance | null>(null);
 
@@ -107,9 +104,8 @@ const setRun = (data: RunStatus | undefined) => {
   run.value = data;
 };
 
-function handleModuleSelected(moduleNameWithMode: string) {
-  selectedModule.value = moduleNameWithMode;
-  setSelectedModuleLS(moduleNameWithMode);
+function handleCourseSelected(CourseNameWithMode: string) {
+  selectedCourse.value = CourseNameWithMode;
 }
 
 const { clearThread, initializeThread } = useThread(run, setRun);
@@ -174,7 +170,7 @@ function handleClickOutside(event: MouseEvent) {
 onMounted(async () => {
   clearThread();
   document.addEventListener("click", handleClickOutside);
-  fetchModules();
+  fetchCourses();
   try {
     const currentCourse = getAssistantCourseName();
     await fetchAssistantIds(
