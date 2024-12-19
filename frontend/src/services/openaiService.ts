@@ -2,13 +2,19 @@ import { reactive, ref, watch } from 'vue';
 
 const assistant = reactive({
     id: '',
+    threadId: '',
     courseName: '',
     modeName: '',
-    threadId: ''
 });
 
+const defaultValues = {
+    id: '',
+    threadId: '',
+    courseName: 'Grundlagen der Programmierung',
+    modeName: 'general',
+};
+
 const oldAssistantId = ref('');
-const threadId = ref('');
 
 function updateAssistant(newId: string, newCourseName: string, newModeName: string) {
     assistant.id = newId;
@@ -20,12 +26,20 @@ function getAssistant() {
     return assistant;
 }
 
+function getAssistantId() {
+    return assistant.id;
+}
+
 function setAssistantId(newId: string) {
     assistant.id = newId;
 }
 
 function setAssistantThreadId(newThreadId: string) {
     assistant.threadId = newThreadId;
+}
+
+function getAssistantThreadId() {
+    return assistant.threadId;
 }
 
 // Function to reset assistantId
@@ -50,13 +64,30 @@ function deleteOldAssistantIdAndUpdateAssistantId() {
     oldAssistantId.value = '';
 }
 
-// Function to update threadId
-function updateThreadId(newId: string) {
-    threadId.value = newId;
-}
-
 function removeAssistantThreadId(){
     assistant.threadId = '';
+}
+
+function getAssistantCourseName() {
+    if (!assistant.courseName) {
+        return defaultValues.courseName;
+    }
+    return assistant.courseName;
+}
+
+function setAssistantCourseName(newCourseName: string) {
+    assistant.courseName = newCourseName;
+}
+
+function getAssistantModeName() {
+    if (!assistant.modeName) {
+        return defaultValues.modeName;
+    }
+    return assistant.modeName;
+}
+
+function setAssistantModeName(newModeName: string) {
+    assistant.modeName = newModeName;
 }
 
 // Watcher to log changes to assistantId
@@ -64,24 +95,22 @@ watch(assistant, (newVal, oldVal) => {
     console.log('assistant changed from', oldVal, 'to', newVal);
 });
 
-// Watcher to log changes to threadId
-watch(threadId, (newVal, oldVal) => {
-    console.log('threadId changed from', oldVal, 'to', newVal);
-});
-
-
 export {
     assistant,
     oldAssistantId,
-    threadId,
     updateAssistant,
     resetAssistant,
-    updateThreadId,
     setAssistantThreadId,
     getAssistant,
     setAssistantId,
     getOldAssistantId,
     setNewAssistantIdAndSetOldAssistantId,
     deleteOldAssistantIdAndUpdateAssistantId,
-    removeAssistantThreadId
+    removeAssistantThreadId,
+    getAssistantId,
+    getAssistantThreadId,
+    getAssistantModeName,
+    getAssistantCourseName,
+    setAssistantCourseName,
+    setAssistantModeName,
 };

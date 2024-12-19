@@ -114,11 +114,11 @@ import { useThread } from "../hooks/useThread";
 import { clearMessages } from "../services/chatService";
 import { fetchAssistantIds, modules } from "../services/moduleService";
 import {
-  getCurrentModuleLS,
-  setCurrentModuleLS,
-  getCurrentModeLS,
-  setCurrentModeLS,
-} from "../services/localStorageService";
+  getAssistantCourseName,
+  getAssistantModeName,
+  setAssistantCourseName,
+  setAssistantModeName,
+} from "../services/openaiService";
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
@@ -132,7 +132,7 @@ const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref(getCurrentModeLS() || 'general');
+const selectedMode = ref(getAssistantModeName() || 'general');
 const moduleClicked = ref<{ module: string; mode: string } | null>(null);
 const showInfo = ref(false);
 
@@ -175,8 +175,8 @@ async function selectModule(module: string) {
   const modeName = selectedMode.value;
   const courseName = module.replace(/ /g, "_");
 
-  const currentModule = getCurrentModuleLS();
-  const currentMode = getCurrentModeLS();
+  const currentModule = getAssistantCourseName();
+  const currentMode = getAssistantModeName();
 
   if (module !== currentModule || modeName !== currentMode) {
     console.log("Module or mode changed. Resetting thread and messages.");
@@ -186,8 +186,8 @@ async function selectModule(module: string) {
     try {
       await fetchAssistantIds(courseName, modeName);
 
-      setCurrentModuleLS(module);
-      setCurrentModeLS(modeName);
+      setAssistantCourseName(module);
+      setAssistantModeName(modeName);
 
       await initializeThread();
     } catch (error) {
@@ -218,8 +218,8 @@ function toggleInfo() {
 }
 
 onMounted(() => {
-  const currentModule = getCurrentModuleLS();
-  const currentMode = getCurrentModeLS();
+  const currentModule = getAssistantCourseName();
+  const currentMode = getAssistantModeName();
   if (currentModule && currentMode) {
     moduleClicked.value = { module: currentModule, mode: currentMode };
     selectedMode.value = currentMode;

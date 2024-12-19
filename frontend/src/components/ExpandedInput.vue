@@ -143,7 +143,7 @@ function sendMessage() {
   min-height: 25px;
   padding: 0.5em;
   margin-right: 0.15em;
-  margin-bottom: -0.15em;
+  margin-bottom: 0.4em;
 }
 
 .btn-disabled {
@@ -180,6 +180,7 @@ function sendMessage() {
     position: absolute !important;
     bottom: 0;
     right: 0;
+    margin-bottom: -0.5px !important;
   }
 }
 

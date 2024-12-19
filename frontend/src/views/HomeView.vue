@@ -30,7 +30,12 @@
         v-if="!chatMessages.length"
         class="d-flex justify-content-center align-items-center h-50 logo-container"
       >
-        <img src="../icons/OwlLogo.png" style="width: 75px" @click="handleOwlClick"/>
+      <img
+        src="../icons/OwlLogo.png"
+        style="width: 75px"
+        @click="handleOwlClick"
+        :class="{ 'blur-effect': isOpenBurgerMenu && !isWideScreen }"
+      />
       </div>
 
       <div
@@ -43,6 +48,7 @@
           :isOpenBurgerMenu="isOpenBurgerMenu"
         />
         <FooterInput
+          class="mb-2"
           :messages="chatMessages"
           :isOpenBurgerMenu="isOpenBurgerMenu"
           @toggleOverlay="toggleOverlay"
@@ -81,9 +87,11 @@ import { fetchModules, fetchAssistantIds } from "@/services/moduleService";
 import {
   getSelectedModuleLS,
   setSelectedModuleLS,
-  getCurrentModeLS,
-  getCurrentModuleLS
 } from "@/services/localStorageService";
+import {
+  getAssistantCourseName,
+  getAssistantModeName
+} from "@/services/openaiService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 
 const isExpandedInput = ref(false);
@@ -168,10 +176,10 @@ onMounted(async () => {
   document.addEventListener("click", handleClickOutside);
   fetchModules();
   try {
-    const currentModul = getCurrentModuleLS();
+    const currentCourse = getAssistantCourseName();
     await fetchAssistantIds(
-      currentModul?.replace(/ /g, "_"),
-      getCurrentModeLS()
+      currentCourse?.replace(/ /g, "_"),
+      getAssistantModeName()
     );
     await initializeThread();
   } catch (error) {
@@ -226,5 +234,9 @@ watch(isWideScreen, (newVal) => {
 
 .min-width{
   min-width: 365px;
+}
+
+.blur-effect {
+  filter: blur(2px);
 }
 </style>

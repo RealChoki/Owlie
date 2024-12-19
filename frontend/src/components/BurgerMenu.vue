@@ -1,5 +1,5 @@
 <template>
-  <div class="burger-menu-open p-3 bg-black rounded shadow-sm">
+  <div class="burger-menu-open py-3 px-3 bg-black rounded shadow-sm">
     <div class="search-container">
       <input
         ref="searchInput"
@@ -37,10 +37,7 @@
             'rounded',
             'text-white',
             'py-1',
-            {
-              inactive: !isModuleActive(module),
-              'cursor-pointer': isModuleActive(module),
-            },
+            { 'inactive': !isModuleActive(module), 'cursor-pointer': isModuleActive(module), 'active-module': isModuleClicked(module) },
           ]"
           @click="isModuleActive(module) ? selectModule(module) : null"
         >
@@ -110,7 +107,6 @@ import {
   computed,
   defineProps,
   defineEmits,
-  watch,
   onMounted,
   onUnmounted,
 } from "vue";
@@ -125,11 +121,11 @@ import { useThread } from "../hooks/useThread";
 import { clearMessages } from "../services/chatService";
 import { fetchAssistantIds, modules } from "../services/moduleService";
 import {
-  getCurrentModuleLS,
-  setCurrentModuleLS,
-  getCurrentModeLS,
-  setCurrentModeLS,
-} from "../services/localStorageService";
+  getAssistantCourseName,
+  getAssistantModeName,
+  setAssistantCourseName,
+  setAssistantModeName,
+} from "../services/openaiService";
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
@@ -143,13 +139,22 @@ const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref("general");
+const selectedMode = ref(getAssistantModeName() || 'general');
+const moduleClicked = ref<{ module: string; mode: string } | null>(null);
 const showInfo = ref(false);
 
-const activeModules = ref<string[]>(["Grundlagen der Programmierung"]);
+const activeModules = ref<string[]>(["Grundlagen der Programmierung", "Englisch fÃ¼r Business Computing", "Statistik"]);
 
 function isModuleActive(module: string): boolean {
   return activeModules.value.includes(module);
+}
+
+function isModuleClicked(module: string): boolean {
+  return (
+    moduleClicked.value !== null &&
+    module === moduleClicked.value.module &&
+    selectedMode.value === moduleClicked.value.mode
+  );
 }
 
 const filteredModules = computed(() => {
@@ -167,16 +172,21 @@ const filteredModules = computed(() => {
 const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
 async function selectModule(module: string) {
+  setTimeout(() => {
+    closeBurgerMenu();
+  }, 350);
+
   if (!isModuleActive(module)) {
     return;
   }
   console.log("Selected module:", module);
+  moduleClicked.value = { module, mode: selectedMode.value };
 
   const modeName = selectedMode.value;
   const courseName = module.replace(/ /g, "_");
 
-  const currentModule = getCurrentModuleLS();
-  const currentMode = getCurrentModeLS();
+  const currentModule = getAssistantCourseName();
+  const currentMode = getAssistantModeName();
 
   if (module !== currentModule || modeName !== currentMode) {
     console.log("Module or mode changed. Resetting thread and messages.");
@@ -186,8 +196,8 @@ async function selectModule(module: string) {
     try {
       await fetchAssistantIds(courseName, modeName);
 
-      setCurrentModuleLS(module);
-      setCurrentModeLS(modeName);
+      setAssistantCourseName(module);
+      setAssistantModeName(modeName);
 
       await initializeThread();
     } catch (error) {
@@ -201,7 +211,6 @@ async function selectModule(module: string) {
   const moduleNameWithMode =
     modeName === "testing" ? `${module} (Test)` : module;
   emit("moduleSelected", moduleNameWithMode);
-  closeBurgerMenu();
 }
 
 function closeBurgerMenu() {
@@ -225,6 +234,12 @@ function handleResize() {
 onMounted(() => {
   window.addEventListener("resize", handleResize);
   handleResize(); // Initial check
+  const currentModule = getAssistantCourseName();
+  const currentMode = getAssistantModeName();
+  if (currentModule && currentMode) {
+    moduleClicked.value = { module: currentModule, mode: currentMode };
+    selectedMode.value = currentMode;
+  }
 });
 
 // Remove the resize handler when the component is unmounted
@@ -242,6 +257,7 @@ onUnmounted(() => {
   width: 80vw;
   z-index: 9999;
   min-width: 305px;
+  padding-right: 12px !important;
 }
 
 .module-list-container {
@@ -288,12 +304,32 @@ onUnmounted(() => {
 }
 
 .list-item-hover {
+  position: relative;
+  padding-left: 0.2em;
   list-style-type: none;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 .list-item-hover:hover {
   background-color: #414141;
+}
+
+.list-item-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(to bottom, white, #5b5b5b);
+  opacity: 0;
+  transition: width 0.4s ease, opacity 0.4s ease;
+}
+
+.inactive {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
 }
 
 ul.p-0 {
@@ -395,9 +431,9 @@ ul.p-0 {
 
 .active-module {
   background-color: #2a2a2a;
-  position: relative; /* Create a positioning context */
-  border-radius: 12px; /* Adjust the value as needed */
-  overflow: hidden; /* Clip the pseudo-element to the border-radius */
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 .active-module::before {
@@ -405,8 +441,9 @@ ul.p-0 {
   position: absolute;
   top: 0;
   left: 0;
-  width: 5px; /* Width of the border */
+  width: 5px;
   height: 100%;
-  background: linear-gradient(to bottom, white, #5b5b5b); /* The gradient */
+  background: linear-gradient(to bottom, white, #5b5b5b);
+  opacity: 1;
 }
 </style>

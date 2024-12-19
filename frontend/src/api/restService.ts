@@ -62,12 +62,12 @@ export interface FetchRunResponse extends RunStatus {}
 
 export interface PostMessageResponse extends RunStatus {}
 
-import { getAssistant } from '../services/openaiService';
+import { getAssistantId } from '../services/openaiService';
 
 // REST Service functions
 export const createNewThread = async (): Promise<CreateThreadResponse | undefined> => {
     try {
-        const assistant_id = getAssistant().id; 
+        const assistant_id = getAssistantId(); 
         if (!assistant_id) {
             throw new Error('Assistant ID is not available.');
         }

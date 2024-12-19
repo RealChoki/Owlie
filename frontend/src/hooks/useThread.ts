@@ -2,10 +2,8 @@ import filesService from '../services/filesService';
 import { ref, watch, type Ref } from 'vue';
 import { createNewThread, fetchThread } from "../api/restService";
 import { runFinishedStates } from "./constants";
-import { setThreadIdLS, removeThreadIdLS } from "../services/localStorageService"
-import { setAssistantThreadId } from '../services/openaiService';
 import type { RunStatus, Thread, ThreadMessage, CreateThreadResponse } from "../api/restService";
-import { getAssistant } from '../services/openaiService';
+import { getAssistant, getAssistantId ,setAssistantThreadId, removeAssistantThreadId } from '../services/openaiService';
 
 export const useThread = (
   run: Ref<RunStatus | undefined>,
@@ -16,34 +14,9 @@ export const useThread = (
   const actionMessages = ref<ThreadMessage[]>([]);
   const messages = ref<ThreadMessage[]>([]);
 
-  // onMounted(() => {
-  //   if (threadId.value === undefined) {
-  //     const localThreadId = localStorage.getItem("thread_id");
-  //     if (localThreadId) {
-  //       console.log(`Resuming thread ${localThreadId}`);
-  //       threadId.value = localThreadId;
-  //       fetchThread(localThreadId).then(data => {
-  //         if (data) {
-  //           thread.value = data;
-  //         }
-  //       });
-  //     } else {
-  //       console.log("Creating new thread");
-  //       createNewThread().then((data: CreateThreadResponse | undefined) => {
-  //         if (data) {
-  //           setRun(data);
-  //           threadId.value = data.thread_id;
-  //           localStorage.setItem("thread_id", data.thread_id);
-  //           console.log(`Created new thread ${data.thread_id}`);
-  //         }
-  //       });
-  //     }
-  //   }
-  // });
-
   const initializeThread = async () => {
     threadId.value = undefined; // Reset threadId to force new thread creation
-    const assistant_id = getAssistant().id;
+    const assistant_id = getAssistantId();
     if (!assistant_id) {
       console.error('Assistant ID is not available.');
       return;
@@ -53,7 +26,6 @@ export const useThread = (
     if (data) {
       setRun(data);
       threadId.value = data.thread_id;
-      setThreadIdLS(data.thread_id);
       setAssistantThreadId(data.thread_id)
 
       console.log(`Created new thread ${data.thread_id}`);
@@ -91,7 +63,7 @@ export const useThread = (
   
   const clearThread = () => {
     filesService.resetFileService();
-    removeThreadIdLS();
+    removeAssistantThreadId();
     threadId.value = undefined;
     thread.value = undefined;
     setRun(undefined);

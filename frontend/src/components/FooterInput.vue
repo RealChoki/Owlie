@@ -18,6 +18,9 @@
         class="cursor-pointer btn-circle align-bottom"
         style="background-color: #5b5b5b"
         @click="triggerFileInput"
+        :class="{
+          'blur-effect': isOpenBurgerMenu,
+        }"
       />
       <span v-if="showFileCount" class="file-count-indicator bg-danger text-white">{{ fileCount }}</span>
     </div>
@@ -104,7 +107,7 @@ import { uploadFiles as uploadChatFiles } from "../services/filesService";
 import { franc } from 'franc-min';
 library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh, faVolumeXmark);
 
-import { getAssistant } from '../services/openaiService';
+import { getAssistantThreadId } from '../services/openaiService';
 
 const props = defineProps({
   isExpandedInput: Boolean,
@@ -186,7 +189,7 @@ function disableSendButton() {
   const isLastMessageFromAssistant = lastMessage?.role === "assistant" || isFirstMessage();
   const isMessageNotEmpty = message.value.trim() !== ""; // Trim whitespace
   const hasFilesAttached = fileCount.value > 0;
-  const isThreadInitialized = getAssistant().threadId !== null;
+  const isThreadInitialized = getAssistantThreadId() !== null;
 
   return (
     !(

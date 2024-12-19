@@ -1,11 +1,16 @@
 import { reactive } from 'vue';
 import axios from 'axios';
-import {
-  getCurrentModeLS,
-  getCurrentModuleLS,
-} from './localStorageService';
-import { getAssistant, deleteOldAssistantIdAndUpdateAssistantId, getOldAssistantId, setNewAssistantIdAndSetOldAssistantId, removeAssistantThreadId } from '../services/openaiService';
-
+import { 
+  getAssistant, 
+  getAssistantId, 
+  getAssistantThreadId, 
+  deleteOldAssistantIdAndUpdateAssistantId, 
+  getOldAssistantId, 
+  setNewAssistantIdAndSetOldAssistantId, 
+  removeAssistantThreadId,
+  getAssistantModeName,
+  getAssistantCourseName,
+} from '../services/openaiService';
 
 const fileState = reactive({
   files: [] as string[],
@@ -25,12 +30,12 @@ export async function uploadFiles(filesToUpload: File[]) {
       formData.append('files', file);
     }
 
-    formData.append('thread_id', getAssistant().threadId);
-    formData.append('current_module', getCurrentModuleLS().replace(/ /g, '_'));
-    formData.append('current_mode',  getCurrentModeLS());
+    formData.append('thread_id', getAssistantThreadId());
+    formData.append('current_module', getAssistantCourseName().replace(/ /g, '_'));
+    formData.append('current_mode',  getAssistantModeName());
     
     if (fileState.isTempAssistant) {
-      formData.append('assistant_id', getAssistant().id);
+      formData.append('assistant_id', getAssistantId());
     }
     
     // Send the files to the FastAPI backend
@@ -78,7 +83,7 @@ export function clearFiles() {
 }
 
 export async function resetFileService() {
-  const oldThreadId = getAssistant().threadId;
+  const oldThreadId = getAssistantThreadId();
 
   if (oldThreadId) {
     try {
@@ -105,18 +110,6 @@ export async function resetFileService() {
     deleteOldAssistantIdAndUpdateAssistantId()
   }
 }
-
-// delete old assistant function, use mode, and module to 
-// try {
-//   const selectedModuleValue = getSelectedModuleLS();
-//   await fetchAssistantIds(
-//     selectedModuleValue?.replace(/ /g, '_'),
-//     getCurrentModeLS()
-//   );
-//   await initializeThread();
-// } catch (error) {
-//   console.error('Error during initialization:', error);
-// }
 
 export default {
   uploadFiles,

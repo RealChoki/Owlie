@@ -8,6 +8,7 @@
         src="../icons/MenuOpen.png"
         style="cursor: pointer"
         @click="toggleBurgerMenu"
+        :class="{ 'blur-effect': isOpenBurgerMenu }"
       />
       <img
       v-else-if="isWideScreen && !isOpenSidebar"
@@ -130,10 +131,10 @@
         </p>
       </div>
       <font-awesome-icon
-        :icon="['fas', 'pen-to-square']"
-        :class="{ 'pen-to-square': true, 'blur-effect': isOpenBurgerMenu }"
+        :icon="['fas', 'arrows-rotate']"
+        :class="{ 'arrows-rotate': true, 'blur-effect': isOpenBurgerMenu }"
         style="color: #5b5b5b; cursor: pointer"
-        @click="handlePenClick"
+        @click="handleRefreshClick"
       />
     </div>
   </nav>
@@ -144,7 +145,7 @@ import { ref, defineEmits, computed, onMounted, onUnmounted, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
-  faPenToSquare,
+  faArrowsRotate,
   faCalendarDays,
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
@@ -162,7 +163,7 @@ import {
 } from "../services/localStorageService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 
-library.add(faPenToSquare, faCalendarDays, faHeart);
+library.add(faArrowsRotate, faCalendarDays, faHeart);
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
@@ -182,7 +183,7 @@ const toggleSidebar = () => {
   emit("toggleSidebar", !props.isOpenSidebar);
 };
 
-const handlePenClick = async () => {
+const handleRefreshClick = async () => {
   if (!props.isOpenBurgerMenu) {
     clearMessages(false); // Do not reset heartCount
     clearThread();
@@ -304,7 +305,7 @@ onMounted(() => {
   color: #4f4f4f;
 }
 
-.pen-to-square {
+.arrows-rotate {
   font-size: 1.8rem;
 }
 
