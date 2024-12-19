@@ -234,7 +234,7 @@ onMounted(() => {
   min-width: 305px;
   position: relative;
   z-index: 1000;
-  padding-right: 12px !important;
+  padding-right: 10px !important;
 }
 
 .sidebar-search-bar {
@@ -350,7 +350,7 @@ onMounted(() => {
 
 .test-mode-text {
   transform: translate(
-    28px,
+    30px,
     -5px
   );
   font-size: 0.7rem;

@@ -54,12 +54,12 @@ function getOldAssistantId() {
     return oldAssistantId.value;
 }
 
-function setNewAssistantIdAndSetOldAssistantId(newId: string) {
+function updateAssistantIdAndStoreOldId(newId: string) {
     oldAssistantId.value = assistant.id;
     assistant.id = newId;
 }
 
-function deleteOldAssistantIdAndUpdateAssistantId() {
+function restoreOldAssistantId() {
     assistant.id = oldAssistantId.value;
     oldAssistantId.value = '';
 }
@@ -104,8 +104,8 @@ export {
     getAssistant,
     setAssistantId,
     getOldAssistantId,
-    setNewAssistantIdAndSetOldAssistantId,
-    deleteOldAssistantIdAndUpdateAssistantId,
+    updateAssistantIdAndStoreOldId,
+    restoreOldAssistantId,
     removeAssistantThreadId,
     getAssistantId,
     getAssistantThreadId,

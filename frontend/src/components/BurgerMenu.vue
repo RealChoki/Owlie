@@ -255,7 +255,7 @@ onUnmounted(() => {
   width: 80vw;
   z-index: 9999;
   min-width: 305px;
-  padding-right: 12px !important;
+  padding-right: 10px !important;
 }
 
 .course-list-container {
@@ -421,7 +421,7 @@ ul.p-0 {
 
 .test-mode-text {
   transform: translate(
-    28px,
+    30px,
     -5px
   ); /* Adjust alignment relative to the course name */
   font-size: 0.7rem; /* Make it smaller */

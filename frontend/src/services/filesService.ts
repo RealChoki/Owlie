@@ -1,12 +1,11 @@
 import { reactive } from 'vue';
 import axios from 'axios';
 import { 
-  getAssistant, 
   getAssistantId, 
   getAssistantThreadId, 
-  deleteOldAssistantIdAndUpdateAssistantId, 
+  restoreOldAssistantId, 
   getOldAssistantId, 
-  setNewAssistantIdAndSetOldAssistantId, 
+  updateAssistantIdAndStoreOldId, 
   removeAssistantThreadId,
   getAssistantModeName,
   getAssistantCourseName,
@@ -51,7 +50,7 @@ export async function uploadFiles(filesToUpload: File[]) {
     // Log the server response
     console.log('Server response:', response.data);
     if(!fileState.isTempAssistant){
-      setNewAssistantIdAndSetOldAssistantId(response.data.temporary_assistant_id);
+      updateAssistantIdAndStoreOldId(response.data.temporary_assistant_id);
 
       fileState.isTempAssistant = true;
     }
@@ -107,7 +106,7 @@ export async function resetFileService() {
   // Restore the old assistant ID if it exists
   const oldAssistantId = getOldAssistantId();
   if (oldAssistantId) {
-    deleteOldAssistantIdAndUpdateAssistantId()
+    restoreOldAssistantId()
   }
 }
 
