@@ -318,6 +318,7 @@ async def get_run_status(thread_id: str, run_id: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/threads/{thread_id}/send_and_wait")
 async def send_message_and_wait_for_response(thread_id: str, message: CreateMessage):
     assistant_id = message.assistant_id
@@ -328,18 +329,34 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
     decrypted_thread_id = decrypt_data(thread_id)
     decrypted_assistant_id = decrypt_data(assistant_id)
 
-    # Post the message to the thread
-    client.beta.threads.messages.create(
-        thread_id=decrypted_thread_id,
-        content=message.content,
-        role="user"
-    )
+    # Check thread state 
+    # update this so it would be come a while loop to wait until its able to run:
+    try:
+        thread_info = client.beta.threads.retrieve(thread_id=decrypted_thread_id)
+        if hasattr(thread_info, 'active_run') and thread_info.active_run:
+            return {
+                "error": "Thread is currently in use. Please wait for the active run to complete."
+            }
+    except Exception as e:
+        return {"error": f"Failed to retrieve thread information: {e}"}
 
-    # Start the conversation run with the provided assistant_id
-    run = client.beta.threads.runs.create(
-        thread_id=decrypted_thread_id,
-        assistant_id=decrypted_assistant_id
-    )
+    try:
+        client.beta.threads.messages.create(
+            thread_id=decrypted_thread_id,
+            content=message.content,
+            role="user"
+        )
+    except Exception as e:
+        return {"error": f"Failed to send message: {e}"}
+
+    try:
+        run = client.beta.threads.runs.create(
+            thread_id=decrypted_thread_id,
+            assistant_id=decrypted_assistant_id
+        )
+    except Exception as e:
+        return {"error": f"Failed to start conversation run: {e}"}
+
 
     # Step 1: Poll for run status updates
     while run.status in ["queued", "processing", "in_progress"]:

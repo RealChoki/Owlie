@@ -62,8 +62,9 @@ async function sendToThread(content: string) {
   }
    
   const threadId = getAssistantThreadId();
+  console.log(threadId)
   if (!threadId) {
-    throw new Error('Thread ID not found in localStorage');
+    throw new Error(`Thread ID not found in assistantService. id: ${threadId}`);
   }
 
   chatState.currentThreadId = threadId;
@@ -130,6 +131,7 @@ export async function sendMessage(messageToSend: string) {
 
   try {
     const response = await sendToThread(messageToSend);
+    console.log(`[sendMessage] Received response:`, response);
   } catch (error) {
     handleSendMessageError(error);
   } finally {

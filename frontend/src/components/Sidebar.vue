@@ -178,6 +178,10 @@ async function selectCourse(course: string) {
   const currentCourse = getAssistantCourseName();
   const currentMode = getAssistantModeName();
 
+  const courseNameWithMode =
+    modeName === "quiz" ? `${course} (Quiz)` : course;
+  emit("courseSelected", courseNameWithMode);
+
   if (course !== currentCourse || modeName !== currentMode) {
     console.log("Course or mode changed. Resetting thread and messages.");
     clearThread();
@@ -197,12 +201,6 @@ async function selectCourse(course: string) {
   } else {
     console.log("Same course and mode selected. No action taken.");
   }
-
-  
-
-  const courseNameWithMode =
-    modeName === "quiz" ? `${course} (Quiz)` : course;
-  emit("courseSelected", courseNameWithMode);
 }
 
 function closeSidebar() {
@@ -263,7 +261,7 @@ onMounted(() => {
   align-items: center;
   position: relative;
   background-color: #000000;
-  padding-bottom: 1em;
+  padding-bottom: 0.75em;
 }
 
 .magnifying-glass {

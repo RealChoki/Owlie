@@ -139,7 +139,7 @@ const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref(getAssistantModeName());
+const selectedMode = ref(getAssistantModeName() || 'general');
 const courseClicked = ref<{ course: string; mode: string } | null>(null);
 const showInfo = ref(false);
 
@@ -188,15 +188,21 @@ async function selectCourse(course: string) {
   const currentCourse = getAssistantCourseName();
   const currentMode = getAssistantModeName();
 
+  const courseNameWithMode =
+    modeName === "quiz" ? `${course} (Quiz)` : course;
+  emit("courseSelected", courseNameWithMode);
+
   if (course !== currentCourse || modeName !== currentMode) {
     console.log("Course or mode changed. Resetting thread and messages.");
     clearThread();
     clearMessages(false);
-    setAssistantCourseName(course);
-    setAssistantModeName(modeName);
 
     try {
       await fetchAssistantIds(courseName, modeName);
+
+      setAssistantCourseName(course);
+      setAssistantModeName(modeName);
+      
       await initializeThread();
     } catch (error) {
       console.error("Error initializing thread:", error);
@@ -205,10 +211,6 @@ async function selectCourse(course: string) {
   } else {
     console.log("Same course and mode selected. No action taken.");
   }
-
-  const courseNameWithMode =
-    modeName === "quiz" ? `${course} (Quiz)` : course;
-  emit("courseSelected", courseNameWithMode);
 }
 
 function closeBurgerMenu() {
@@ -286,7 +288,7 @@ onUnmounted(() => {
   align-items: center;
   position: relative;
   background-color: #000000;
-  padding-bottom: 1em;
+  padding-bottom: 0.75em;
 }
 
 .magnifying-glass {

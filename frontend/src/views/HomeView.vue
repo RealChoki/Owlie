@@ -172,9 +172,8 @@ onMounted(async () => {
   document.addEventListener("click", handleClickOutside);
   fetchCourses();
   try {
-    const currentCourse = getAssistantCourseName();
     await fetchAssistantIds(
-      currentCourse?.replace(/ /g, "_"),
+      getAssistantCourseName()?.replace(/ /g, "_"),
       getAssistantModeName()
     );
     await initializeThread();
