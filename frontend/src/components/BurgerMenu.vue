@@ -45,7 +45,7 @@
             <span class="module-name position-relative">
               {{ module }}
               <span
-                v-if="selectedMode === 'testing'"
+                v-if="selectedMode === 'quiz'"
                 class="test-mode-text text-secondary small position-absolute top-0 end-0"
               >
                 (Test)
@@ -70,7 +70,7 @@
         </h6>
       </div>
       <div v-if="showInfo" class="small mt-1 text-warning text-center">
-        Testing mode: A quiz feature that assesses knowledge, tracks
+        quiz mode: A quiz feature that assesses knowledge, tracks
         performance, and provides personalized feedback.
       </div>
 
@@ -91,9 +91,9 @@
             >General</v-btn
           >
           <v-btn
-            value="testing"
+            value="quiz"
             class="equal-width-btn"
-            >Testing</v-btn
+            >quiz</v-btn
           >
         </v-btn-toggle>
       </div>
@@ -209,7 +209,7 @@ async function selectModule(module: string) {
   }
 
   const moduleNameWithMode =
-    modeName === "testing" ? `${module} (Test)` : module;
+    modeName === "quiz" ? `${module} (Test)` : module;
   emit("moduleSelected", moduleNameWithMode);
 }
 

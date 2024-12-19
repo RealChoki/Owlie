@@ -38,7 +38,7 @@
                             "assistant_id": "asst_ITEK83NLc8Uigo2jTka6nUOt",
                             "vector_store_id": "vs_iUgqLZv4td1SaM4CC0zz29o8"
                         },
-                        "testing": {
+                        "quiz": {
                             "instructions": "Du bist ein interaktiver Mentor f\u00c3\u00bcr Programmierkonzepte. Stelle eine Frage nach der anderen in vorgegebener Reihenfolge. Bei Schwierigkeiten stelle gezielte Fragen oder gib Erkl\u00c3\u00a4rungen und Beispiele. Wiederhole Themen, bei denen der Benutzer unsicher ist, und \u00c3\u00bcberpr\u00c3\u00bcfe das Verst\u00c3\u00a4ndnis mit Kontrollfragen. Gratuliere bei Erfolg und gib Aufgaben zu Themen wo der Benutzer Schwierigkeiten hat. Dokumentiere behandelte und offene Themen klar. Beantworte ausschlie\u00c3\u0178lich Fragen zu Grundlagen der Programmierung oder Informatik. Wenn der Benutzer ein Thema nennt, zu dem er evaluiert werden m\u00c3\u00b6chte, f\u00c3\u00bchre ihn durch spezifische Fragen zu diesem Thema nur mit Hilfe bereitgestellter Fragen. Verhalte dich dabei wie eine weise Eule: freundlich und pr\u00c3\u00a4gnant.",
                             "data_path": "data/hochschule_fuer_technik_und_wirtschaft_berlin/bachelor/wirtschaftsinformatik/Grundlagen_der_Programmierung/test",
                             "tools": [
@@ -80,9 +80,9 @@
                             "tools": [],
                             "model": "gpt-4o-mini"
                         },
-                        "testing": {
-                            "instructions": "Statistik testing instructions.",
-                            "data_path": "backend/htw/bachelor/wirtschaftsinformatik/Statistik/testing_mode/data",
+                        "quiz": {
+                            "instructions": "Statistik quiz instructions.",
+                            "data_path": "backend/htw/bachelor/wirtschaftsinformatik/Statistik/quiz_mode/data",
                             "tools": [],
                             "model": "gpt-4o-mini"
                         }
@@ -95,9 +95,9 @@
                             "tools": [],
                             "model": "gpt-4o-mini"
                         },
-                        "testing": {
-                            "instructions": "Investition und Finanzierung testing instructions.",
-                            "data_path": "backend/htw/bachelor/wirtschaftsinformatik/Investition_und_Finanzierung/testing_mode/data",
+                        "quiz": {
+                            "instructions": "Investition und Finanzierung quiz instructions.",
+                            "data_path": "backend/htw/bachelor/wirtschaftsinformatik/Investition_und_Finanzierung/quiz_mode/data",
                             "tools": [],
                             "model": "gpt-4o-mini"
                         }
