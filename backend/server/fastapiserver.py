@@ -329,16 +329,20 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
     decrypted_thread_id = decrypt_data(thread_id)
     decrypted_assistant_id = decrypt_data(assistant_id)
 
-    # Check thread state 
-    # update this so it would be come a while loop to wait until its able to run:
-    try:
-        thread_info = client.beta.threads.retrieve(thread_id=decrypted_thread_id)
-        if hasattr(thread_info, 'active_run') and thread_info.active_run:
-            return {
-                "error": "Thread is currently in use. Please wait for the active run to complete."
-            }
-    except Exception as e:
-        return {"error": f"Failed to retrieve thread information: {e}"}
+    # Check thread state
+    while True:
+        try:
+            # Check for active runs on the thread
+            active_runs = client.beta.threads.runs.list(thread_id=decrypted_thread_id)
+            if active_runs.data and any(run.status in ["queued", "processing", "in_progress"] for run in active_runs.data):
+                print("Thread is active; waiting for it to become available.")
+                time.sleep(1)  # Wait before retrying
+            else:
+                print("Thread is now available.")
+                break
+        except Exception as e:
+            print(f"Error checking for active runs: {e}")
+            return {"error": f"Failed to check for active runs: {e}"}
 
     try:
         client.beta.threads.messages.create(

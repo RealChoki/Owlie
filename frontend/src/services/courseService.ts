@@ -28,7 +28,7 @@ export async function fetchAssistantIds(courseName: string, modeName: string) {
     const response = await axios.get(
       "http://localhost:8000/api/get_assistant_ids",
       {
-        params: { course_name: courseName, mode_name: modeName },
+        params: { course_name: courseName.replace(/ /g, "_"), mode_name: modeName },
       }
     );
     const { assistant_id } = response.data;

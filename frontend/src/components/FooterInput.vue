@@ -189,7 +189,7 @@ function disableSendButton() {
   const isLastMessageFromAssistant = lastMessage?.role === "assistant" || isFirstMessage();
   const isMessageNotEmpty = message.value.trim() !== ""; // Trim whitespace
   const hasFilesAttached = fileCount.value > 0;
-  const isThreadInitialized = getAssistantThreadId() !== null;
+  const isThreadInitialized = !!getAssistantThreadId();
 
   return (
     !(

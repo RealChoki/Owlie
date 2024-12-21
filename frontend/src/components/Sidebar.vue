@@ -37,9 +37,9 @@
             'rounded',
             'text-white',
             'py-1',
-            { 'inactive': !isCourseActive(course), 'cursor-pointer': isCourseActive(course), 'active-course': isCourseClicked(course) },
+            { 'unclickable': !isCourseClickable(course), 'cursor-pointer': isCourseClickable(course), 'clickable-course': isCourseClicked(course) },
           ]"
-          @click="isCourseActive(course) ? selectCourse(course) : null"
+          @click="isCourseClickable(course) ? selectCourse(course) : null; handleCourseClick(course)"
         >
           <p class="m-0 py-2 px-2 d-flex align-items-start position-relative">
             <span class="course-name position-relative">
@@ -114,10 +114,10 @@ import { useThread } from "../hooks/useThread";
 import { clearMessages } from "../services/chatService";
 import { fetchAssistantIds, courses } from "../services/courseService";
 import {
-  getAssistantCourseName,
-  getAssistantModeName,
-  setAssistantCourseName,
-  setAssistantModeName,
+  getAssistantCourse,
+  getAssistantMode,
+  setAssistantCourse,
+  setAssistantMode,
 } from "../services/openaiService";
 
 library.add(faMagnifyingGlass, faCircleInfo);
@@ -132,15 +132,23 @@ const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref(getAssistantModeName() || 'general');
+const selectedMode = ref(getAssistantMode() || 'general');
 const courseClicked = ref<{ course: string; mode: string } | null>(null);
 const showInfo = ref(false);
 
 
-const activeCourses = ref<string[]>(["Grundlagen der Programmierung", "Englisch fÃ¼r Business Computing", "Statistik"]);
+const clickableCourses = ref<string[]>(["Grundlagen der Programmierung",  "Statistik"]);
 
-function isCourseActive(course: string): boolean {
-  return activeCourses.value.includes(course);
+function isCourseClickable(course: string): boolean {
+  return clickableCourses.value.includes(course);
+}
+
+function handleCourseClick(course: string) {
+  if (!isCourseClickable(course)) {
+    return;
+  }
+  console.log("Selected course:", course);
+  emit("courseSelected", course, selectedMode.value);
 }
 
 function isCourseClicked(course: string): boolean {
@@ -157,42 +165,38 @@ const filteredCourses = computed(() => {
     course.toLowerCase().includes(query)
   );
 
-  const active = filtered.filter(isCourseActive);
-  const inactive = filtered.filter((course) => !isCourseActive(course));
+  const clickable = filtered.filter(isCourseClickable);
+  const unclickable = filtered.filter((course) => !isCourseClickable(course));
 
-  return [...active, ...inactive.sort()];
+  return [...clickable, ...unclickable.sort()];
 });
 
 const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
+
 async function selectCourse(course: string) {
-  if (!isCourseActive(course)) {
+  if (!isCourseClickable(course)) {
     return;
   }
   console.log("Selected course:", course);
   courseClicked.value = { course, mode: selectedMode.value };
 
   const modeName = selectedMode.value;
-  const courseName = course.replace(/ /g, "_");
+  const courseName = course;
 
-  const currentCourse = getAssistantCourseName();
-  const currentMode = getAssistantModeName();
-
-  const courseNameWithMode =
-    modeName === "quiz" ? `${course} (Quiz)` : course;
-  emit("courseSelected", courseNameWithMode);
+  const currentCourse = getAssistantCourse();
+  const currentMode = getAssistantMode();
 
   if (course !== currentCourse || modeName !== currentMode) {
     console.log("Course or mode changed. Resetting thread and messages.");
     clearThread();
     clearMessages(false);
 
+    setAssistantCourse(course);
+    setAssistantMode(modeName);
+    console.log("Selected course and mode from side bar:", course, modeName);
     try {
       await fetchAssistantIds(courseName, modeName);
-
-      setAssistantCourseName(course);
-      setAssistantModeName(modeName);
-
       await initializeThread();
     } catch (error) {
       console.error("Error initializing thread:", error);
@@ -216,8 +220,8 @@ function toggleInfo() {
 }
 
 onMounted(() => {
-  const currentCourse = getAssistantCourseName();
-  const currentMode = getAssistantModeName();
+  const currentCourse = getAssistantCourse();
+  const currentMode = getAssistantMode();
   if (currentCourse && currentMode) {
     courseClicked.value = { course: currentCourse, mode: currentMode };
     selectedMode.value = currentMode;
@@ -302,7 +306,7 @@ onMounted(() => {
 }
 
 
-.inactive {
+.unclickable {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
   pointer-events: none !important;
@@ -358,14 +362,14 @@ onMounted(() => {
   cursor: pointer;
 }
 
-.active-course {
+.clickable-course {
   background-color: #2a2a2a;
   position: relative;
   overflow: hidden;
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-.active-course::before {
+.clickable-course::before {
   content: '';
   position: absolute;
   top: 0;

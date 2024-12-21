@@ -1,10 +1,11 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light pb-4">
     <div
-      class="container-fluid d-flex justify-content-between align-items-center"
+      class="container-fluid"
     >
       <img
       v-if="!isWideScreen"
+        class="mt-3"
         src="../icons/MenuOpen.png"
         style="cursor: pointer"
         @click="toggleBurgerMenu"
@@ -12,12 +13,23 @@
       />
       <img
       v-else-if="isWideScreen && !isOpenSidebar"
+        class="mt-3"
         src="../icons/MenuOpen.png"
         style="cursor: pointer"
         @click="toggleSidebar"
       />
-      <div v-else class="icon-holder"> </div>
-      <div class="d-flex flex-column align-items-center position-relative w-50">
+      <div v-else class="icon-holder mt-3"> 
+        <font-awesome-icon
+          :icon="['fas', 'arrows-rotate']"
+          :class="{ 'arrows-rotate': true, 'blur-effect': isOpenBurgerMenu }"
+          style="color: #5b5b5b; cursor: pointer"
+          @click="handleRefreshClick"
+        />
+      </div>
+      <div class="d-flex flex-column align-items-center position-relative w-50"
+        style="margin-top: -0.3em;"
+      >
+
         <div class="hearts-container">
           <span
             v-for="(heartClass, index) in heartClasses"
@@ -130,12 +142,21 @@
           {{ props.selectedCourse }}
         </p>
       </div>
-      <font-awesome-icon
-        :icon="['fas', 'arrows-rotate']"
-        :class="{ 'arrows-rotate': true, 'blur-effect': isOpenBurgerMenu }"
-        style="color: #5b5b5b; cursor: pointer"
-        @click="handleRefreshClick"
-      />
+      <div class="icon-holder mt-3">
+        <font-awesome-icon
+          v-if="isWideScreen && isOpenSidebar"
+          :icon="['fas', 'user']"
+          :class="{ 'arrows-rotate': true, 'blur-effect': isOpenBurgerMenu }"
+          style="color: #5b5b5b; cursor: pointer"
+        />
+        <font-awesome-icon
+        v-else
+          :icon="['fas', 'arrows-rotate']"
+          :class="{ 'arrows-rotate': true, 'blur-effect': isOpenBurgerMenu }"
+          style="color: #5b5b5b; cursor: pointer"
+          @click="handleRefreshClick"
+        />
+      </div>
     </div>
   </nav>
 </template>
@@ -146,8 +167,8 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowsRotate,
-  faCalendarDays,
   faHeart,
+  faUser
 } from "@fortawesome/free-solid-svg-icons";
 import { useThread } from "../hooks/useThread";
 import {
@@ -163,7 +184,7 @@ import {
 } from "../services/localStorageService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 
-library.add(faArrowsRotate, faCalendarDays, faHeart);
+library.add(faArrowsRotate, faHeart, faUser);
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
@@ -298,11 +319,6 @@ onMounted(() => {
 
 .heart-icon svg:hover {
   transform: scale(1.1);
-}
-
-.calendar-days {
-  font-size: 1.8rem;
-  color: #4f4f4f;
 }
 
 .arrows-rotate {

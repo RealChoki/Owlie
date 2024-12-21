@@ -62,7 +62,6 @@ async function sendToThread(content: string) {
   }
    
   const threadId = getAssistantThreadId();
-  console.log(threadId)
   if (!threadId) {
     throw new Error(`Thread ID not found in assistantService. id: ${threadId}`);
   }
@@ -73,6 +72,8 @@ async function sendToThread(content: string) {
     content,
     assistant_id,
   });
+
+  console.log('Received response:', response);
 
   if (getAssistantThreadId() == chatState.currentThreadId) {
     addAssistantMessage(response.data.content);
@@ -130,8 +131,7 @@ export async function sendMessage(messageToSend: string) {
   chatState.thinking = true;
 
   try {
-    const response = await sendToThread(messageToSend);
-    console.log(`[sendMessage] Received response:`, response);
+    await sendToThread(messageToSend);
   } catch (error) {
     handleSendMessageError(error);
   } finally {

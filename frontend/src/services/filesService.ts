@@ -7,8 +7,8 @@ import {
   getOldAssistantId, 
   updateAssistantIdAndStoreOldId, 
   removeAssistantThreadId,
-  getAssistantModeName,
-  getAssistantCourseName,
+  getAssistantMode,
+  getAssistantCourse,
 } from '../services/openaiService';
 
 const fileState = reactive({
@@ -30,8 +30,8 @@ export async function uploadFiles(filesToUpload: File[]) {
     }
 
     formData.append('thread_id', getAssistantThreadId());
-    formData.append('current_course', getAssistantCourseName().replace(/ /g, '_'));
-    formData.append('current_mode',  getAssistantModeName());
+    formData.append('current_course', getAssistantCourse().replace(/ /g, '_'));
+    formData.append('current_mode',  getAssistantMode());
     
     if (fileState.isTempAssistant) {
       formData.append('assistant_id', getAssistantId());
@@ -93,7 +93,6 @@ export async function resetFileService() {
     } catch (error) {
       console.error('Error deleting tempassistant:', error);
     } finally {
-      // Clear relevant entries from local storage
       removeAssistantThreadId();
     }
   }

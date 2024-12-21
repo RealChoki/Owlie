@@ -3,7 +3,7 @@ import { ref, watch, type Ref } from 'vue';
 import { createNewThread, fetchThread } from "../api/restService";
 import { runFinishedStates } from "./constants";
 import type { RunStatus, Thread, ThreadMessage, CreateThreadResponse } from "../api/restService";
-import { getAssistant, getAssistantId ,setAssistantThreadId, removeAssistantThreadId } from '../services/openaiService';
+import { getAssistantId ,setAssistantThreadId, removeAssistantThreadId, getAssistantThreadId } from '../services/openaiService';
 
 export const useThread = (
   run: Ref<RunStatus | undefined>,
@@ -27,7 +27,7 @@ export const useThread = (
       setRun(data);
       threadId.value = data.thread_id;
       setAssistantThreadId(data.thread_id)
-
+      console.log(getAssistantThreadId());
       console.log(`Created new thread ${data.thread_id}`);
     }
   };

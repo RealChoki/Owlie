@@ -85,9 +85,8 @@ import chatService from "@/services/chatService";
 import { useThread } from "../hooks/useThread";
 import { fetchCourses, fetchAssistantIds } from "@/services/courseService";
 import {
-  getAssistantCourseName,
-  getAssistantModeName,
-  setAssistantCourseName,
+  getAssistantCourse,
+  getAssistantMode,
 } from "@/services/openaiService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 
@@ -95,7 +94,7 @@ const isExpandedInput = ref(false);
 const isOpenBurgerMenu = ref(false);
 const isOpenSidebar = ref(true);
 const chatMessages = computed(() => chatService.getMessages());
-const selectedCourse = ref(getAssistantCourseName());
+const selectedCourse = ref(getAssistantCourse());
 
 const burgerMenuRef = ref<ComponentPublicInstance | null>(null);
 
@@ -104,8 +103,10 @@ const setRun = (data: RunStatus | undefined) => {
   run.value = data;
 };
 
-function handleCourseSelected(CourseNameWithMode: string) {
-  selectedCourse.value = CourseNameWithMode;
+function handleCourseSelected(course: string, mode: string) {
+  console.log("Course selected from home view:", course, mode);
+  selectedCourse.value = mode !== "general" ? `${course} (${mode})` : course;
+
 }
 
 const { clearThread, initializeThread } = useThread(run, setRun);
@@ -169,12 +170,13 @@ function handleClickOutside(event: MouseEvent) {
 
 onMounted(async () => {
   clearThread();
+  handleCourseSelected(getAssistantCourse(), getAssistantMode());
   document.addEventListener("click", handleClickOutside);
   fetchCourses();
   try {
     await fetchAssistantIds(
-      getAssistantCourseName()?.replace(/ /g, "_"),
-      getAssistantModeName()
+      getAssistantCourse(),
+      getAssistantMode()
     );
     await initializeThread();
   } catch (error) {
