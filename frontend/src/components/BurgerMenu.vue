@@ -93,6 +93,7 @@
       </div>
 
       <button
+        ref="profileBtn"
         class="equal-width-toggle mt-2 d-flex align-items-center w-100 p-2 text-dark border-0 profile-btn"
         type="button"
         aria-haspopup="menu"
@@ -118,7 +119,11 @@
       </button>
 
       <!-- popover -->
-      <div v-if="isPopoverVisible" class="popover position-absolute z-50">
+      <div
+        v-if="isPopoverVisible"
+        class="popover position-absolute z-50"
+        :style="{ width: buttonWidth + 'px', maxWidth: '450px' }"
+      >
         <nav
           class="rounded shadow-sm p-2 text-white"
           style="background-color: #2a2a2a"
@@ -208,6 +213,16 @@ const clickableCourses = ref<string[]>([
   "Investition und Finanzierung",
   "Statistik",
 ]);
+
+const profileBtn = ref(null);
+const buttonWidth = ref(0);
+
+const updatePopoverWidth = () => {
+  if (profileBtn.value) {
+    buttonWidth.value = profileBtn.value.offsetWidth;
+    console.log("Button width:", buttonWidth.value);
+  }
+};
 
 const isPopoverVisible = ref(false);
 
@@ -301,6 +316,7 @@ function handleResize() {
   if (window.innerWidth >= 768) {
     emit("closeBurgerMenu");
   }
+  updatePopoverWidth();
 }
 
 onMounted(() => {
@@ -527,7 +543,6 @@ ul.p-0 {
 
 .popover {
   width: 100%;
-  max-width: 450px;
   top: -145px;
   left: transformX(-50%);
   background-color: transparent;
