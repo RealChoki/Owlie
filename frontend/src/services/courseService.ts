@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ref } from "vue";
 import { updateAssistant } from "./openaiService";
+import { setOwlDisplayMessage, clearOwlDisplayMessage, displayAssistantNotFountMessage } from "./homeService";
 
 const activeCourses = ref<string[]>(["Grundlagen der Programmierung"]);
 export const courses = ref<string[]>([]);
@@ -25,6 +26,7 @@ export async function fetchCourses() {
 
 export async function fetchAssistantIds(courseName: string, modeName: string) {
   try {
+    setOwlDisplayMessage("Fetching assistant...");
     const response = await axios.get(
       "http://localhost:8000/api/get_assistant_ids",
       {
@@ -35,14 +37,16 @@ export async function fetchAssistantIds(courseName: string, modeName: string) {
 
     console.log("Assistant ID:", assistant_id);
     if (!assistant_id) {
-      throw new Error("Assistant ID or vector store ID not found");
+      throw new Error("Assistant ID not found");
     }
 
     updateAssistant(assistant_id, courseName, modeName);
-
+    setOwlDisplayMessage("Assistant found");
+    setTimeout(() => clearOwlDisplayMessage(), 1000);
     return response.data; 
   } catch (error) {
     console.error("Error fetching assistant IDs:", error);
+    displayAssistantNotFountMessage();
     throw error;
   }
 }

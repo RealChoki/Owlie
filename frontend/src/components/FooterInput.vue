@@ -18,9 +18,6 @@
         class="cursor-pointer btn-circle align-bottom"
         style="background-color: #5b5b5b"
         @click="triggerFileInput"
-        :class="{
-          'blur-effect': isOpenBurgerMenu,
-        }"
       />
       <span v-if="showFileCount" class="file-count-indicator bg-danger text-white">{{ fileCount }}</span>
     </div>
@@ -46,7 +43,6 @@
         :class="{
           'input-focused': isSearchFocused,
           'custom-input': true,
-          'blur-effect': isOpenBurgerMenu,
         }"
       ></textarea>
       <font-awesome-icon
@@ -54,7 +50,6 @@
         :icon="['fas', 'up-right-and-down-left-from-center']"
         class="top-right-icon"
         @click="toggleOverlay"
-        :class="{ 'blur-effect': isOpenBurgerMenu }"
       />
       <div v-if="isMessageTooLong" class="character-count">
         <span :class="{ 'text-danger': isMessageTooLong }">{{ messageLength }}</span> / {{ MAX_MESSAGE_LENGTH }}
@@ -67,7 +62,6 @@
         :class="{
           'cursor-pointer': !disableSendButton(),
           'btn-disabled': disableSendButton(),
-          'blur-effect': isOpenBurgerMenu,
         }"
         @click="sendMessage"
         v-if="message || fileCount > 0 || isFirstMessage()"
@@ -78,7 +72,6 @@
         :icon="isTTSPlaying ? ['fas', 'volume-xmark'] : ['fas', 'volume-high']"
         :class="{
           'cursor-pointer btn-circle bg-light align-bottom': true,
-          'blur-effect': isOpenBurgerMenu,
         }"
         @click="toggleTTS"
       />
@@ -440,12 +433,6 @@ watch(message, (newValue) => {
   align-self: flex;
 }
 
-.blur-effect {
-  filter: blur(1.5px);
-  cursor: default !important;
-  pointer-events: none;
-}
-
 .input-focused::placeholder {
   color: white !important;
 }
@@ -481,4 +468,5 @@ watch(message, (newValue) => {
     max-height: calc(1.5em * 10 + 16px) !important; 
   }
 }
+
 </style>

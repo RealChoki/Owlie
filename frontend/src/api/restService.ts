@@ -63,10 +63,12 @@ export interface FetchRunResponse extends RunStatus {}
 export interface PostMessageResponse extends RunStatus {}
 
 import { getAssistantId } from '../services/openaiService';
+import { setOwlDisplayMessage } from '../services/homeService';
 
 // REST Service functions
 export const createNewThread = async (): Promise<CreateThreadResponse | undefined> => {
     try {
+        setOwlDisplayMessage("Creating a new thread...");
         const assistant_id = getAssistantId(); 
         if (!assistant_id) {
             throw new Error('Assistant ID is not available.');
@@ -83,8 +85,12 @@ export const createNewThread = async (): Promise<CreateThreadResponse | undefine
             throw new Error(`Error: ${response.statusText}`);
         }
         const data: CreateThreadResponse = await response.json();
+        setOwlDisplayMessage("Thread created");
+        setTimeout(() => { setOwlDisplayMessage(" (˶˃ ᵕ ˂˶) .ᐟ.ᐟ"); }, 1000);
+        setTimeout(() => { setOwlDisplayMessage(""); }, 2000);
         return data;
     } catch (err: any) {
+        setOwlDisplayMessage("Failed to create a thread!");
         console.error(err.message);
     }
 };

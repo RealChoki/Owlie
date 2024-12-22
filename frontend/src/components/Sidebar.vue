@@ -20,7 +20,7 @@
       />
       <img
         src="../icons/MenuClose.png"
-        class="ms-3"
+        class="ms-3 icon-click-effect"
         style="cursor: pointer"
         @click="closeSidebar"
       />
@@ -119,6 +119,7 @@ import {
   setAssistantCourse,
   setAssistantMode,
 } from "../services/openaiService";
+import { setNavbarCourseTitle } from "../services/homeService";
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
@@ -126,7 +127,7 @@ const props = defineProps({
   isOpenSidebar: Boolean,
 });
 
-const emit = defineEmits(["closeSidebar", "courseSelected"]);
+const emit = defineEmits(["closeSidebar"]);
 
 const searchQuery = ref("");
 const isSearchFocused = ref(false);
@@ -148,7 +149,7 @@ function handleCourseClick(course: string) {
     return;
   }
   console.log("Selected course:", course);
-  emit("courseSelected", course, selectedMode.value);
+  setNavbarCourseTitle(course, selectedMode.value);
 }
 
 function isCourseClicked(course: string): boolean {
@@ -194,7 +195,6 @@ async function selectCourse(course: string) {
 
     setAssistantCourse(course);
     setAssistantMode(modeName);
-    console.log("Selected course and mode from side bar:", course, modeName);
     try {
       await fetchAssistantIds(courseName, modeName);
       await initializeThread();
@@ -378,5 +378,15 @@ onMounted(() => {
   height: 100%;
   background: linear-gradient(to bottom, white, #5b5b5b);
   opacity: 1;
+}
+
+.icon-click-effect {
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.icon-click-effect:active {
+  transform: scale(0.8);
 }
 </style>

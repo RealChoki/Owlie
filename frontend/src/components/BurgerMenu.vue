@@ -20,7 +20,7 @@
       />
       <img
         src="../icons/MenuClose.png"
-        class="ms-3"
+        class="ms-3 icon-click-effect"
         style="cursor: pointer"
         @click="closeBurgerMenu"
       />
@@ -37,9 +37,16 @@
             'rounded',
             'text-white',
             'py-1',
-            { 'unclickable': !isCourseClickable(course), 'cursor-pointer': isCourseClickable(course), 'clickable-course': isCourseClicked(course) },
+            {
+              unclickable: !isCourseClickable(course),
+              'cursor-pointer': isCourseClickable(course),
+              'clickable-course': isCourseClicked(course),
+            },
           ]"
-          @click="isCourseClickable(course) ? selectCourse(course) : null; handleCourseClick(course)"
+          @click="
+            isCourseClickable(course) ? selectCourse(course) : null;
+            handleCourseClick(course);
+          "
         >
           <p class="m-0 py-2 px-2 d-flex align-items-start position-relative">
             <span class="course-name position-relative">
@@ -60,42 +67,90 @@
       class="mode-toggle d-flex flex-column align-items-center modes_container p-3 pt-2"
     >
       <div class="d-flex gap-2">
-        <h6 class="m-0">
-          Select a mode
-          <font-awesome-icon
-            :icon="['fas', 'circle-info']"
-            class="circle-info"
-            @click="toggleInfo"
-          />
-        </h6>
+        <h6 class="m-0">Switch mode to:</h6>
       </div>
       <div v-if="showInfo" class="small mt-1 text-warning text-center">
-        Quiz mode: A quiz feature that assesses knowledge, tracks
-        performance, and provides personalized feedback.
+        Quiz mode: A quiz feature that assesses knowledge, tracks performance,
+        and provides personalized feedback.
       </div>
 
       <div
-        class="toggle-btn-container d-flex justify-content-center mt-2 w-100"
+        class="toggle-btn-container d-flex justify-content-center mt-2 w-100 position-relative"
       >
-        <v-btn-toggle
-          v-model="selectedMode"
-          mandatory
-          rounded="x2"
+        <v-btn
+          @click="toggleMode"
+          class="equal-width-btn equal-width-toggle"
           color="#414141"
-          base-color="#2a2a2a"
-          class="equal-width-toggle"
+          :style="{ backgroundColor: '#2a2a2a' }"
         >
-          <v-btn
-            value="general"
-            class="equal-width-btn"
-            >General</v-btn
+          {{ selectedMode === "general" ? "Quiz" : "General" }}
+        </v-btn>
+        <font-awesome-icon
+          :icon="['fas', 'circle-info']"
+          class="circle-info"
+          @click="toggleInfo"
+        />
+      </div>
+
+      <button
+        class="equal-width-toggle mt-2 d-flex align-items-center w-100 p-2 text-dark border-0 profile-btn"
+        type="button"
+        aria-haspopup="menu"
+        :aria-expanded="isPopoverVisible"
+        @click="togglePopover"
+      >
+        <div class="me-2">
+          <div
+            class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle"
+            style="width: 32px; height: 32px"
           >
-          <v-btn
-            value="quiz"
-            class="equal-width-btn"
-            >Quiz</v-btn
+            <img
+              alt="User"
+              src="https://s.gravatar.com/avatar/6276a6c42e2f0f22bb0a96c4b1f2bd32?s=480&amp;r=pg&amp;d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fsh.png"
+              class="img-fluid rounded-circle"
+              style="width: 100%; height: 100%"
+            />
+          </div>
+        </div>
+        <div class="text-start text-truncate text-white">
+          <span>David Svoboda</span>
+        </div>
+      </button>
+
+      <!-- popover -->
+      <div v-if="isPopoverVisible" class="popover position-absolute z-50">
+        <nav
+          class="rounded shadow-sm p-2 text-white"
+          style="background-color: #2a2a2a"
+        >
+          <div class="ms-2 my-2">Hochschule für Technisch und Wirtschaft</div>
+          <hr />
+          <a
+            href="#"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white py-2"
           >
-        </v-btn-toggle>
+            <i class="bi bi-person-circle"></i> My GPTs
+          </a>
+          <a
+            href="#"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white py-2"
+          >
+            <i class="bi bi-pencil-square"></i> Customize ChatGPT
+          </a>
+          <a
+            href="https://help.openai.com/en/collections/3742473-chatgpt"
+            target="_blank"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white py-2"
+          >
+            <i class="bi bi-question-circle"></i> Help & FAQ
+          </a>
+          <a
+            href="#"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white py-2"
+          >
+            <i class="bi bi-gear"></i> Settings
+          </a>
+        </nav>
       </div>
     </div>
   </div>
@@ -126,6 +181,7 @@ import {
   setAssistantCourse,
   setAssistantMode,
 } from "../services/openaiService";
+import { setNavbarCourseTitle } from "../services/homeService";
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
@@ -133,17 +189,31 @@ const props = defineProps({
   isOpenBurgerMenu: Boolean,
 });
 
-const emit = defineEmits(["closeBurgerMenu", "courseSelected"]);
+const emit = defineEmits(["closeBurgerMenu"]);
 
 const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref(getAssistantMode() || 'general');
+const selectedMode = ref(getAssistantMode() || "general");
 const courseClicked = ref<{ course: string; mode: string } | null>(null);
 const showInfo = ref(false);
 
-const clickableCourses = ref<string[]>(["Grundlagen der Programmierung", "Investition und Finanzierung", "Statistik"]);
+function toggleMode() {
+  selectedMode.value = selectedMode.value === "general" ? "quiz" : "general";
+}
+
+const clickableCourses = ref<string[]>([
+  "Grundlagen der Programmierung",
+  "Investition und Finanzierung",
+  "Statistik",
+]);
+
+const isPopoverVisible = ref(false);
+
+const togglePopover = () => {
+  isPopoverVisible.value = !isPopoverVisible.value;
+};
 
 function isCourseClickable(course: string): boolean {
   return clickableCourses.value.includes(course);
@@ -154,7 +224,7 @@ function handleCourseClick(course: string) {
     return;
   }
   console.log("Selected course:", course);
-  emit("courseSelected", course, selectedMode.value);
+  setNavbarCourseTitle(course, selectedMode.value);
 }
 
 function isCourseClicked(course: string): boolean {
@@ -201,12 +271,10 @@ async function selectCourse(course: string) {
     clearThread();
     clearMessages(false);
 
+    setAssistantCourse(course);
+    setAssistantMode(modeName);
     try {
       await fetchAssistantIds(courseName, modeName);
-
-      setAssistantCourse(course);
-      setAssistantMode(modeName);
-      
       await initializeThread();
     } catch (error) {
       console.error("Error initializing thread:", error);
@@ -259,7 +327,7 @@ onUnmounted(() => {
   top: 0;
   left: 0;
   width: 80vw;
-  z-index: 9999;
+  z-index: 1000;
   min-width: 305px;
   padding-right: 10px !important;
 }
@@ -319,7 +387,7 @@ onUnmounted(() => {
 }
 
 .list-item-hover::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -345,7 +413,6 @@ ul.p-0 {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100%;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -355,40 +422,25 @@ ul.p-0 {
 }
 
 .equal-width-toggle {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
   width: 100%;
-  max-width: 300px;
+  max-width: 450px;
   box-sizing: border-box;
 }
 
 .equal-width-btn {
-  flex: 1 1 0;
+  width: 100%;
   text-align: center;
   min-width: 0;
-  box-sizing: border-box;
   padding: 12px 16px;
   height: auto;
   line-height: 1.2;
-  white-space: normal;
-  word-wrap: break-word;
-}
-
-.info-message {
-  font-size: 14px;
-  color: #333;
-  left: -1em;
-  top: -30em;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  z-index: 1000;
 }
 
 .circle-info {
-  margin-bottom: -1.5px;
   cursor: pointer;
+  position: absolute;
+  right: -3px;
+  top: -3px;
 }
 
 /* Other styles remain the same */
@@ -413,24 +465,22 @@ ul.p-0 {
 
 .modes_container {
   background-color: #000000;
+  overflow: visible;
 }
 
-.small{
-  max-width: 285px;
+.small {
+  max-width: 450px;
 }
 
 ::v-deep(.test-mode-text) {
   position: relative;
-  top: -5px; /* Adjust to position it higher */
-  font-size: 0.8rem; /* Smaller font */
+  top: -5px;
+  font-size: 0.8rem;
 }
 
 .test-mode-text {
-  transform: translate(
-    30px,
-    -5px
-  ); /* Adjust alignment relative to the course name */
-  font-size: 0.7rem; /* Make it smaller */
+  transform: translate(30px, -5px);
+  font-size: 0.7rem;
 }
 
 .clickable-course {
@@ -441,7 +491,7 @@ ul.p-0 {
 }
 
 .clickable-course::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -449,5 +499,37 @@ ul.p-0 {
   height: 100%;
   background: linear-gradient(to bottom, white, #5b5b5b);
   opacity: 1;
+}
+
+.icon-click-effect {
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.icon-click-effect:active {
+  transform: scale(0.8);
+}
+
+.profile-btn {
+  border-radius: 5px;
+  background-color: #000000;
+  transition: background-color 0.5s ease;
+}
+
+.profile-btn:hover {
+  background-color: #4141415b;
+}
+
+.profile-btn:active {
+  background-color: #1a1a1a;
+}
+
+.popover {
+  width: 100%;
+  max-width: 450px;
+  top: -145px;
+  left: transformX(-50%);
+  background-color: transparent;
 }
 </style>

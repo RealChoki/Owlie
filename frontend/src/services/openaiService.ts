@@ -12,17 +12,19 @@ import {
     removeThreadIdLS,
     setOldAssistantIdLS,
     removeOldAssistantIdLS,
-  } from "./localStorageService";
+} from './localStorageService';
 
+// Reactive state for assistant
 const assistant = reactive({
-    id: getAssistantIdLS() || "",
-    threadId: getThreadIdLS() || "",
+    id: getAssistantIdLS() || '',
+    threadId: getThreadIdLS() || '',
     courseName: getCurrentCourseLS(),
     modeName: getCurrentModeLS(),
 });
 
 const oldAssistantId = ref('');
 
+// Assistant management functions
 function updateAssistant(newId: string, newCourseName: string, newModeName: string) {
     assistant.id = newId;
     assistant.courseName = newCourseName;
@@ -30,28 +32,6 @@ function updateAssistant(newId: string, newCourseName: string, newModeName: stri
     setAssistantIdLS(newId);
     setCurrentCourseLS(newCourseName);
     setCurrentModeLS(newModeName);
-}
-
-function getAssistant() {
-    return assistant;
-}
-
-function setAssistantId(newId: string) {
-    assistant.id = newId;
-    setAssistantIdLS(newId);
-}
-
-function getAssistantId() {
-    return assistant.id;
-}
-
-function setAssistantThreadId(newThreadId: string) {
-    assistant.threadId = newThreadId;
-    setThreadIdLS(newThreadId);
-}
-
-function getAssistantThreadId() {
-    return assistant.threadId;
 }
 
 function resetAssistant() {
@@ -62,6 +42,20 @@ function resetAssistant() {
     removeAssistantIdLS();
     removeThreadIdLS();
     removeOldAssistantIdLS();
+}
+
+function getAssistant() {
+    return assistant;
+}
+
+// Assistant ID management functions
+function setAssistantId(newId: string) {
+    assistant.id = newId;
+    setAssistantIdLS(newId);
+}
+
+function getAssistantId() {
+    return assistant.id;
 }
 
 function getOldAssistantId() {
@@ -82,11 +76,22 @@ function restoreOldAssistantId() {
     removeOldAssistantIdLS();
 }
 
-function removeAssistantThreadId(){
+// Assistant thread management functions
+function setAssistantThreadId(newThreadId: string) {
+    assistant.threadId = newThreadId;
+    setThreadIdLS(newThreadId);
+}
+
+function getAssistantThreadId() {
+    return assistant.threadId;
+}
+
+function removeAssistantThreadId() {
     assistant.threadId = '';
     removeThreadIdLS();
 }
 
+// Assistant course and mode management functions
 function getAssistantCourse() {
     return assistant.courseName;
 }
@@ -105,7 +110,7 @@ function setAssistantMode(newModeName: string) {
     setCurrentModeLS(newModeName);
 }
 
-// Watcher to log changes to assistantId
+// Watcher to log changes to assistant
 watch(assistant, (newVal, oldVal) => {
     console.log('assistant changed from', oldVal, 'to', newVal);
 });

@@ -12,7 +12,6 @@
         <div
           :class="[
             'chat-bubble user-msg',
-            { 'blur-effect': props.isOpenBurgerMenu },
             index === 0 ? 'mt-3 mb-4' : 'my-4',
           ]"
         >
@@ -24,7 +23,6 @@
         v-else-if="message.role === 'assistant'"
         :class="[
           'assistant-msg text-white',
-          { 'blur-effect': props.isOpenBurgerMenu },
         ]"
         :style="isWideScreen ? 'position: relative' : ''"
       >
@@ -194,10 +192,6 @@ watch(
   30% {
     transform: translateY(-10px);
   }
-}
-
-.blur-effect {
-  filter: blur(1.5px);
 }
 
 ::v-deep p:last-of-type {

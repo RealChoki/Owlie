@@ -6,7 +6,6 @@
       <Sidebar
         v-if="isWideScreen && isOpenSidebar"
         @closeSidebar="closeSidebar"
-        @courseSelected="handleCourseSelected"
       />
     </transition>
     <div
@@ -24,20 +23,11 @@
         :isOpenSidebar="isOpenSidebar"
         @toggleBurgerMenu="toggleBurgerMenu"
         @toggleSidebar="toggleSidebar"
-        :selectedCourse="selectedCourse"
-      />
-      <div
-        v-if="!chatMessages.length"
-        class="d-flex justify-content-center align-items-center h-50 logo-container"
-      >
-      <img
-        src="../icons/OwlLogo.png"
-        style="width: 75px"
-        @click="handleOwlClick"
         :class="{ 'blur-effect': isOpenBurgerMenu && !isWideScreen }"
       />
-      </div>
-
+      
+      <OwlLogo v-if="!chatMessages.length" :class="{ 'blur-effect': isOpenBurgerMenu && !isWideScreen }"/>
+      
       <div
         class="flex-grow-1 d-flex flex-column overflow-hidden"
         :class="{ 'chat-wrapper': isWideScreen }"
@@ -46,12 +36,14 @@
           v-if="chatMessages.length"
           :chatMessages="chatMessages"
           :isOpenBurgerMenu="isOpenBurgerMenu"
+          :class="{ 'blur-effect': isOpenBurgerMenu && !isWideScreen }"
         />
         <FooterInput
           class="mb-2"
           :messages="chatMessages"
           :isOpenBurgerMenu="isOpenBurgerMenu"
           @toggleOverlay="toggleOverlay"
+          :class="{ 'blur-effect': isOpenBurgerMenu && !isWideScreen }"
         />
       </div>
       <ExpandedInput
@@ -62,7 +54,6 @@
         <BurgerMenu
           v-if="isOpenBurgerMenu"
           @closeBurgerMenu="closeBurgerMenu"
-          @courseSelected="handleCourseSelected"
           ref="burgerMenuRef"
         />
       </transition>
@@ -80,6 +71,7 @@ import ExpandedInput from "../components/ExpandedInput.vue";
 import BurgerMenu from "../components/BurgerMenu.vue";
 import Sidebar from "@/components/Sidebar.vue";
 import ChatBubbleContainer from "../components/ChatBubbleContainer.vue";
+import OwlLogo from "../components/Owlie.vue"; 
 import type { RunStatus } from "../api/restService";
 import chatService from "@/services/chatService";
 import { useThread } from "../hooks/useThread";
@@ -89,12 +81,12 @@ import {
   getAssistantMode,
 } from "@/services/openaiService";
 import { useScreenWidth } from "../utils/useScreenWidth";
+import { setNavbarCourseTitle } from "../services/homeService";
 
 const isExpandedInput = ref(false);
 const isOpenBurgerMenu = ref(false);
 const isOpenSidebar = ref(true);
 const chatMessages = computed(() => chatService.getMessages());
-const selectedCourse = ref(getAssistantCourse());
 
 const burgerMenuRef = ref<ComponentPublicInstance | null>(null);
 
@@ -102,12 +94,6 @@ const run = ref<RunStatus | undefined>(undefined);
 const setRun = (data: RunStatus | undefined) => {
   run.value = data;
 };
-
-function handleCourseSelected(course: string, mode: string) {
-  console.log("Course selected from home view:", course, mode);
-  selectedCourse.value = mode !== "general" ? `${course} (${mode})` : course;
-
-}
 
 const { clearThread, initializeThread } = useThread(run, setRun);
 
@@ -155,7 +141,6 @@ function handleOwlClick() {
 function triggerSurprise() {
   console.log("Surprise triggered!");
   alert("OwO, what's this? Stwop pewtting me baka UwU");
-  // Hier kannst du weitere überraschende Aktionen hinzufügen, z.B. Animationen, Sounds etc.
 }
 
 function handleClickOutside(event: MouseEvent) {
@@ -170,7 +155,7 @@ function handleClickOutside(event: MouseEvent) {
 
 onMounted(async () => {
   clearThread();
-  handleCourseSelected(getAssistantCourse(), getAssistantMode());
+  setNavbarCourseTitle(getAssistantCourse(), getAssistantMode());
   document.addEventListener("click", handleClickOutside);
   fetchCourses();
   try {
@@ -219,10 +204,6 @@ watch(isWideScreen, (newVal) => {
   background-color: #131213;
 }
 
-.logo-container {
-  margin-top: 6em;
-}
-
 .chat-wrapper {
   width: 100%;
   max-width: 800px;
@@ -234,6 +215,7 @@ watch(isWideScreen, (newVal) => {
 }
 
 .blur-effect {
-  filter: blur(2px);
+  filter: blur(1.5px);
 }
+
 </style>

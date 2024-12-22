@@ -5,36 +5,36 @@
     >
       <img
       v-if="!isWideScreen"
-        class="mt-3"
+        class="mt-3 icon-click-effect"
         src="../icons/MenuOpen.png"
         style="cursor: pointer"
         @click="toggleBurgerMenu"
-        :class="{ 'blur-effect': isOpenBurgerMenu }"
       />
       <img
       v-else-if="isWideScreen && !isOpenSidebar"
-        class="mt-3"
+        class="mt-3 icon-click-effect"
         src="../icons/MenuOpen.png"
         style="cursor: pointer"
         @click="toggleSidebar"
       />
       <div v-else class="icon-holder mt-3"> 
         <font-awesome-icon
+          class="icon-click-effect"
           :icon="['fas', 'arrows-rotate']"
-          :class="{ 'arrows-rotate': true, 'blur-effect': isOpenBurgerMenu }"
+          :class="{ 'arrows-rotate': true}"
           style="color: #5b5b5b; cursor: pointer"
           @click="handleRefreshClick"
         />
       </div>
       <div class="d-flex flex-column align-items-center position-relative w-50"
-        style="margin-top: -0.3em;"
+        
       >
 
         <div class="hearts-container">
           <span
             v-for="(heartClass, index) in heartClasses"
             :key="index"
-            :class="['heart-icon', { 'blur-effect': isOpenBurgerMenu }]"
+            class="heart-icon"
           >
             <template v-if="heartClass === 'heart-filled'">
               <!-- Full Heart -->
@@ -138,21 +138,34 @@
             </template>
           </span>
         </div>
-        <p :class="['assistant-title', { 'blur-effect': isOpenBurgerMenu }]">
-          {{ props.selectedCourse }}
+        <p class="assistant-title">
+          {{ navbarCourseTitle }}
         </p>
       </div>
       <div class="icon-holder mt-3">
-        <font-awesome-icon
+      <!-- if user doesnt have pfp -->
+        <!-- <font-awesome-icon
+          class="arrows-rotate icon-click-effect"
           v-if="isWideScreen && isOpenSidebar"
           :icon="['fas', 'user']"
-          :class="{ 'arrows-rotate': true, 'blur-effect': isOpenBurgerMenu }"
           style="color: #5b5b5b; cursor: pointer"
-        />
+        /> -->
+        <div 
+        v-if="isWideScreen && isOpenSidebar"
+            class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect"
+            style="width: 32px; height: 32px"
+          >
+            <img
+              alt="User"
+              src="https://s.gravatar.com/avatar/6276a6c42e2f0f22bb0a96c4b1f2bd32?s=480&amp;r=pg&amp;d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fsh.png"
+              class="img-fluid rounded-circle"
+              style="width: 100%; height: 100%"
+            />
+          </div>
         <font-awesome-icon
         v-else
+          class="icon-click-effect arrows-rotate"
           :icon="['fas', 'arrows-rotate']"
-          :class="{ 'arrows-rotate': true, 'blur-effect': isOpenBurgerMenu }"
           style="color: #5b5b5b; cursor: pointer"
           @click="handleRefreshClick"
         />
@@ -183,13 +196,13 @@ import {
   setMessageCountLS,
 } from "../services/localStorageService";
 import { useScreenWidth } from "../utils/useScreenWidth";
+import { navbarCourseTitle } from "../services/homeService";
 
 library.add(faArrowsRotate, faHeart, faUser);
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
-  isOpenSidebar: Boolean,
-  selectedCourse: String,
+  isOpenSidebar: Boolean
 });
 
 const emit = defineEmits(["toggleBurgerMenu", "toggleSidebar"]);
@@ -329,12 +342,6 @@ onMounted(() => {
   width: 29px;
 }
 
-.blur-effect {
-  filter: blur(1.5px);
-  cursor: default !important;
-  pointer-events: none;
-}
-
 .assistant-title {
   background: linear-gradient(90deg, white, #5b5b5b);
   -webkit-background-clip: text;
@@ -346,4 +353,15 @@ onMounted(() => {
   font-weight: bold;
   white-space: nowrap;
 }
+
+.icon-click-effect {
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.icon-click-effect:active {
+  transform: scale(0.8);
+}
+
 </style>
