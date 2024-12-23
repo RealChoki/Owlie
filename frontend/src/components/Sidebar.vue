@@ -37,7 +37,7 @@
             'rounded',
             'text-white',
             'py-1',
-            { 'unclickable': !isCourseClickable(course), 'cursor-pointer': isCourseClickable(course), 'clickable-course': isCourseClicked(course) },
+            { 'unclickable': !isCourseClickable(course), 'cursor-pointer': isCourseClickable(course), 'selected-course': isCourseClicked(course) },
           ]"
           @click="isCourseClickable(course) ? selectCourse(course) : null; handleCourseClick(course)"
         >
@@ -362,14 +362,14 @@ onMounted(() => {
   cursor: pointer;
 }
 
-.clickable-course {
+.selected-course {
   background-color: #2a2a2a;
   position: relative;
   overflow: hidden;
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-.clickable-course::before {
+.selected-course::before {
   content: '';
   position: absolute;
   top: 0;
@@ -387,6 +387,6 @@ onMounted(() => {
 }
 
 .icon-click-effect:active {
-  transform: scale(0.8);
+  transform: scale(0.9);
 }
 </style>

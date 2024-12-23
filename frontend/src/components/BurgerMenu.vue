@@ -40,7 +40,7 @@
             {
               unclickable: !isCourseClickable(course),
               'cursor-pointer': isCourseClickable(course),
-              'clickable-course': isCourseClicked(course),
+              'selected-course': isCourseClicked(course),
             },
           ]"
           @click="
@@ -69,17 +69,20 @@
       <div class="d-flex gap-2">
         <h6 class="m-0">Switch mode to:</h6>
       </div>
-      <div v-if="showInfo" class="small mt-1 text-warning text-center">
+      <div
+        v-if="showInfo"
+        class="small mt-1 text-warning text-center max-width-450"
+      >
         Quiz mode: A quiz feature that assesses knowledge, tracks performance,
         and provides personalized feedback.
       </div>
 
       <div
-        class="toggle-btn-container d-flex justify-content-center mt-2 w-100 position-relative"
+        class="d-flex justify-content-center mt-2 w-100 position-relative max-width-450"
       >
         <v-btn
           @click="toggleMode"
-          class="equal-width-btn equal-width-toggle"
+          class="equal-width-btn max-width-450"
           color="#414141"
           :style="{ backgroundColor: '#2a2a2a' }"
         >
@@ -94,11 +97,11 @@
 
       <button
         ref="profileBtn"
-        class="equal-width-toggle mt-2 d-flex align-items-center w-100 p-2 text-dark border-0 profile-btn"
+        class="max-width-450 mt-2 d-flex align-items-center w-100 p-2 text-dark border-0 profile-btn"
         type="button"
         aria-haspopup="menu"
-        :aria-expanded="isPopoverVisible"
         @click="togglePopover"
+        :style="{ backgroundColor: isPopoverVisible ? '#41414160' : '' }"
       >
         <div class="me-2">
           <div
@@ -120,40 +123,39 @@
 
       <!-- popover -->
       <div
+        ref="popoverRef"
         v-if="isPopoverVisible"
         class="popover position-absolute z-50"
         :style="{ width: buttonWidth + 'px', maxWidth: '450px' }"
       >
-        <nav
-          class="rounded shadow-sm p-2 text-white"
-          style="background-color: #2a2a2a"
-        >
-          <div class="ms-2 my-2">Hochschule für Technisch und Wirtschaft</div>
-          <hr />
+        <nav class="p-2 text-white">
+          <div ref="popoverUniversityRef" class="p-2">
+            Hochschule für Technik und Wirtschaft Berlin
+          </div>
+          <hr class="my-1" />
           <a
             href="#"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white py-2"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
           >
-            <i class="bi bi-person-circle"></i> My GPTs
+            <font-awesome-icon :icon="['fas', 'user-circle']" /> Profile
           </a>
           <a
             href="#"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white py-2"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
           >
-            <i class="bi bi-pencil-square"></i> Customize ChatGPT
-          </a>
-          <a
-            href="https://help.openai.com/en/collections/3742473-chatgpt"
-            target="_blank"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white py-2"
-          >
-            <i class="bi bi-question-circle"></i> Help & FAQ
+            <font-awesome-icon :icon="['fas', 'gear']" /> Settings
           </a>
           <a
             href="#"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white py-2"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
           >
-            <i class="bi bi-gear"></i> Settings
+            <font-awesome-icon :icon="['fas', 'info-circle']" /> About Us
+          </a>
+          <a
+            href="#"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+          >
+            <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Log Out
           </a>
         </nav>
       </div>
@@ -169,12 +171,18 @@ import {
   defineEmits,
   onMounted,
   onUnmounted,
+  watch,
+  nextTick,
 } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faMagnifyingGlass,
   faCircleInfo,
+  faUserCircle,
+  faGear,
+  faRightFromBracket,
+  faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { VBtn, VBtnToggle } from "vuetify/components";
 import { useThread } from "../hooks/useThread";
@@ -188,7 +196,14 @@ import {
 } from "../services/openaiService";
 import { setNavbarCourseTitle } from "../services/homeService";
 
-library.add(faMagnifyingGlass, faCircleInfo);
+library.add(
+  faMagnifyingGlass,
+  faCircleInfo,
+  faUserCircle,
+  faGear,
+  faRightFromBracket,
+  faInfoCircle
+);
 
 const props = defineProps({
   isOpenBurgerMenu: Boolean,
@@ -214,18 +229,37 @@ const clickableCourses = ref<string[]>([
   "Statistik",
 ]);
 
-const profileBtn = ref(null);
+const profileBtn = ref<HTMLElement | null>(null);
 const buttonWidth = ref(0);
-
 const updatePopoverWidth = () => {
   if (profileBtn.value) {
     buttonWidth.value = profileBtn.value.offsetWidth;
-    console.log("Button width:", buttonWidth.value);
+  }
+};
+
+const popoverUniversityRef = ref<HTMLElement | null>(null);
+const popoverRef = ref<HTMLElement | null>(null);
+const updatePopoverPosition = () => {
+  if (showInfo.value) {
+    toggleInfo();
+  }
+  const popoverUniversityHeight = popoverUniversityRef.value?.offsetHeight;
+  if (popoverUniversityHeight && popoverUniversityHeight > 63) {
+    if (popoverRef.value) {
+      popoverRef.value.style.top = `-175px`;
+    }
+  } else if (popoverUniversityHeight && popoverUniversityHeight > 42) {
+    if (popoverRef.value) {
+      popoverRef.value.style.top = `-155px`;
+    }
+  } else {
+    if (popoverRef.value) {
+      popoverRef.value.style.top = `-135px`;
+    }
   }
 };
 
 const isPopoverVisible = ref(false);
-
 const togglePopover = () => {
   isPopoverVisible.value = !isPopoverVisible.value;
 };
@@ -238,7 +272,6 @@ function handleCourseClick(course: string) {
   if (!isCourseClickable(course)) {
     return;
   }
-  console.log("Selected course:", course);
   setNavbarCourseTitle(course, selectedMode.value);
 }
 
@@ -272,7 +305,6 @@ async function selectCourse(course: string) {
   if (!isCourseClickable(course)) {
     return;
   }
-  console.log("Selected course:", course);
   courseClicked.value = { course, mode: selectedMode.value };
 
   const modeName = selectedMode.value;
@@ -282,7 +314,6 @@ async function selectCourse(course: string) {
   const currentMode = getAssistantMode();
 
   if (course !== currentCourse || modeName !== currentMode) {
-    console.log("Course or mode changed. Resetting thread and messages.");
     clearThread();
     clearMessages(false);
 
@@ -317,7 +348,30 @@ function handleResize() {
     emit("closeBurgerMenu");
   }
   updatePopoverWidth();
+  updatePopoverPosition();
 }
+
+function handleClickOutside(event: MouseEvent) {
+  if (
+    popoverRef.value &&
+    !popoverRef.value.contains(event.target as Node) &&
+    profileBtn.value &&
+    !profileBtn.value.contains(event.target as Node)
+  ) {
+    isPopoverVisible.value = false;
+  }
+}
+
+watch(isPopoverVisible, (newVal) => {
+  if (newVal) {
+    nextTick(() => {
+      updatePopoverPosition();
+    });
+    document.addEventListener("click", handleClickOutside);
+  } else {
+    document.removeEventListener("click", handleClickOutside);
+  }
+});
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
@@ -333,6 +387,7 @@ onMounted(() => {
 // Remove the resize handler when the component is unmounted
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
+  document.removeEventListener("click", handleClickOutside);
 });
 </script>
 
@@ -402,27 +457,10 @@ onUnmounted(() => {
   background-color: #414141;
 }
 
-.list-item-hover::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 100%;
-  background: linear-gradient(to bottom, white, #5b5b5b);
-  opacity: 0;
-  transition: width 0.5s ease, opacity 0.5s ease;
-}
-
 .unclickable {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
   pointer-events: none !important;
-}
-
-ul.p-0 {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
 }
 
 .mode-toggle {
@@ -437,7 +475,7 @@ ul.p-0 {
   overflow: hidden;
 }
 
-.equal-width-toggle {
+.max-width-450 {
   width: 100%;
   max-width: 450px;
   box-sizing: border-box;
@@ -455,8 +493,8 @@ ul.p-0 {
 .circle-info {
   cursor: pointer;
   position: absolute;
-  right: -3px;
-  top: -3px;
+  top: -4px;
+  right: -4px;
 }
 
 /* Other styles remain the same */
@@ -467,16 +505,12 @@ ul.p-0 {
   pointer-events: none !important;
 }
 
-.list-item-hover:hover {
-  background-color: #414141 !important;
-}
-
 .unclickable:hover {
   background-color: transparent !important;
 }
 
 .cursor-pointer {
-  cursor: pointer !important;
+  cursor: pointer;
 }
 
 .modes_container {
@@ -484,29 +518,19 @@ ul.p-0 {
   overflow: visible;
 }
 
-.small {
-  max-width: 450px;
-}
-
-::v-deep(.test-mode-text) {
-  position: relative;
-  top: -5px;
-  font-size: 0.8rem;
-}
-
 .test-mode-text {
   transform: translate(30px, -5px);
   font-size: 0.7rem;
 }
 
-.clickable-course {
+.selected-course {
   background-color: #2a2a2a;
   position: relative;
   overflow: hidden;
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-.clickable-course::before {
+.selected-course::before {
   content: "";
   position: absolute;
   top: 0;
@@ -524,7 +548,7 @@ ul.p-0 {
 }
 
 .icon-click-effect:active {
-  transform: scale(0.8);
+  transform: scale(0.9);
 }
 
 .profile-btn {
@@ -534,17 +558,19 @@ ul.p-0 {
 }
 
 .profile-btn:hover {
-  background-color: #4141415b;
-}
-
-.profile-btn:active {
-  background-color: #1a1a1a;
+  background-color: #41414149;
 }
 
 .popover {
   width: 100%;
-  top: -145px;
+  top: -135px;
   left: transformX(-50%);
-  background-color: transparent;
+  background-color: #2a2a2a;
+  border-color: #414141;
+  border-width: 1px;
+}
+
+.popover nav a:hover {
+  background-color: #414141;
 }
 </style>

@@ -147,7 +147,7 @@
         <!-- <font-awesome-icon
           class="arrows-rotate icon-click-effect"
           v-if="isWideScreen && isOpenSidebar"
-          :icon="['fas', 'user']"
+          :icon="['fas', 'user-circle']"
           style="color: #5b5b5b; cursor: pointer"
         /> -->
         <div 
@@ -160,6 +160,7 @@
               src="https://s.gravatar.com/avatar/6276a6c42e2f0f22bb0a96c4b1f2bd32?s=480&amp;r=pg&amp;d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fsh.png"
               class="img-fluid rounded-circle"
               style="width: 100%; height: 100%"
+              @click="togglePopover"
             />
           </div>
         <font-awesome-icon
@@ -171,6 +172,43 @@
         />
       </div>
     </div>
+
+      <div
+        ref="popoverRef"
+        v-if="isPopoverVisible"
+        class="popover position-absolute z-50"
+      >
+        <nav class="p-2 text-white">
+          <div ref="popoverUniversityRef" class="p-2">
+            Hochschule für Technik und Wirtschaft Berlin
+          </div>
+          <hr class="my-1" />
+          <a
+            href="#"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+          >
+            <font-awesome-icon :icon="['fas', 'user-circle']" /> Profile
+          </a>
+          <a
+            href="#"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+          >
+            <font-awesome-icon :icon="['fas', 'gear']" /> Settings
+          </a>
+          <a
+            href="#"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+          >
+            <font-awesome-icon :icon="['fas', 'info-circle']" /> About Us
+          </a>
+          <a
+            href="#"
+            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+          >
+            <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Log Out
+          </a>
+        </nav>
+      </div>
   </nav>
 </template>
 
@@ -204,6 +242,11 @@ const props = defineProps({
   isOpenBurgerMenu: Boolean,
   isOpenSidebar: Boolean
 });
+
+const isPopoverVisible = ref(false);
+const togglePopover = () => {
+  isPopoverVisible.value = !isPopoverVisible.value;
+};
 
 const emit = defineEmits(["toggleBurgerMenu", "toggleSidebar"]);
 
@@ -361,7 +404,19 @@ onMounted(() => {
 }
 
 .icon-click-effect:active {
-  transform: scale(0.8);
+  transform: scale(0.9);
 }
 
+.popover {
+  width: 100%;
+  top: 4.5em;
+  right: 0;
+  background-color: #2a2a2a;
+  border-color: #414141;
+  border-width: 1px;
+}
+
+.popover nav a:hover {
+  background-color: #414141;
+}
 </style>
