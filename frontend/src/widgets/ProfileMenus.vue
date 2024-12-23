@@ -1,111 +1,150 @@
 <template>
   <div
     ref="popoverRef"
-    v-if="isVisible"
     class="popover position-absolute z-50"
-    :style="{ ...popoverStyle, }"
+    :style="{ ...positionStyle }"
+    :class="{ 'popover-nav': props.origin === 'Nav', 'popover-burger': props.origin === 'BurgerMenu' }"
   >
     <nav class="p-2 text-white">
       <div ref="popoverUniversityRef" class="p-2">
-        {{ universityName }}
+        Hochschule für Technik und Wirtschaft Berlin
       </div>
       <hr class="my-1" />
       <a
-        v-for="item in menuItems"
-        :key="item.label"
-        :href="item.href"
+        href="#"
         class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
       >
-        <font-awesome-icon :icon="item.icon" /> {{ item.label }}
+        <font-awesome-icon :icon="['fas', 'user-circle']" /> Profile
+      </a>
+      <a
+        href="#"
+        class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+      >
+        <font-awesome-icon :icon="['fas', 'gear']" /> Settings
+      </a>
+      <a
+        href="#"
+        class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+      >
+        <font-awesome-icon :icon="['fas', 'info-circle']" /> About Us
+      </a>
+      <a
+        href="#"
+        class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+      >
+        <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Log Out
       </a>
     </nav>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, onMounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, watch, nextTick, PropType } from "vue";
 import type { Ref } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faUserCircle,
+  faGear,
+  faRightFromBracket,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
+
+// Add icons to library
+library.add(faUserCircle, faGear, faRightFromBracket, faInfoCircle);
 
 // Props
 const props = defineProps({
-  isVisible: Boolean,
-  universityName: {
-    type: String,
-    default: "Hochschule für Technik und Wirtschaft Berlin",
-  },
-  menuItems: {
-    type: Array as () => { label: string; href: string; icon: string[] }[],
+  origin: {
+    type: String as PropType<"BurgerMenu" | "Nav">,
     required: true,
   },
-  position: {
-    type: Object as () => Partial<CSSStyleDeclaration>,
-    default: () => ({}),
-  },
-  width: {
-    type: [String, Number],
-    default: "100%",
-  },
-  maxWidth: {
-    type: String,
-    default: "450px",
+  togglePopover: {
+      type: Function,
+      required: true,
   },
 });
 
 // Refs
+const emit = defineEmits(["togglePopover"]);
+
 const popoverRef: Ref<HTMLElement | null> = ref(null);
 const popoverUniversityRef: Ref<HTMLElement | null> = ref(null);
+const positionStyle = ref<Partial<CSSStyleDeclaration>>(null);
+const isFirstClick = ref(true);
 
-// Computed styles
-const popoverStyle = computed(() => {
-  const { width, maxWidth } = props;
-  return {
-    width: typeof width === "number" ? `${width}px` : width,
-    maxWidth,
-    backgroundColor: "#2a2a2a",
-    borderColor: "#414141",
-    borderWidth: "1px",
-  };
-});
-
-const positionStyle = ref<Partial<CSSStyleDeclaration>>(props.position);
-
-// Methods
-onMounted(() => {
-  updatePopoverPosition();
-});
-
-watch(() => props.isVisible, (newVal) => {
-  if (newVal) {
-    nextTick(() => {
-      updatePopoverPosition();
-    });
-  }
-});
-
+// Function to update popover position based on height
 function updatePopoverPosition() {
+  if (props.origin !== "BurgerMenu") return;
   const universityHeight = popoverUniversityRef.value?.offsetHeight || 0;
 
-  let calculatedTop;
-  if (universityHeight > 63) {
-    calculatedTop = "-175px";
-  } else if (universityHeight > 42) {
-    calculatedTop = "-155px";
-  } else {
-    calculatedTop = "-135px";
+  positionStyle.value = {
+    top:
+      universityHeight > 63
+        ? "-175px"
+        : universityHeight > 42
+        ? "-155px"
+        : "-135px",
+  };
+}
+
+// ResizeObserver handler
+function handleHeightChange(entries: ResizeObserverEntry[]) {
+    updatePopoverPosition();
+}
+function handleClickOutside(event: MouseEvent) {
+  if (isFirstClick.value) {
+    isFirstClick.value = false;
+    return;
   }
+  if (popoverRef.value && !popoverRef.value.contains(event.target as Node)) {
+    emit("togglePopover");
+  }
+}
 
-  positionStyle.value = { ...props.position, top: calculatedTop };
-};
+let resizeObserver: ResizeObserver | null = null;
 
+// Lifecycle hooks
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+  if (popoverUniversityRef.value) {
+    resizeObserver = new ResizeObserver(handleHeightChange);
+    resizeObserver.observe(popoverUniversityRef.value);
+  }
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+  if (resizeObserver && popoverUniversityRef.value) {
+    resizeObserver.unobserve(popoverUniversityRef.value);
+  }
+  resizeObserver?.disconnect();
+});
 </script>
 
 <style scoped>
 .popover {
-  position: absolute;
-  z-index: 50;
+  z-index: 9999;
+  width: 100%;
+  background-color: #2a2a2a;
+  border-color: #414141;
+  border-width: 1px;
 }
 
 .popover nav a:hover {
   background-color: #414141;
+}
+
+/* from burger-menu */
+.popover-burger {
+  top: -135px;
+  left: transformX(-50%);
+  max-width: 450px;
+}
+
+/* from nav */
+.popover-nav {
+  top: 4.5em;
+  right: 0;
 }
 </style>

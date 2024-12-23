@@ -10,6 +10,7 @@
         @focus="isSearchFocused = true"
         @blur="isSearchFocused = false"
         :class="{ 'input-focused': isSearchFocused }"
+        maxlength="50"
       />
       <font-awesome-icon
         :icon="['fas', 'magnifying-glass']"
@@ -110,7 +111,7 @@
           >
             <img
               alt="User"
-              src="https://s.gravatar.com/avatar/6276a6c42e2f0f22bb0a96c4b1f2bd32?s=480&amp;r=pg&amp;d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fsh.png"
+              src="https://scontent-ber1-1.cdninstagram.com/v/t51.2885-19/461621119_507240088873650_7983337688478167496_n.jpg?stp=dst-jpg_s100x100_tt6&_nc_cat=103&ccb=1-7&_nc_sid=bf7eb4&_nc_ohc=kHBp3yUY_PwQ7kNvgFeKn_N&_nc_zt=24&_nc_ht=scontent-ber1-1.cdninstagram.com&oh=00_AYBQT7SUl2ZHW8UjAiqcHAlemBrR3CEeujwiaKBKIERGCQ&oe=676F6C48"
               class="img-fluid rounded-circle"
               style="width: 100%; height: 100%"
             />
@@ -120,45 +121,12 @@
           <span>David Svoboda</span>
         </div>
       </button>
-
-      <!-- popover -->
-      <div
-        ref="popoverRef"
+      <ProfileMenus
         v-if="isPopoverVisible"
-        class="popover position-absolute z-50"
-        :style="{ width: buttonWidth + 'px', maxWidth: '450px' }"
-      >
-        <nav class="p-2 text-white">
-          <div ref="popoverUniversityRef" class="p-2">
-            Hochschule für Technik und Wirtschaft Berlin
-          </div>
-          <hr class="my-1" />
-          <a
-            href="#"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
-          >
-            <font-awesome-icon :icon="['fas', 'user-circle']" /> Profile
-          </a>
-          <a
-            href="#"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
-          >
-            <font-awesome-icon :icon="['fas', 'gear']" /> Settings
-          </a>
-          <a
-            href="#"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
-          >
-            <font-awesome-icon :icon="['fas', 'info-circle']" /> About Us
-          </a>
-          <a
-            href="#"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
-          >
-            <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Log Out
-          </a>
-        </nav>
-      </div>
+        :origin="'BurgerMenu'"
+        @togglePopover="togglePopover"
+        :style="{ width: buttonWidth + 'px' }"
+        />
     </div>
   </div>
 </template>
@@ -195,6 +163,7 @@ import {
   setAssistantMode,
 } from "../services/openaiService";
 import { setNavbarCourseTitle } from "../services/homeService";
+import ProfileMenus from "@/widgets/ProfileMenus.vue";
 
 library.add(
   faMagnifyingGlass,
@@ -237,31 +206,12 @@ const updatePopoverWidth = () => {
   }
 };
 
-const popoverUniversityRef = ref<HTMLElement | null>(null);
-const popoverRef = ref<HTMLElement | null>(null);
-const updatePopoverPosition = () => {
-  if (showInfo.value) {
-    toggleInfo();
-  }
-  const popoverUniversityHeight = popoverUniversityRef.value?.offsetHeight;
-  if (popoverUniversityHeight && popoverUniversityHeight > 63) {
-    if (popoverRef.value) {
-      popoverRef.value.style.top = `-175px`;
-    }
-  } else if (popoverUniversityHeight && popoverUniversityHeight > 42) {
-    if (popoverRef.value) {
-      popoverRef.value.style.top = `-155px`;
-    }
-  } else {
-    if (popoverRef.value) {
-      popoverRef.value.style.top = `-135px`;
-    }
-  }
-};
-
 const isPopoverVisible = ref(false);
 const togglePopover = () => {
   isPopoverVisible.value = !isPopoverVisible.value;
+    if (showInfo.value) {
+    toggleInfo();
+  }
 };
 
 function isCourseClickable(course: string): boolean {
@@ -348,30 +298,7 @@ function handleResize() {
     emit("closeBurgerMenu");
   }
   updatePopoverWidth();
-  updatePopoverPosition();
 }
-
-function handleClickOutside(event: MouseEvent) {
-  if (
-    popoverRef.value &&
-    !popoverRef.value.contains(event.target as Node) &&
-    profileBtn.value &&
-    !profileBtn.value.contains(event.target as Node)
-  ) {
-    isPopoverVisible.value = false;
-  }
-}
-
-watch(isPopoverVisible, (newVal) => {
-  if (newVal) {
-    nextTick(() => {
-      updatePopoverPosition();
-    });
-    document.addEventListener("click", handleClickOutside);
-  } else {
-    document.removeEventListener("click", handleClickOutside);
-  }
-});
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
@@ -387,7 +314,6 @@ onMounted(() => {
 // Remove the resize handler when the component is unmounted
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
-  document.removeEventListener("click", handleClickOutside);
 });
 </script>
 
@@ -559,18 +485,5 @@ onUnmounted(() => {
 
 .profile-btn:hover {
   background-color: #41414149;
-}
-
-.popover {
-  width: 100%;
-  top: -135px;
-  left: transformX(-50%);
-  background-color: #2a2a2a;
-  border-color: #414141;
-  border-width: 1px;
-}
-
-.popover nav a:hover {
-  background-color: #414141;
 }
 </style>

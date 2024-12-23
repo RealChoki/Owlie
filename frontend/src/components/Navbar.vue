@@ -172,43 +172,11 @@
         />
       </div>
     </div>
-
-      <div
-        ref="popoverRef"
+      <ProfileMenus
         v-if="isPopoverVisible"
-        class="popover position-absolute z-50"
-      >
-        <nav class="p-2 text-white">
-          <div ref="popoverUniversityRef" class="p-2">
-            Hochschule für Technik und Wirtschaft Berlin
-          </div>
-          <hr class="my-1" />
-          <a
-            href="#"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
-          >
-            <font-awesome-icon :icon="['fas', 'user-circle']" /> Profile
-          </a>
-          <a
-            href="#"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
-          >
-            <font-awesome-icon :icon="['fas', 'gear']" /> Settings
-          </a>
-          <a
-            href="#"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
-          >
-            <font-awesome-icon :icon="['fas', 'info-circle']" /> About Us
-          </a>
-          <a
-            href="#"
-            class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
-          >
-            <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Log Out
-          </a>
-        </nav>
-      </div>
+        :origin="'Nav'"
+        @togglePopover="togglePopover"
+       />
   </nav>
 </template>
 
@@ -235,6 +203,7 @@ import {
 } from "../services/localStorageService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 import { navbarCourseTitle } from "../services/homeService";
+import ProfileMenus from "@/widgets/ProfileMenus.vue";
 
 library.add(faArrowsRotate, faHeart, faUser);
 
@@ -287,6 +256,12 @@ const heartClasses = computed(() => {
   return classes;
 });
 
+function handleResize() {
+  if (window.innerWidth <= 768) {
+    isPopoverVisible.value = false;
+  }
+}
+
 const handleStorageChange = (event: StorageEvent) => {
   if (event.key === 'heartCount') {
     const newHeartCount = parseFloat(event.newValue || '');
@@ -310,6 +285,8 @@ messageCount.value = getMessageCountLS();
 const { isWideScreen } = useScreenWidth();
 
 onMounted(() => {
+  window.addEventListener("resize", handleResize);
+  handleResize();
   const lastRegenTimeKey = "lastRegenTime";
   const regenIntervalMs = 3 * 60 * 1000; // 3 minutes in milliseconds
 
@@ -353,6 +330,7 @@ onMounted(() => {
   }, regenIntervalMs);
 
   onUnmounted(() => {
+    window.removeEventListener("resize", handleResize);
     window.removeEventListener('storage', handleStorageChange);
     clearInterval(regenInterval);
   });
