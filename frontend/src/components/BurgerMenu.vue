@@ -1,5 +1,5 @@
 <template>
-  <div class="burger-menu-open py-3 px-3 bg-black rounded shadow-sm">
+  <div class="burger-menu py-3 px-3 rounded shadow-sm">
     <div class="search-container">
       <input
         ref="searchInput"
@@ -20,7 +20,7 @@
         @click="focusInput"
       />
       <img
-        src="../icons/MenuClose.png"
+        src="../assets/icons/MenuClose.png"
         class="ms-3 icon-click-effect"
         style="cursor: pointer"
         @click="closeBurgerMenu"
@@ -67,7 +67,7 @@
     <div
       class="mode-toggle d-flex flex-column align-items-center modes_container p-3 pt-2"
     >
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 text-white">
         <h6 class="m-0">Switch mode to:</h6>
       </div>
       <div
@@ -83,15 +83,15 @@
       >
         <v-btn
           @click="toggleMode"
-          class="equal-width-btn max-width-450"
-          color="#414141"
-          :style="{ backgroundColor: '#2a2a2a' }"
+          class="equal-width-btn max-width-450 text-white"
+          base-color="var(--color-gray-medium)"
+
         >
           {{ selectedMode === "general" ? "Quiz" : "General" }}
         </v-btn>
         <font-awesome-icon
           :icon="['fas', 'circle-info']"
-          class="circle-info"
+          class="circle-info text-white"
           @click="toggleInfo"
         />
       </div>
@@ -318,7 +318,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.burger-menu-open {
+.burger-menu {
+  background-color: var(--color-black);
   height: 100vh;
   position: fixed;
   top: 0;
@@ -336,7 +337,7 @@ onUnmounted(() => {
 }
 
 .burger-menu-search-bar {
-  background-color: #2a2a2a;
+  background-color: var(--color-gray-medium);
   color: white;
   border: none;
   border-radius: 20px;
@@ -356,7 +357,6 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   position: relative;
-  background-color: #000000;
   padding-bottom: 0.75em;
 }
 
@@ -364,7 +364,7 @@ onUnmounted(() => {
   position: absolute;
   font-size: 1.2rem;
   left: 15px;
-  color: #5b5b5b;
+  color: var(--color-gray-shadow);
   transition: color 0.2s ease;
 }
 
@@ -380,7 +380,7 @@ onUnmounted(() => {
 }
 
 .list-item-hover:hover {
-  background-color: #414141;
+  background-color: var(--color-gray-light);
 }
 
 .unclickable {
@@ -440,7 +440,7 @@ onUnmounted(() => {
 }
 
 .modes_container {
-  background-color: #000000;
+  background-color: var(--color-black);
   overflow: visible;
 }
 
@@ -450,7 +450,7 @@ onUnmounted(() => {
 }
 
 .selected-course {
-  background-color: #2a2a2a;
+  background-color: var(--color-gray-medium);
   position: relative;
   overflow: hidden;
   transition: background-color 0.5s ease, color 0.5s ease;
@@ -463,7 +463,7 @@ onUnmounted(() => {
   left: 0;
   width: 5px;
   height: 100%;
-  background: linear-gradient(to bottom, white, #5b5b5b);
+  background: linear-gradient(to bottom, white, var(--color-gray-shadow));
   opacity: 1;
 }
 
@@ -479,7 +479,7 @@ onUnmounted(() => {
 
 .profile-btn {
   border-radius: 5px;
-  background-color: #000000;
+  background-color: var(--color-black);
   transition: background-color 0.5s ease;
 }
 

@@ -61,7 +61,7 @@ const props = defineProps({
   },
   togglePopover: {
       type: Function,
-      required: true,
+      required: false,
   },
 });
 
@@ -126,13 +126,13 @@ onUnmounted(() => {
 .popover {
   z-index: 9999;
   width: 100%;
-  background-color: #2a2a2a;
-  border-color: #414141;
+  background-color: var(--color-gray-medium);
+  border-color: var(--color-gray-light);
   border-width: 1px;
 }
 
 .popover nav a:hover {
-  background-color: #414141;
+  background-color: var(--color-gray-light);
 }
 
 /* from burger-menu */

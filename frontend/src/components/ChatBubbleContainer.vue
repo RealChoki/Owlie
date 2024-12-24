@@ -27,11 +27,9 @@
         :style="isWideScreen ? 'position: relative' : ''"
       >
         <img
-          src="../icons/OwlLogo.png"
+          src="../assets/icons/OwlLogo.png"
           class="assistant-pfp p-1 pt-0"
           :style="isWideScreen ? 'position: absolute; left: 5px; top: 5px' : ''"
-        @click="handleOwlClick" 
-
         />
         <div
           v-html="renderedMessages[index]"
@@ -41,10 +39,9 @@
     </div>
     <div v-if="thinking">
       <img
-        src="../icons/OwlLogo.png"
+        src="../assets/icons/OwlLogo.png"
         alt="assistant"
         class="assistant-pfp p-1 pt-0"
-        @click="handleOwlClick" 
       />
       <span class="thinking-animation text-white fst-italic ms-1"
         >thinking<span class="dot">.</span><span class="dot">.</span
@@ -76,23 +73,6 @@ const props = defineProps({
 
 // Klickzähler für das Owl-Bild
 const clickCount = ref(0);
-
-// Funktion, die aufgerufen wird, wenn das Owl-Bild geklickt wird
-function handleOwlClick() {
-  clickCount.value += 1;
-  console.log(`Owl clicked ${clickCount.value} times`);
-  if (clickCount.value === 40) {
-    triggerSurprise();
-    clickCount.value = 0; // Zähler zurücksetzen
-  }
-}
-
-// Funktion, die die Überraschung auslöst
-function triggerSurprise() {
-  console.log("Surprise triggered!");
-  alert("OwO, what's this? Stwop pewtting me baka UwU");
-  // Hier kannst du weitere überraschende Aktionen hinzufügen, z.B. Animationen, Sounds etc.
-}
 
 // Convert assistant messages from markdown to HTML
 const renderedMessages = computed(() => {
@@ -152,7 +132,7 @@ watch(
   max-width: 85%;
   display: inline-block;
   word-wrap: break-word;
-  box-shadow: 0 0px 10px #5b5b5b;
+  box-shadow: 0 0px 10px var(--color-gray-shadow);
 }
 
 .assistant-pfp {
@@ -216,52 +196,4 @@ watch(
     background-color: yellow;
   }
 }
-
-/* Assistant message styles (change)
-.assistant-msg pre {
-  background-color: #2d2d2d;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  margin: 10px 0;
-}
-
-.assistant-msg code {
-  background-color: #2d2d2d;
-  padding: 2px 4px;
-  border-radius: 3px;
-  color: #e96900;
-}
-
-.assistant-msg h1,
-.assistant-msg h2,
-.assistant-msg h3 {
-  font-weight: bold;
-  margin: 10px 0 5px;
-}
-
-.assistant-msg p {
-  margin: 5px 0;
-}
-
-.assistant-msg strong {
-  font-weight: bold;
-}
-
-.assistant-msg em {
-  font-style: italic;
-}
-
-.assistant-msg ul {
-  list-style-type: disc;
-  margin-left: 20px;
-}
-
-.assistant-msg ol {
-  list-style-type: decimal;
-  margin-left: 20px;
-}
-*/
 </style>

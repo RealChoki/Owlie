@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar py-3 px-3 bg-black vh-100">
+  <div class="sidebar py-3 px-3 vh-100">
     <div class="search-container">
       <input
         ref="searchInput"
@@ -19,7 +19,7 @@
         @click="focusInput"
       />
       <img
-        src="../icons/MenuClose.png"
+        src="../assets/icons/MenuClose.png"
         class="ms-3 icon-click-effect"
         style="cursor: pointer"
         @click="closeSidebar"
@@ -59,7 +59,7 @@
     <div
       class="mode-toggle d-flex flex-column align-items-center modes_container p-3 pt-2"
     >
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 text-white">
         <h6 class="m-0">
           Select a mode
           <font-awesome-icon
@@ -81,8 +81,7 @@
           v-model="selectedMode"
           mandatory
           rounded="x2"
-          color="#414141"
-          base-color="#2a2a2a"
+          base-color="var(--color-gray-medium)"
           class="equal-width-toggle"
         >
         <v-btn
@@ -231,6 +230,7 @@ onMounted(() => {
 
 <style scoped>
 .sidebar {
+  background-color: var(--color-black);
   height: 100vh;
   overflow-y: auto;
   min-width: 305px;
@@ -240,7 +240,7 @@ onMounted(() => {
 }
 
 .sidebar-search-bar {
-  background-color: #2a2a2a;
+  background-color: var(--color-gray-medium);
   color: white;
   border: none;
   border-radius: 20px;
@@ -264,7 +264,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   position: relative;
-  background-color: #000000;
+  /* background-color: var(--color-black); */
   padding-bottom: 0.75em;
 }
 
@@ -272,7 +272,7 @@ onMounted(() => {
   position: absolute;
   font-size: 1.2rem;
   left: 15px;
-  color: #5b5b5b;
+  color: var(--color-gray-shadow);
   transition: color 0.2s ease;
 }
 
@@ -290,7 +290,7 @@ onMounted(() => {
 }
 
 .list-item-hover:hover {
-  background-color: #414141;
+  background-color: var(--color-gray-light);
 }
 
 .list-item-hover::before {
@@ -300,7 +300,7 @@ onMounted(() => {
   left: 0;
   width: 0;
   height: 100%;
-  background: linear-gradient(to bottom, white, #5b5b5b);
+  background: linear-gradient(to bottom, white, var(--color-gray-shadow));
   opacity: 0;
   transition: width 0.5s ease, opacity 0.5s ease;
 }
@@ -317,7 +317,6 @@ onMounted(() => {
 }
 
 .modes_container {
-  background-color: #000000;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -363,7 +362,7 @@ onMounted(() => {
 }
 
 .selected-course {
-  background-color: #2a2a2a;
+  background-color: var(--color-gray-medium);
   position: relative;
   overflow: hidden;
   transition: background-color 0.5s ease, color 0.5s ease;
@@ -376,7 +375,7 @@ onMounted(() => {
   left: 0;
   width: 5px;
   height: 100%;
-  background: linear-gradient(to bottom, white, #5b5b5b);
+  background: linear-gradient(to bottom, white, var(--color-gray-shadow));
   opacity: 1;
 }
 

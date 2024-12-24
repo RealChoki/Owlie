@@ -1,17 +1,17 @@
 <template>
   <div class="full-screen-overlay">
-    <div class="h-100 p-2 pb-2" style="background-color: #232323">
-      <div class="container" style="background-color: #232323">
+    <div class="h-100 p-2 pb-2" style="background-color: var(--color-gray-dark);">
+      <div class="container" style="background-color: var(--color-gray-dark);">
         <div class="minimize-screen d-flex justify-content-end mt-2 mb-3" style="position: fixed; top: 10px; right: 10px; z-index: 10">
           <font-awesome-icon
             :icon="['fas', 'down-left-and-up-right-to-center']"
             @click.stop="closeExpandedInput"
-            class="collapse-icon"
+            class="collapse-icon text-white"
           />
         </div>
         <textarea
-          class="full-screen-textarea flex-grow-1"
-          style="background-color: #232323"
+          class="full-screen-textarea text-white flex-grow-1"
+          style="background-color: var(--color-gray-dark)"
           placeholder="Type a message..."
           aria-label="Message input"
           v-model="message"
@@ -94,7 +94,6 @@ function sendMessage() {
 }
 
 .collapse-icon {
-  color: #ffffff;
   cursor: pointer;
   font-size: 1.5rem;
   margin-right: 0.2em;
@@ -112,7 +111,6 @@ function sendMessage() {
   height: 95%;
   border: none;
   outline: none;
-  color: #ffffff;
   padding: 0 1em;
   font-size: 1rem;
   resize: none;
@@ -147,7 +145,7 @@ function sendMessage() {
 }
 
 .btn-disabled {
-  background-color: rgb(196, 195, 195) !important;
+  background-color: var(--color-disabled) !important;
   cursor: default;
 }
 

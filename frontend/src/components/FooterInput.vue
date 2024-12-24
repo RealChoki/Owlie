@@ -16,7 +16,7 @@
       <font-awesome-icon
         :icon="['fas', 'plus']"
         class="cursor-pointer btn-circle align-bottom"
-        style="background-color: #5b5b5b"
+        style="background-color: var(--color-gray-shadow)"
         @click="triggerFileInput"
       />
       <span v-if="showFileCount" class="file-count-indicator bg-danger text-white">{{ fileCount }}</span>
@@ -353,11 +353,9 @@ watch(message, (newValue) => {
 
 <style scoped>
 .sticky-footer {
-  /* Remove position: fixed */
   width: 100%;
-  background-color: #131213;
+  /* background-color: var(--color-background-dark);  */
   z-index: 1000;
-  /* Add display flex to help with alignment */
   display: flex;
   align-items: center;
 }
@@ -374,7 +372,7 @@ watch(message, (newValue) => {
 }
 
 .btn-disabled {
-  background-color: rgb(196, 195, 195) !important;
+  background-color: var(--color-disabled) !important;
   cursor: default;
 }
 
@@ -387,7 +385,7 @@ watch(message, (newValue) => {
 
 .custom-input {
   flex: 1;
-  background-color: #232323;
+  background-color: var(--color-gray-dark);
   border: none;
   color: white;
   border-radius: 25px;
@@ -422,9 +420,9 @@ watch(message, (newValue) => {
   top: 7px;
   right: 7px;
   font-size: 0.8rem;
-  color: #232323;
+  color: var(--color-gray-dark);
   cursor: pointer;
-  background-color: #5b5b5b;
+  background-color: var(--color-gray-shadow);
   padding: 6px;
   border-radius: 50%;
 }

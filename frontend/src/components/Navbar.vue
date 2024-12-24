@@ -6,14 +6,14 @@
       <img
       v-if="!isWideScreen"
         class="mt-3 icon-click-effect"
-        src="../icons/MenuOpen.png"
+        src="../assets/icons/MenuOpen.png"
         style="cursor: pointer"
         @click="toggleBurgerMenu"
       />
       <img
       v-else-if="isWideScreen && !isOpenSidebar"
         class="mt-3 icon-click-effect"
-        src="../icons/MenuOpen.png"
+        src="../assets/icons/MenuOpen.png"
         style="cursor: pointer"
         @click="toggleSidebar"
       />
@@ -22,7 +22,7 @@
           class="icon-click-effect"
           :icon="['fas', 'arrows-rotate']"
           :class="{ 'arrows-rotate': true}"
-          style="color: #5b5b5b; cursor: pointer"
+          style="color: var(--color-gray-shadow); cursor: pointer"
           @click="handleRefreshClick"
         />
       </div>
@@ -54,7 +54,7 @@
                     y2="0"
                   >
                     <stop offset="0%" stop-color="white" />
-                    <stop offset="100%" stop-color="#5b5b5b" />
+                    <stop offset="100%" stop-color="var(--color-gray-shadow)" />
                   </linearGradient>
                 </defs>
                 <path
@@ -84,7 +84,7 @@
                     y2="0"
                   >
                     <stop offset="0%" stop-color="white" />
-                    <stop offset="100%" stop-color="#5b5b5b" />
+                    <stop offset="100%" stop-color="var(--color-gray-shadow)" />
                   </linearGradient>
                   <clipPath id="leftHalf">
                     <rect x="0" y="0" width="12" height="24"></rect>
@@ -125,7 +125,7 @@
                     y2="0"
                   >
                     <stop offset="0%" stop-color="white" />
-                    <stop offset="100%" stop-color="#5b5b5b" />
+                    <stop offset="100%" stop-color="var(--color-gray-shadow)" />
                   </linearGradient>
                 </defs>
                 <path
@@ -148,7 +148,7 @@
           class="arrows-rotate icon-click-effect"
           v-if="isWideScreen && isOpenSidebar"
           :icon="['fas', 'user-circle']"
-          style="color: #5b5b5b; cursor: pointer"
+          style="color: var(--color-gray-shadow); cursor: pointer"
         /> -->
         <div 
         v-if="isWideScreen && isOpenSidebar"
@@ -167,7 +167,7 @@
         v-else
           class="icon-click-effect arrows-rotate"
           :icon="['fas', 'arrows-rotate']"
-          style="color: #5b5b5b; cursor: pointer"
+          style="color: var(--color-gray-shadow); cursor: pointer"
           @click="handleRefreshClick"
         />
       </div>
@@ -338,7 +338,7 @@ onMounted(() => {
 </script>
 <style scoped>
 .navbar {
-  background-color: #131213;
+ /* background-color: var(--color-background-dark); */
 }
 
 .hearts-container {
@@ -364,7 +364,7 @@ onMounted(() => {
 }
 
 .assistant-title {
-  background: linear-gradient(90deg, white, #5b5b5b);
+  background: linear-gradient(90deg, white, var(--color-gray-shadow));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-size: 12px;
@@ -383,18 +383,5 @@ onMounted(() => {
 
 .icon-click-effect:active {
   transform: scale(0.9);
-}
-
-.popover {
-  width: 100%;
-  top: 4.5em;
-  right: 0;
-  background-color: #2a2a2a;
-  border-color: #414141;
-  border-width: 1px;
-}
-
-.popover nav a:hover {
-  background-color: #414141;
 }
 </style>

@@ -13,7 +13,7 @@
         </p>
       </div>
       <img
-        src="../icons/OwlLogo.png"
+        src="../assets/icons/OwlLogo.png"
         class="img-fluid"
         style="width: 75px"
         @click="handleOwlClick"
@@ -27,7 +27,7 @@
             class="d-flex justify-content-center align-items-center h-50 logo-container flex-column"
           >
         <img
-          src="../icons/OwlLogo.png"
+          src="../assets/icons/OwlLogo.png"
           style="width: 75px"
           @click="handleOwlClick"
           :class="{ 'blur-effect': isOpenBurgerMenu && !isWideScreen }"
@@ -79,12 +79,12 @@ function displayRandomMessage() {
 .owl-speech-bubble {
   top: -35px;
   right: -85px;
-  background-color: #232323;
+  background-color: var(--color-gray-dark);
   color: white;
   font-size: 0.8em;
   min-width: 100px;
   width: fit-content;
-  box-shadow: 1.5px 1.5px 2px #424242; /* Adjusted box-shadow color */
+  box-shadow: 1.5px 1.3px 1px #444444; /* Adjusted box-shadow color */
   border-radius: 10px;
 }
 
@@ -95,7 +95,7 @@ function displayRandomMessage() {
   left: 20px;
   border-width: 20px 20px 0 0;
   border-style: solid;
-  border-color: #232323 transparent;
+  border-color: var(--color-gray-dark) transparent;
 }
 
 .username {

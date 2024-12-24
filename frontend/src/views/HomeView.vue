@@ -200,10 +200,6 @@ watch(isWideScreen, (newVal) => {
   transform: translateX(0);
 }
 
-.container {
-  background-color: #131213;
-}
-
 .chat-wrapper {
   width: 100%;
   max-width: 800px;
