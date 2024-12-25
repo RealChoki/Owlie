@@ -69,17 +69,17 @@ import Navbar from "../components/Navbar.vue";
 import FooterInput from "../components/FooterInput.vue";
 import ExpandedInput from "../components/ExpandedInput.vue";
 import BurgerMenu from "../components/BurgerMenu.vue";
-import Sidebar from "@/components/Sidebar.vue";
+import Sidebar from "../components/Sidebar.vue";
 import ChatBubbleContainer from "../components/ChatBubbleContainer.vue";
 import OwlLogo from "../components/Owlie.vue"; 
 import type { RunStatus } from "../api/restService";
-import chatService from "@/services/chatService";
+import chatService from "../services/chatService";
 import { useThread } from "../hooks/useThread";
-import { fetchCourses, fetchAssistantIds } from "@/services/courseService";
+import { fetchCourses, fetchAssistantIds } from "../services/courseService";
 import {
   getAssistantCourse,
   getAssistantMode,
-} from "@/services/openaiService";
+} from "../services/openaiService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 import { setNavbarCourseTitle } from "../services/homeService";
 
