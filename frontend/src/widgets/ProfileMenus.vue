@@ -31,6 +31,7 @@
       <a
         href="#"
         class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+        @click="logout"
       >
         <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Log Out
       </a>
@@ -49,9 +50,11 @@ import {
   faRightFromBracket,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from "vue-router";
 
 // Add icons to library
 library.add(faUserCircle, faGear, faRightFromBracket, faInfoCircle);
+const router = useRouter();
 
 // Props
 const props = defineProps({
@@ -86,6 +89,10 @@ function updatePopoverPosition() {
         ? "-155px"
         : "-135px",
   };
+}
+
+function logout() {
+  router.push("/login");
 }
 
 // ResizeObserver handler
