@@ -52,15 +52,15 @@
         </form>
       </div>
     </div>
-
     <!-- Right Section -->
+    <!-- src="../assets/videos/vecteezy_abstract-grey-and-black-professional-motion-background_34700930.mp4" -->
     <div class="login-right">
       <div class="container h-100">
         <video
           class="image_preview_container"
-          src="https://chatki.htw-berlin.de/public/img/HAWKIBG-DM.m4v"
           type="video/m4v"
           preload="auto"
+          src="https://videos.pexels.com/video-files/1877846/1877846-hd_1920_1080_30fps.mp4"
           autoplay
           loop
           muted

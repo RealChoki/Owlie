@@ -1,25 +1,25 @@
 :root {
   /* General Colors */
   --color-white: #ffffff;
-  --color-black: #000000;
-
+  --color-black: #0a0a0a;
+  
   /* main bg color*/
   --color-background-dark: #131213;
-
-    /* footer/expanded input */
-    --color-gray-dark: #232323;
-    /* selected course, togglebtn, profile menu */
-    --color-gray-medium: #2a2a2a;
-    --color-gray-light: #414141;
-    
-    /* fontawesome icons */
+  
+  /* footer/expanded input */
+  --color-gray-dark: #232323;
+  /* selected course, togglebtn, profile menu */
+  --color-gray-medium: #2a2a2a;
+  --color-gray-light: #414141;
+  
+  /* fontawesome icons */
   --color-gray-shadow: #5b5b5b;
-
-    /* Disable btns */
+  
+  /* Disable btns */
   --color-disabled: rgb(196, 195, 195);
-
+  
+  
   /*
-black: 1A1A1A, 1C1C1C, 0A0A0A, 050505, 0F0F0F, 111111, 
 
   burger
   #41414160
