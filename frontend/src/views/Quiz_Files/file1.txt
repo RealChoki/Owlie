@@ -1,0 +1,6 @@
+
+GitHub Copilot
+To make the search functionality work in your QuizProf.vue component, you need to ensure that the search input correctly filters the list of files based on the user's query. The current implementation already has most of the necessary logic, but I'll provide a complete example to ensure everything is set up correctly.
+
+Updated QuizProf.vue
+Here's the updated code with the search functionality working:

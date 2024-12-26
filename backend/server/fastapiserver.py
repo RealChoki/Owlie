@@ -9,10 +9,14 @@ from openai import OpenAI
 from openai.types.beta.threads.run import RequiredAction, LastError
 from tools.fernet import encrypt_data, decrypt_data
 from tools.function_calling import get_moodle_course_content
+# from langchain_experimental.data_anonymizer import PresidioReversibleAnonymizer
 import time
 import logging
 import shutil
 import tempfile  # Add this import
+
+# Configure logging
+logging.basicConfig(level=logging.ERROR)
 
 # Load environment variables
 load_dotenv()
@@ -45,8 +49,25 @@ assistant_cache = {}  # Cache assistants for reuse
 FILES_DIR = ""
 file_ids = []
 
-# Configure logging
-logging.basicConfig(level=logging.ERROR)
+# # Initialize the anonymizer
+# anonymizer = PresidioReversibleAnonymizer(
+#     add_default_faker_operators=True,
+#     faker_seed=42
+# )
+    
+# # A function to anonymize the users message
+# def presidio_anonymize(user_message):
+#     anonymized_user_message = anonymizer.anonymize(
+#         user_message
+#     )
+#     return anonymized_user_message
+
+# # A function to de-anonymize the assistants response
+# def presidio_deanonymize(anonymized_response):
+#     de_anonymized_response = anonymizer.deanonymize(
+#         anonymized_response
+#     )
+#     return de_anonymized_response
 
 def get_course_config(course_name, mode_name):
     # Traverse the config to find the matching course and mode
