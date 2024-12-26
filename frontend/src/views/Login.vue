@@ -1,48 +1,57 @@
 <template>
   <div class="container-fluid vh-100 d-flex p-2 py-4">
-   <!-- Left Section -->
-<div class="login-left d-flex align-items-center justify-content-center">
-  <div class="p-4 w-100">
-    <h1 class="text-center mb-4">Login</h1>
-    <form @submit.prevent="onSubmit">
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input
-          type="email"
-          id="email"
-          v-model="email"
-          class="login-input w-100"
-          placeholder="Enter your email"
-          required
-        />
+    <!-- Left Section -->
+    <!-- <div
+      class="logo-container d-flex align-items-center px-4 mt-3 position-fixed"
+    >
+      <img src="../assets/icons/OwlLogo.png" alt="Logo" class="logo" />
+      <div class="text-white">
+        <span class="fw-bold ms-2">Owlie</span>
+        <span class="fst-italic"> - personal student assistant</span>
       </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input
-          type="password"
-          id="password"
-          v-model="password"
-          class="login-input w-100"
-          placeholder="Enter your password"
-          required
-        />
-      </div>
-      
-      <!-- Text and Login Button Container -->
-      <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
-        <span class="small text-start" style="width: 50%; cursor: pointer;">Don't have an account? <strong>Register</strong></span>
+    </div> -->
+    <div class="login-left d-flex align-items-center justify-content-center">
+      <div class="p-4 w-100">
+        <h1 class="text-center mb-4">Login</h1>
+        <form @submit.prevent="onSubmit">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="email"
+              v-model="email"
+              class="login-input w-100"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              id="password"
+              v-model="password"
+              class="login-input w-100"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
 
-        <button
-          type="submit"
-          class="btn btn-action"
-          style="width: 50%;"
-        >
-          Login
-        </button>
+          <!-- Text and Login Button Container -->
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 gap-3"
+          >
+            <span class="small text-start" style="width: 50%; cursor: pointer"
+              >Don't have an account? <strong>Register</strong></span
+            >
+
+            <button type="submit" class="btn btn-action" style="width: 50%">
+              Login
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
-  </div>
-</div>
+    </div>
 
     <!-- Right Section -->
     <div class="login-right">
@@ -75,7 +84,7 @@ import { useRouter } from "vue-router";
 const email = ref("");
 const password = ref("");
 
-const router = useRouter(); 
+const router = useRouter();
 
 const onSubmit = () => {
   if (!email.value || !password.value) {
@@ -92,6 +101,11 @@ const onSubmit = () => {
 
 
 <style scoped>
+.logo {
+  width: 30px;
+  cursor: pointer;
+}
+
 .container-fluid {
   background-color: var(--color-black);
 }

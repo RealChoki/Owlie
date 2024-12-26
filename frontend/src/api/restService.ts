@@ -68,7 +68,7 @@ import { setOwlDisplayMessage } from '../services/homeService';
 // REST Service functions
 export const createNewThread = async (): Promise<CreateThreadResponse | undefined> => {
     try {
-        setOwlDisplayMessage("Creating a new thread...");
+        setOwlDisplayMessage("Creating a new chat...");
         const assistant_id = getAssistantId(); 
         if (!assistant_id) {
             throw new Error('Assistant ID is not available.');
@@ -85,12 +85,12 @@ export const createNewThread = async (): Promise<CreateThreadResponse | undefine
             throw new Error(`Error: ${response.statusText}`);
         }
         const data: CreateThreadResponse = await response.json();
-        setOwlDisplayMessage("Thread created");
+        setOwlDisplayMessage("Chat created");
         setTimeout(() => { setOwlDisplayMessage(" (˶˃ ᵕ ˂˶) .ᐟ.ᐟ"); }, 1000);
         setTimeout(() => { setOwlDisplayMessage(""); }, 2000);
         return data;
     } catch (err: any) {
-        setOwlDisplayMessage("Failed to create a thread!");
+        setOwlDisplayMessage("Failed to create a chat!");
         console.error(err.message);
     }
 };
