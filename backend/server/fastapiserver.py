@@ -9,7 +9,10 @@ from openai import OpenAI
 from openai.types.beta.threads.run import RequiredAction, LastError
 from tools.fernet import encrypt_data, decrypt_data
 from tools.function_calling import get_moodle_course_content
-# from langchain_experimental.data_anonymizer import PresidioReversibleAnonymizer
+from langchain_experimental.data_anonymizer import PresidioReversibleAnonymizer
+from presidio_analyzer import AnalyzerEngine
+from presidio_analyzer.nlp_engine import NlpEngineProvider
+from langdetect import detect, LangDetectException
 import time
 import logging
 import shutil
@@ -49,25 +52,60 @@ assistant_cache = {}  # Cache assistants for reuse
 FILES_DIR = ""
 file_ids = []
 
-# # Initialize the anonymizer
-# anonymizer = PresidioReversibleAnonymizer(
-#     add_default_faker_operators=True,
-#     faker_seed=42
-# )
-    
-# # A function to anonymize the users message
-# def presidio_anonymize(user_message):
-#     anonymized_user_message = anonymizer.anonymize(
-#         user_message
-#     )
-#     return anonymized_user_message
+# Create configuration containing engine name and models
+configuration = {
+    "nlp_engine_name": "spacy",
+    "models": [{"lang_code": "de", "model_name": "de_core_news_md"},
+                {"lang_code": "en", "model_name": "en_core_web_lg"}],
+}
 
-# # A function to de-anonymize the assistants response
-# def presidio_deanonymize(anonymized_response):
-#     de_anonymized_response = anonymizer.deanonymize(
-#         anonymized_response
-#     )
-#     return de_anonymized_response
+# Create NLP engine based on configuration
+provider = NlpEngineProvider(nlp_configuration=configuration)
+nlp_engine_with_german = provider.create_engine()
+
+# Initialize the analyzer
+analyzer = AnalyzerEngine(
+    nlp_engine=nlp_engine_with_german, 
+    supported_languages=["en", "de"]
+)
+
+# Initialize the anonymizer
+anonymizer = PresidioReversibleAnonymizer(
+    add_default_faker_operators=True,
+)
+
+# Detects the language of the text
+def detect_language(text: str) -> str:
+    try:
+        if detect(text) == "en":
+            return "en"
+        else:
+            return "de"
+    except LangDetectException:
+        return "de"
+
+# A function to check if the message contains PII
+def contains_pii(text):
+    print("detected language:", detect_language(text))
+    results = analyzer.analyze(text=text, language=detect_language(text))
+    print("PII results:", results)
+    return len(results) > 0
+
+# A function to anonymize the users message
+def presidio_anonymize(user_message):
+    if contains_pii(user_message):
+        print("# # ## # # #  # # ## #  # ## # # # ## # # #  ## # #  # ")
+        anonymized_user_message = anonymizer.anonymize(user_message)
+        return anonymized_user_message
+    return user_message
+
+# A function to de-anonymize the assistants response
+def presidio_deanonymize(anonymized_response):
+    if contains_pii(anonymized_response):
+        print("# # ## # # #  # # ## #  # ## # # # ## # # #  ## # #  # ")
+        de_anonymized_response = anonymizer.deanonymize(anonymized_response)
+        return de_anonymized_response
+    return anonymized_response
 
 def get_course_config(course_name, mode_name):
     # Traverse the config to find the matching course and mode
@@ -88,8 +126,6 @@ def get_assistant_ids(course_name, mode_name):
     if not assistant_id:
         raise ValueError('Assistant IDs not found in configuration.')
     return assistant_id
-
-
 
 # Helper data models
 class RunStatus(BaseModel):
@@ -175,6 +211,72 @@ async def get_thread(thread_id: str):
         messages=result,
     )
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+QUIZ_FILES_DIR = BASE_DIR / 'data' / 'hochschule_fuer_technik_und_wirtschaft_berlin' / 'bachelor' / 'wirtschaftsinformatik' / 'grundlagen_der_programmierung' / 'test'
+
+@app.get("/api/quiz_files")
+async def get_quiz_files():
+    try:
+        # Ensure the directory exists before iterating
+        if not QUIZ_FILES_DIR.exists():
+            raise FileNotFoundError(f"Quiz files directory not found: {QUIZ_FILES_DIR}")
+        
+        # Retrieve only .txt filenames as a list of strings
+        files = [
+            filename.name
+            for filename in QUIZ_FILES_DIR.iterdir()
+            if filename.is_file() and filename.suffix == ".txt"
+        ]
+
+        return files
+
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/quiz_files/{filename}")
+async def get_quiz_file(filename: str):
+    try:
+        filepath = QUIZ_FILES_DIR / filename
+        if not filepath.exists():
+            raise FileNotFoundError(f"Quiz file not found: {filepath}")
+
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        return {"title": filename, "content": content}
+
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# QUIZ_FILES_DIR = Path('../data/hochschule_fuer_technik_und_wirtschaft_berlin/bachelor/wirtschaftsinformatik/grundlagen_der_programmierung/test')
+# @app.get("/api/quiz_files")
+# async def get_quiz_files():
+#     try:
+#         files_data = []
+#         # Ensure the directory exists before iterating
+#         if not QUIZ_FILES_DIR.exists():
+#             raise FileNotFoundError(f"Quiz files directory not found: {QUIZ_FILES_DIR}")
+
+#         for filename in QUIZ_FILES_DIR.iterdir():
+#             if filename.is_file() and filename.suffix == ".txt":
+#                 filepath = QUIZ_FILES_DIR / filename  # Use path operations
+#                 async with open(filepath, "r", encoding="utf-8") as f:
+#                     content = await f.read()
+#                     files_data.append({"title": filename.name, "content": content})
+#         return files_data
+
+#     except FileNotFoundError as e:
+#         raise HTTPException(status_code=404, detail=str(e))
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/threads/{thread_id}")
 async def post_thread(thread_id: str, message: CreateMessage):
     assistant_id = message.assistant_id
@@ -258,58 +360,6 @@ async def post_thread(thread_id: str, message: CreateMessage):
         last_error=run.last_error
     )
 
-# run = client.beta.threads.runs.create_and_poll(
-#   thread_id=thread.id,
-#   assistant_id=assistant.id,
-# )
- 
-# if run.status == 'completed':
-#   messages = client.beta.threads.messages.list(
-#     thread_id=thread.id
-#   )
-#   print(messages)
-# else:
-#   print(run.status)
- 
-# # Define the list to store tool outputs
-# tool_outputs = []
- 
-# # Loop through each tool in the required action section
-# for tool in run.required_action.submit_tool_outputs.tool_calls:
-#   if tool.function.name == "get_current_temperature":
-#     tool_outputs.append({
-#       "tool_call_id": tool.id,
-#       "output": "57"
-#     })
-#   elif tool.function.name == "get_rain_probability":
-#     tool_outputs.append({
-#       "tool_call_id": tool.id,
-#       "output": "0.06"
-#     })
- 
-# # Submit all tool outputs at once after collecting them in a list
-# if tool_outputs:
-#   try:
-#     run = client.beta.threads.runs.submit_tool_outputs_and_poll(
-#       thread_id=thread.id,
-#       run_id=run.id,
-#       tool_outputs=tool_outputs
-#     )
-#     print("Tool outputs submitted successfully.")
-#   except Exception as e:
-#     print("Failed to submit tool outputs:", e)
-# else:
-#   print("No tool outputs to submit.")
- 
-# if run.status == 'completed':
-#   messages = client.beta.threads.messages.list(
-#     thread_id=thread.id
-#   )
-#   print(messages)
-# else:
-#   print(run.status)
-
-
 @app.post("/api/tools/get_moodle_course_content")
 async def handle_get_moodle_course_content(request: Request):
     data = await request.json()
@@ -366,9 +416,12 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
             return {"error": f"Failed to check for active runs: {e}"}
 
     try:
+        print("Unencrypted user message:", message.content)
+        anonymized_message = presidio_anonymize(message.content)
+        print("Anonymized user message:", anonymized_message)
         client.beta.threads.messages.create(
             thread_id=decrypted_thread_id,
-            content=message.content,
+            content=anonymized_message,
             role="user"
         )
     except Exception as e:
@@ -439,9 +492,12 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
                         content_block = latest_message.content[0]
                         if hasattr(content_block, 'text') and hasattr(content_block.text, 'value'):
                             content = content_block.text.value
+                            print("anonynmized ai response:", content)
+                            deanonymized_response = presidio_deanonymize(content)
+                            print("deanonymized ai response:", deanonymized_response)
 
                 return ThreadMessage(
-                    content=content,
+                    content=deanonymized_response,
                     role=latest_message.role,
                     hidden="type" in latest_message.metadata and latest_message.metadata.get("type") == "hidden",
                     id=latest_message.id,

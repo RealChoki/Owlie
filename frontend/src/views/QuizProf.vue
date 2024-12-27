@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex">
-    <div class="sidebar py-3 px-3 vh-100">
+  <div class="d-flex vh-100">
+    <div class="sidebar py-3 px-3">
       <div class="search-container">
         <input
           ref="searchInput"
@@ -22,10 +22,10 @@
       </div>
 
       <!-- Scrollable Course List -->
-      <div class="course-list-container">
+      <div class="file-list-container">
         <ul class="p-0 mt-1">
           <li
-            v-for="(course, index) in filteredFiles"
+            v-for="(fileTitle, index) in filteredFileTitles"
             :key="index"
             :class="[
               'list-item-hover',
@@ -33,25 +33,31 @@
               'text-white',
               'py-1',
               'cursor-pointer',
-              'selected-course',
+              { 'selected-file': fileTitle === selectedFile.title },
             ]"
+            @click="selectFile(fileTitle)"
           >
             <p class="m-0 py-2 px-2 d-flex align-items-start position-relative">
-              <span class="course-name position-relative">
-                {{ course }}
+              <span class="file-name position-relative">
+                {{ fileTitle }}
               </span>
             </p>
           </li>
         </ul>
       </div>
     </div>
-    <div class="right-side w-100 p-4">
-      <h3 class="text-center text-white">File1</h3>
-      <div class="d-flex">
-        <!-- <input type="file" @change="handleFileSelect" class="bg-white border" /> -->
-        <textarea v-model="fileContent" rows="10" class="bg-white w-100 "></textarea>
-      </div>
-    </div>
+   <div class="right-side w-100 p-4 d-flex flex-column align-items-center">
+  <h3 class="text-white text-center">{{ selectedFile.title }}</h3>
+  <div class="d-flex flex-column w-100 h-100 align-items-center">
+    <textarea
+      v-model="selectedFile.content"
+      rows="10"
+      class="w-100 flex-grow-1 p-3 rounded file-textarea"
+      readonly
+    ></textarea>
+  </div>
+</div>
+
   </div>
 </template>
 
@@ -63,52 +69,49 @@ import {
   faMagnifyingGlass,
   faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
+import { fetchQuizFiles, fetchQuizFile } from "../services/filesService";
 
 library.add(faMagnifyingGlass, faCircleInfo);
-
-const fileContent = ref("");
-
-const handleFileSelect = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  const file = input.files?.[0];
-
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      fileContent.value = (e.target?.result as string) || "";
-    };
-    reader.readAsText(file);
-  }
-};
 
 const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
-
-const files = [
-  "file1",
-  "file2",
-  "file3",
-  "file4",
-  "file5",
-  "file6",
-  "file7",
-  "file8",
-  "file9",
-  "file10",
-];
-
-const filteredFiles = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  const filtered = files.filter((course) =>
-    course.toLowerCase().includes(query)
-  );
-  return filtered;
+const fileTitles = ref<string[]>([]);
+const selectedFile = ref<{ title: string; content: string }>({
+  title: "",
+  content: "",
 });
+
+const filteredFileTitles = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+  return fileTitles.value.filter((title) =>
+    title.toLowerCase().includes(query)
+  );
+});
+
+async function selectFile(fileTitle: string) {
+  try {
+    const response = await fetchQuizFile(fileTitle);
+    selectedFile.value = { title: response.data.title, content: response.data.content };
+  } catch (error) {
+    console.error("Error fetching file:", error);
+  }
+  console.log("Selected file:", fileTitle);
+}
 
 function focusInput() {
   searchInput.value?.focus();
 }
+
+onMounted(async () => {
+  try {
+    const response = await fetchQuizFiles();
+    fileTitles.value = response.data.sort();
+    console.log("Files fetched:", fileTitles.value);
+  } catch (error) {
+    console.error("Error fetching files:", error);
+  }
+});
 </script>
 
 <style scoped>
@@ -160,7 +163,7 @@ function focusInput() {
   transition: color 0.2s ease;
 }
 
-.course-list-container {
+.file-list-container {
   max-height: 82vh;
   overflow-y: auto;
   scrollbar-width: none;
@@ -241,14 +244,14 @@ function focusInput() {
   cursor: pointer;
 }
 
-.selected-course {
+.selected-file {
   background-color: var(--color-gray-medium);
   position: relative;
   overflow: hidden;
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-.selected-course::before {
+.selected-file::before {
   content: "";
   position: absolute;
   top: 0;
@@ -267,5 +270,16 @@ function focusInput() {
 
 .icon-click-effect:active {
   transform: scale(0.9);
+}
+
+.file-textarea {
+  background-color: var(--color-gray-dark);
+  max-width: 800px;
+
+  border: none;
+  outline: none;
+  resize: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style>

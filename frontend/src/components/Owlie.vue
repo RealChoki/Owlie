@@ -58,9 +58,8 @@ const playfulMessages = [
 function handleOwlClick() {
   clickCount.value += 1;
   const randomValue = Math.random();
-  console.log(randomValue);
   if (randomValue < 0.000001) {
-    owlDisplayMessage.value = "Tbh Java is shit ୧(๑•̀ᗝ•́)૭";
+    owlDisplayMessage.value = "Sending endless hoots of gratitude to @davidcraccer and @RealChoki for bringing me to life! 🦉✨";
   }
   if (randomValue < 0.001) {
     owlDisplayMessage.value = "The One Piece! The One Piece is real!!!";
@@ -84,7 +83,7 @@ function displayRandomMessage() {
   font-size: 0.8em;
   min-width: 100px;
   width: fit-content;
-  box-shadow: 1.5px 1.3px 1px #444444; /* Adjusted box-shadow color */
+  box-shadow: 1.5px 1.3px 1px #535353; /* Adjusted box-shadow color */
   border-radius: 10px;
 }
 

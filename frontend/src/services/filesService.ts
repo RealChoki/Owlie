@@ -65,6 +65,14 @@ export async function uploadFiles(filesToUpload: File[]) {
   }
 }
 
+export function fetchQuizFiles() {
+  return axios.get('http://localhost:8000/api/quiz_files')
+}
+
+export function fetchQuizFile(quizFile: string) {
+  return axios.get(`http://localhost:8000/api/quiz_files/${quizFile}`)
+}
+
 export function getFiles() {
   return fileState.files
 }
