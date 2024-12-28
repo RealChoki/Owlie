@@ -89,23 +89,31 @@ def detect_language(text: str) -> str:
 
 # A function to check if the message contains PII
 def contains_pii(text):
-    print("detected language:", detect_language(text))
     results = analyzer.analyze(text=text, language=detect_language(text))
     print("PII results:", results)
-    return len(results) > 0
+    return results
 
 # A function to anonymize the users message
 def presidio_anonymize(user_message):
-    if contains_pii(user_message):
-        print("# # ## # # #  # # ## #  # ## # # # ## # # #  ## # #  # ")
-        anonymized_user_message = anonymizer.anonymize(text=user_message, language=detect_language(user_message))
+    results = contains_pii(user_message)
+    if results:
+        allowed_types = [r.entity_type for r in results]
+        print("Allowed types:", allowed_types)
+        anonymized_user_message = anonymizer.anonymize(
+            text=user_message,
+            language=detect_language(user_message),
+            allow_list=allowed_types
+        )
         return anonymized_user_message
     return user_message
 
 # A function to de-anonymize the assistants response
 def presidio_deanonymize(anonymized_response):
-    if contains_pii(anonymized_response):
-        print("# # ## # # #  # # ## #  # ## # # # ## # # #  ## # #  # ")
+    print("anonymizer mapping", anonymizer.anonymizer_mapping)
+    print()
+    print("deanonymizer mapping", anonymizer.deanonymizer_mapping)
+    results = contains_pii(anonymized_response)
+    if results:
         de_anonymized_response = anonymizer.deanonymize(text_to_deanonymize=anonymized_response)
         return de_anonymized_response
     return anonymized_response
@@ -413,9 +421,10 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
             return {"error": f"Failed to check for active runs: {e}"}
 
     try:
-        print("Unencrypted user message:", message.content)
+        print("unencrypted message:", message.content)
         anonymized_message = presidio_anonymize(message.content)
-        print("Anonymized user message:", anonymized_message)
+        print()
+        print("anonymized message:", anonymized_message)
         client.beta.threads.messages.create(
             thread_id=decrypted_thread_id,
             content=anonymized_message,
@@ -489,9 +498,10 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
                         content_block = latest_message.content[0]
                         if hasattr(content_block, 'text') and hasattr(content_block.text, 'value'):
                             content = content_block.text.value
-                            print("anonynmized ai response:", content)
+                            print("unencrypted response:", content)
                             deanonymized_response = presidio_deanonymize(content)
-                            print("deanonymized ai response:", deanonymized_response)
+                            print()
+                            print("deanonymized response:", deanonymized_response)
 
                 return ThreadMessage(
                     content=deanonymized_response,

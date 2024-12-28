@@ -3,7 +3,7 @@
     ref="ProfileMenuRef"
     class="popover profile-menu position-absolute z-50"
     :style="{ ...positionStyle }"
-    :class="{ 'profile-menu-nav': props.origin === 'Nav', 'profile-menu-burger': props.origin === 'BurgerMenu' }"
+    :class="{ 'profile-menu-nav': props.origin === 'Nav', 'profile-menu-burger': props.origin === 'BurgerMenu', 'profile-menu-nav-edit-quiz': props.origin === 'Nav-EditQuiz' }"
   >
     <nav class="p-2 text-white">
       <div ref="ProfileMenuUniversityRef" class="p-2">
@@ -59,7 +59,7 @@ const router = useRouter();
 // Props
 const props = defineProps({
   origin: {
-    type: String as PropType<"BurgerMenu" | "Nav">,
+    type: String as PropType<"BurgerMenu" | "Nav" | "Nav-EditQuiz">,
     required: true,
   },
   toggleProfileMenu: {
@@ -152,6 +152,11 @@ onUnmounted(() => {
 /* from nav */
 .profile-menu-nav {
   top: 4.5em;
+  right: 0;
+}
+
+.profile-menu-nav-edit-quiz {
+  top: 3.5em;
   right: 0;
 }
 </style>

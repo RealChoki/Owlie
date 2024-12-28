@@ -1,5 +1,8 @@
 <template>
-  <div class="d-flex vh-100">
+  <div
+    class="d-flex vh-100"
+    :class="{ 'container-fluid': isWideScreen && !isSidebarOpen }"
+  >
     <div v-if="isSidebarOpen" class="sidebar py-3 px-3">
       <div class="search-container">
         <input
@@ -50,8 +53,10 @@
       </div>
     </div>
 
-    <div class="right-side w-100 p-4 pb-5 d-flex flex-column align-items-center">
-      <nav class=" d-flex justify-content-between w-100 mb-3">
+    <div
+      class="right-side w-100 container pt-3 pb-5 d-flex flex-column align-items-center"
+    >
+      <nav class="navbar px-2 d-flex justify-content-between w-100 mb-3">
         <!-- phone -->
         <img
           v-if="!isWideScreen"
@@ -64,7 +69,6 @@
           v-else-if="isWideScreen && !isSidebarOpen"
           class="icon-click-effect cursor-pointer"
           src="../assets/icons/MenuOpen.png"
-          
           @click="toggleSidebar"
         />
         <!-- pc and sidebar open -->
@@ -72,11 +76,7 @@
           <font-awesome-icon
             class="icon-click-effect cursor-pointer"
             :icon="['fas', 'home']"
-            style="
-              color: var(--color-gray-shadow);
-              width: 29px;
-              height: 29px;
-            "
+            style="color: var(--color-gray-shadow); width: 29px; height: 29px"
             @click="handleHomeClick"
           />
         </div>
@@ -105,11 +105,14 @@
         </div>
         <Profilemenu
           v-if="isProfileMenuVisible"
-          :origin="'Nav'"
+          :origin="'Nav-EditQuiz'"
           @toggleProfileMenu="toggleProfileMenu"
         />
       </nav>
-      <div v-if="fileTitles.length" class="d-flex flex-column w-100 h-100 align-items-center">
+      <div
+        v-if="fileTitles.length"
+        class="d-flex flex-column w-100 h-100 align-items-center"
+      >
         <div class="textarea-container position-relative w-100 flex-grow-1">
           <textarea
             v-model="selectedFile.content"
@@ -128,7 +131,7 @@
               <font-awesome-icon
                 :icon="['fas', 'pen-to-square']"
                 class="cursor-pointer"
-                style="color: var(--color-gray-shadow);"
+                style="color: var(--color-gray-shadow)"
               />
             </span>
           </button>
@@ -148,7 +151,11 @@ import {
   faHome,
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
-import { fetchQuizFiles, fetchQuizFile, postQuizFile } from "../services/filesService";
+import {
+  fetchQuizFiles,
+  fetchQuizFile,
+  postQuizFile,
+} from "../services/filesService";
 import Profilemenu from "../widgets/Profilemenu.vue";
 import { useScreenWidth } from "../utils/useScreenWidth";
 import { useRouter } from "vue-router";
@@ -191,7 +198,9 @@ const handleHomeClick = () => {
 
 const toggleEdit = () => {
   isEditMode.value = !isEditMode.value;
-  const textarea = document.querySelector(".file-textarea") as HTMLTextAreaElement;
+  const textarea = document.querySelector(
+    ".file-textarea"
+  ) as HTMLTextAreaElement;
   if (isEditMode.value) {
     textarea.readOnly = false;
     textarea.focus();
@@ -203,7 +212,9 @@ const toggleEdit = () => {
 
 const filteredFileTitles = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  return fileTitles.value.filter((title) => title.toLowerCase().includes(query));
+  return fileTitles.value.filter((title) =>
+    title.toLowerCase().includes(query)
+  );
 });
 
 async function selectFile(fileTitle: string) {

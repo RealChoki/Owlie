@@ -18,7 +18,7 @@ ner_model_configuration:
     DATE: DATE_TIME
     TIME: DATE_TIME
 
-  low_confidence_score_multiplier: 0.71
+  low_confidence_score_multiplier: 0.73
   low_score_entity_names:
   - PER
   - PERSON
