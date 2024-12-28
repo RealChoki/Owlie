@@ -46,18 +46,17 @@
         </ul>
       </div>
     </div>
-   <div class="right-side w-100 p-4 d-flex flex-column align-items-center">
-  <h3 class="text-white text-center">{{ selectedFile.title }}</h3>
-  <div class="d-flex flex-column w-100 h-100 align-items-center">
-    <textarea
-      v-model="selectedFile.content"
-      rows="10"
-      class="w-100 flex-grow-1 p-3 rounded file-textarea"
-      readonly
-    ></textarea>
-  </div>
-</div>
-
+    <div class="right-side w-100 p-4 d-flex flex-column align-items-center">
+      <h3 class="text-white text-center">{{ selectedFile.title }}</h3>
+      <div class="d-flex flex-column w-100 h-100 align-items-center">
+        <textarea
+          v-model="selectedFile.content"
+          rows="10"
+          class="w-100 flex-grow-1 p-3 rounded file-textarea"
+          readonly
+        ></textarea>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -92,7 +91,10 @@ const filteredFileTitles = computed(() => {
 async function selectFile(fileTitle: string) {
   try {
     const response = await fetchQuizFile(fileTitle);
-    selectedFile.value = { title: response.data.title, content: response.data.content };
+    selectedFile.value = {
+      title: response.data.title,
+      content: response.data.content,
+    };
   } catch (error) {
     console.error("Error fetching file:", error);
   }
@@ -107,6 +109,7 @@ onMounted(async () => {
   try {
     const response = await fetchQuizFiles();
     fileTitles.value = response.data.sort();
+    selectFile(fileTitles.value[0]);
     console.log("Files fetched:", fileTitles.value);
   } catch (error) {
     console.error("Error fetching files:", error);
