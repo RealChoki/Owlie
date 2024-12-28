@@ -30,7 +30,7 @@
           src="../assets/icons/OwlLogo.png"
           style="width: 75px"
           @click="handleOwlClick"
-          :class="{ 'blur-effect': isOpenBurgerMenu && !isWideScreen }"
+          :class="{ 'blur-effect': isBurgerMenuOpen && !isWideScreen }"
         />
         <p class="text-white small fst-italic">{{ owlDisplayMessage }}</p>
       </div> -->

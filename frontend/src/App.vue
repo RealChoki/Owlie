@@ -10,10 +10,6 @@
   box-sizing: border-box;
 }
 
-.cursor-pointer {
-  cursor: pointer;
-}
-
 .no-select {
   -webkit-touch-callout: none;
   /* iOS Safari */
@@ -30,6 +26,4 @@
 .btn-click:active {
   transform: scale(0.9);
 }
-
-
 </style>

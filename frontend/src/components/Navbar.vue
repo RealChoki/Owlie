@@ -1,35 +1,28 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light pb-4">
-    <div
-      class="container-fluid"
-    >
+    <div class="container-fluid">
       <img
-      v-if="!isWideScreen"
-        class="mt-3 icon-click-effect"
+        v-if="!isWideScreen"
+        class="mt-3 icon-click-effect cursor-pointer"
         src="../assets/icons/MenuOpen.png"
-        style="cursor: pointer"
         @click="toggleBurgerMenu"
       />
       <img
-      v-else-if="isWideScreen && !isOpenSidebar"
-        class="mt-3 icon-click-effect"
+        v-else-if="isWideScreen && !isSidebarOpen"
+        class="mt-3 icon-click-effect cursor-pointer"
         src="../assets/icons/MenuOpen.png"
-        style="cursor: pointer"
         @click="toggleSidebar"
       />
-      <div v-else class="icon-holder mt-3"> 
+      <div v-else class="icon-holder mt-3">
         <font-awesome-icon
-          class="icon-click-effect"
+          class="icon-click-effect cursor-pointer"
           :icon="['fas', 'arrows-rotate']"
-          :class="{ 'arrows-rotate': true}"
-          style="color: var(--color-gray-shadow); cursor: pointer"
+          :class="{ 'arrows-rotate': true }"
+          style="color: var(--color-gray-shadow);"
           @click="handleRefreshClick"
         />
       </div>
-      <div class="d-flex flex-column align-items-center position-relative w-50"
-        
-      >
-
+      <div class="d-flex flex-column align-items-center position-relative w-50">
         <div class="hearts-container">
           <span
             v-for="(heartClass, index) in heartClasses"
@@ -143,40 +136,40 @@
         </p>
       </div>
       <div class="icon-holder mt-3">
-      <!-- if user doesnt have pfp -->
+        <!-- if user doesnt have pfp -->
         <!-- <font-awesome-icon
-          class="arrows-rotate icon-click-effect"
-          v-if="isWideScreen && isOpenSidebar"
+          class="arrows-rotate icon-click-effect cursor-pointer"
+          v-if="isWideScreen && isSidebarOpen"
           :icon="['fas', 'user-circle']"
-          style="color: var(--color-gray-shadow); cursor: pointer"
+          style="color: var(--color-gray-shadow);"
         /> -->
-        <div 
-        v-if="isWideScreen && isOpenSidebar"
-            class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect"
-            style="width: 32px; height: 32px"
-          >
-            <img
-              alt="User"
-              src="https://s.gravatar.com/avatar/6276a6c42e2f0f22bb0a96c4b1f2bd32?s=480&amp;r=pg&amp;d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fsh.png"
-              class="img-fluid rounded-circle"
-              style="width: 100%; height: 100%"
-              @click="togglePopover"
-            />
-          </div>
+        <div
+          v-if="isWideScreen && isSidebarOpen"
+          class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect cursor-pointer"
+          style="width: 32px; height: 32px"
+        >
+          <img
+            alt="User"
+            src="https://s.gravatar.com/avatar/6276a6c42e2f0f22bb0a96c4b1f2bd32?s=480&amp;r=pg&amp;d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fsh.png"
+            class="img-fluid rounded-circle"
+            style="width: 100%; height: 100%"
+            @click="toggleProfileMenu"
+          />
+        </div>
         <font-awesome-icon
-        v-else
-          class="icon-click-effect arrows-rotate"
+          v-else
+          class="icon-click-effect arrows-rotate cursor-pointer"
           :icon="['fas', 'arrows-rotate']"
-          style="color: var(--color-gray-shadow); cursor: pointer"
+          style="color: var(--color-gray-shadow);"
           @click="handleRefreshClick"
         />
       </div>
     </div>
-      <ProfileMenus
-        v-if="isPopoverVisible"
-        :origin="'Nav'"
-        @togglePopover="togglePopover"
-       />
+    <Profilemenu
+      v-if="isProfileMenuVisible"
+      :origin="'Nav'"
+      @toggleProfileMenu="toggleProfileMenu"
+    />
   </nav>
 </template>
 
@@ -187,7 +180,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowsRotate,
   faHeart,
-  faUser
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { useThread } from "../hooks/useThread";
 import {
@@ -203,18 +196,18 @@ import {
 } from "../services/localStorageService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 import { navbarCourseTitle } from "../services/homeService";
-import ProfileMenus from "@/widgets/ProfileMenus.vue";
+import Profilemenu from "@/widgets/Profilemenu.vue";
 
 library.add(faArrowsRotate, faHeart, faUser);
 
 const props = defineProps({
-  isOpenBurgerMenu: Boolean,
-  isOpenSidebar: Boolean
+  isBurgerMenuOpen: Boolean,
+  isSidebarOpen: Boolean,
 });
 
-const isPopoverVisible = ref(false);
-const togglePopover = () => {
-  isPopoverVisible.value = !isPopoverVisible.value;
+const isProfileMenuVisible = ref(false);
+const toggleProfileMenu = () => {
+  isProfileMenuVisible.value = !isProfileMenuVisible.value;
 };
 
 const emit = defineEmits(["toggleBurgerMenu", "toggleSidebar"]);
@@ -222,15 +215,15 @@ const emit = defineEmits(["toggleBurgerMenu", "toggleSidebar"]);
 const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
 const toggleBurgerMenu = () => {
-  emit("toggleBurgerMenu", !props.isOpenBurgerMenu);
+  emit("toggleBurgerMenu", !props.isBurgerMenuOpen);
 };
 
 const toggleSidebar = () => {
-  emit("toggleSidebar", !props.isOpenSidebar);
+  emit("toggleSidebar", !props.isSidebarOpen);
 };
 
 const handleRefreshClick = async () => {
-  if (!props.isOpenBurgerMenu) {
+  if (!props.isBurgerMenuOpen) {
     clearMessages(false); // Do not reset heartCount
     clearThread();
     await initializeThread();
@@ -258,13 +251,13 @@ const heartClasses = computed(() => {
 
 function handleResize() {
   if (window.innerWidth <= 768) {
-    isPopoverVisible.value = false;
+    isProfileMenuVisible.value = false;
   }
 }
 
 const handleStorageChange = (event: StorageEvent) => {
-  if (event.key === 'heartCount') {
-    const newHeartCount = parseFloat(event.newValue || '');
+  if (event.key === "heartCount") {
+    const newHeartCount = parseFloat(event.newValue || "");
     if (!isNaN(newHeartCount)) {
       heartCount.value = newHeartCount;
     }
@@ -314,7 +307,7 @@ onMounted(() => {
 
   // Update the last regeneration time
   localStorage.setItem(lastRegenTimeKey, currentTime.toString());
-  window.addEventListener('storage', handleStorageChange);
+  window.addEventListener("storage", handleStorageChange);
   // Start the interval for future regeneration
   const regenInterval = setInterval(() => {
     if (heartCount.value < totalHearts) {
@@ -331,14 +324,14 @@ onMounted(() => {
 
   onUnmounted(() => {
     window.removeEventListener("resize", handleResize);
-    window.removeEventListener('storage', handleStorageChange);
+    window.removeEventListener("storage", handleStorageChange);
     clearInterval(regenInterval);
   });
 });
 </script>
 <style scoped>
 .navbar {
- /* background-color: var(--color-background-dark); */
+  /* background-color: var(--color-background-dark); */
 }
 
 .hearts-container {
@@ -376,7 +369,6 @@ onMounted(() => {
 }
 
 .icon-click-effect {
-  cursor: pointer;
   display: inline-block;
   transition: transform 0.2s ease;
 }

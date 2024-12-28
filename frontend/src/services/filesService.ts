@@ -73,6 +73,10 @@ export function fetchQuizFile(quizFile: string) {
   return axios.get(`http://localhost:8000/api/quiz_files/${quizFile}`)
 }
 
+export function postQuizFile(quizFile: string, data: any) {
+  return axios.post(`http://localhost:8000/api/quiz_files/${quizFile}`, data)
+}
+
 export function getFiles() {
   return fileState.files
 }

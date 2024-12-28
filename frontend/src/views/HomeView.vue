@@ -4,29 +4,29 @@
   >
     <transition name="slide">
       <Sidebar
-        v-if="isWideScreen && isOpenSidebar"
+        v-if="isWideScreen && isSidebarOpen"
         @closeSidebar="closeSidebar"
       />
     </transition>
     <div
       class="container d-flex flex-column vh-100"
       :style="{
-        position: !isOpenSidebar && !isOpenBurgerMenu ? 'fixed' : 'relative',
-        left: !isOpenSidebar && !isOpenBurgerMenu ? '50%' : 'auto',
-        transform: !isOpenSidebar && !isOpenBurgerMenu ? 'translateX(-50%)' : 'none',
+        position: !isSidebarOpen && !isBurgerMenuOpen ? 'fixed' : 'relative',
+        left: !isSidebarOpen && !isBurgerMenuOpen ? '50%' : 'auto',
+        transform: !isSidebarOpen && !isBurgerMenuOpen ? 'translateX(-50%)' : 'none',
         transition: isWideScreen ? 'transform 0.7s ease' : 'none',
       }"
       
     >
       <Navbar
-        :isOpenBurgerMenu="isOpenBurgerMenu"
-        :isOpenSidebar="isOpenSidebar"
+        :isBurgerMenuOpen="isBurgerMenuOpen"
+        :isSidebarOpen="isSidebarOpen"
         @toggleBurgerMenu="toggleBurgerMenu"
         @toggleSidebar="toggleSidebar"
-        :class="{ 'blur-effect': isOpenBurgerMenu && !isWideScreen }"
+        :class="{ 'blur-effect': isBurgerMenuOpen && !isWideScreen }"
       />
       
-      <OwlLogo v-if="!chatMessages.length" :class="{ 'blur-effect': isOpenBurgerMenu && !isWideScreen }"/>
+      <OwlLogo v-if="!chatMessages.length" :class="{ 'blur-effect': isBurgerMenuOpen && !isWideScreen }"/>
       
       <div
         class="flex-grow-1 d-flex flex-column overflow-hidden"
@@ -35,15 +35,15 @@
         <ChatBubbleContainer
           v-if="chatMessages.length"
           :chatMessages="chatMessages"
-          :isOpenBurgerMenu="isOpenBurgerMenu"
-          :class="{ 'blur-effect': isOpenBurgerMenu && !isWideScreen }"
+          :isBurgerMenuOpen="isBurgerMenuOpen"
+          :class="{ 'blur-effect': isBurgerMenuOpen && !isWideScreen }"
         />
         <FooterInput
           class="mb-2"
           :messages="chatMessages"
-          :isOpenBurgerMenu="isOpenBurgerMenu"
+          :isBurgerMenuOpen="isBurgerMenuOpen"
           @toggleOverlay="toggleOverlay"
-          :class="{ 'blur-effect': isOpenBurgerMenu && !isWideScreen }"
+          :class="{ 'blur-effect': isBurgerMenuOpen && !isWideScreen }"
         />
       </div>
       <ExpandedInput
@@ -52,7 +52,7 @@
       />
       <transition name="slide">
         <BurgerMenu
-          v-if="isOpenBurgerMenu"
+          v-if="isBurgerMenuOpen"
           @closeBurgerMenu="closeBurgerMenu"
           ref="burgerMenuRef"
         />
@@ -84,8 +84,8 @@ import { useScreenWidth } from "../utils/useScreenWidth";
 import { setNavbarCourseTitle } from "../services/homeService";
 
 const isExpandedInput = ref(false);
-const isOpenBurgerMenu = ref(false);
-const isOpenSidebar = ref(true);
+const isBurgerMenuOpen = ref(false);
+const isSidebarOpen = ref(true);
 const chatMessages = computed(() => chatService.getMessages());
 
 const burgerMenuRef = ref<ComponentPublicInstance | null>(null);
@@ -98,23 +98,23 @@ const setRun = (data: RunStatus | undefined) => {
 const { clearThread, initializeThread } = useThread(run, setRun);
 
 function toggleBurgerMenu(newState: boolean) {
-  isOpenBurgerMenu.value = newState;
+  isBurgerMenuOpen.value = newState;
 }
 
 function closeBurgerMenu() {
-  isOpenBurgerMenu.value = false;
+  isBurgerMenuOpen.value = false;
 }
 
 function openSidebar() {
-  isOpenSidebar.value = true;
+  isSidebarOpen.value = true;
 }
 
 function closeSidebar() {
-  isOpenSidebar.value = false;
+  isSidebarOpen.value = false;
 }
 
 function toggleSidebar(newState: boolean) {
-  isOpenSidebar.value = newState;
+  isSidebarOpen.value = newState;
 }
 
 function closeExpandedInput() {
@@ -213,5 +213,4 @@ watch(isWideScreen, (newVal) => {
 .blur-effect {
   filter: blur(1.5px);
 }
-
 </style>

@@ -17,6 +17,7 @@ import time
 import logging
 import shutil
 import tempfile  # Add this import
+import yaml
 
 # Configure logging
 logging.basicConfig(level=logging.ERROR)
@@ -52,26 +53,28 @@ assistant_cache = {}  # Cache assistants for reuse
 FILES_DIR = ""
 file_ids = []
 
-# Create configuration containing engine name and models
-configuration = {
-    "nlp_engine_name": "spacy",
-    "models": [{"lang_code": "de", "model_name": "de_core_news_md"},
-                {"lang_code": "en", "model_name": "en_core_web_lg"}],
-}
+# Define the path to the languages configuration file
+LANGUAGES_CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),"languages-config.yml")
+
+# Load the configuration data from the YAML file
+with open(LANGUAGES_CONFIG_FILE, "r") as file:
+    language_config_data = yaml.safe_load(file)
 
 # Create NLP engine based on configuration
-provider = NlpEngineProvider(nlp_configuration=configuration)
+provider = NlpEngineProvider(conf_file=LANGUAGES_CONFIG_FILE)
 nlp_engine_with_german = provider.create_engine()
 
 # Initialize the analyzer
 analyzer = AnalyzerEngine(
     nlp_engine=nlp_engine_with_german, 
-    supported_languages=["en", "de"]
+    supported_languages=["en", "de"],
+    default_score_threshold=0.6
 )
 
 # Initialize the anonymizer
 anonymizer = PresidioReversibleAnonymizer(
-    add_default_faker_operators=True,
+    languages_config=language_config_data,
+    add_default_faker_operators=True
 )
 
 # Detects the language of the text
@@ -95,7 +98,7 @@ def contains_pii(text):
 def presidio_anonymize(user_message):
     if contains_pii(user_message):
         print("# # ## # # #  # # ## #  # ## # # # ## # # #  ## # #  # ")
-        anonymized_user_message = anonymizer.anonymize(user_message)
+        anonymized_user_message = anonymizer.anonymize(text=user_message, language=detect_language(user_message))
         return anonymized_user_message
     return user_message
 
@@ -103,7 +106,7 @@ def presidio_anonymize(user_message):
 def presidio_deanonymize(anonymized_response):
     if contains_pii(anonymized_response):
         print("# # ## # # #  # # ## #  # ## # # # ## # # #  ## # #  # ")
-        de_anonymized_response = anonymizer.deanonymize(anonymized_response)
+        de_anonymized_response = anonymizer.deanonymize(text_to_deanonymize=anonymized_response)
         return de_anonymized_response
     return anonymized_response
 
@@ -255,27 +258,21 @@ async def get_quiz_file(filename: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# QUIZ_FILES_DIR = Path('../data/hochschule_fuer_technik_und_wirtschaft_berlin/bachelor/wirtschaftsinformatik/grundlagen_der_programmierung/test')
-# @app.get("/api/quiz_files")
-# async def get_quiz_files():
-#     try:
-#         files_data = []
-#         # Ensure the directory exists before iterating
-#         if not QUIZ_FILES_DIR.exists():
-#             raise FileNotFoundError(f"Quiz files directory not found: {QUIZ_FILES_DIR}")
+@app.post("/api/quiz_files/{filename}")
+async def post_quiz_file(filename: str, request: Request):
+    try:
+        # Read the uploaded file
+        content = await request.body()
+        filepath = QUIZ_FILES_DIR / filename
 
-#         for filename in QUIZ_FILES_DIR.iterdir():
-#             if filename.is_file() and filename.suffix == ".txt":
-#                 filepath = QUIZ_FILES_DIR / filename  # Use path operations
-#                 async with open(filepath, "r", encoding="utf-8") as f:
-#                     content = await f.read()
-#                     files_data.append({"title": filename.name, "content": content})
-#         return files_data
+        # Write the content to the file
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(content.decode("utf-8"))
 
-#     except FileNotFoundError as e:
-#         raise HTTPException(status_code=404, detail=str(e))
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
+        return {"message": f"Quiz file '{filename}' uploaded successfully."}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/threads/{thread_id}")
 async def post_thread(thread_id: str, message: CreateMessage):

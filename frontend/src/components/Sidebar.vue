@@ -13,15 +13,13 @@
       />
       <font-awesome-icon
         :icon="['fas', 'magnifying-glass']"
-        class="magnifying-glass"
+        class="magnifying-glass cursor-pointer"
         :class="{ 'text-white': isSearchFocused }"
-        style="cursor: pointer"
         @click="focusInput"
       />
       <img
         src="../assets/icons/MenuClose.png"
-        class="ms-3 icon-click-effect"
-        style="cursor: pointer"
+        class="ms-3 icon-click-effect cursor-pointer"
         @click="closeSidebar"
       />
     </div>
@@ -64,7 +62,7 @@
           Select a mode
           <font-awesome-icon
             :icon="['fas', 'circle-info']"
-            class="circle-info"
+            class="circle-info cursor-pointer"
             @click="toggleInfo"
           />
         </h6>
@@ -123,7 +121,7 @@ import { setNavbarCourseTitle } from "../services/homeService";
 library.add(faMagnifyingGlass, faCircleInfo);
 
 const props = defineProps({
-  isOpenSidebar: Boolean,
+  isSidebarOpen: Boolean,
 });
 
 const emit = defineEmits(["closeSidebar"]);
@@ -312,10 +310,6 @@ onMounted(() => {
   pointer-events: none !important;
 }
 
-.cursor-pointer {
-  cursor: pointer !important;
-}
-
 .modes_container {
   bottom: 0;
   left: 0;
@@ -357,10 +351,6 @@ onMounted(() => {
   font-size: 0.7rem;
 }
 
-.circle-info {
-  cursor: pointer;
-}
-
 .selected-course {
   background-color: var(--color-gray-medium);
   position: relative;
@@ -380,7 +370,6 @@ onMounted(() => {
 }
 
 .icon-click-effect {
-  cursor: pointer;
   display: inline-block;
   transition: transform 0.2s ease;
 }

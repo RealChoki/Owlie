@@ -1,12 +1,12 @@
 <template>
   <div
-    ref="popoverRef"
-    class="popover position-absolute z-50"
+    ref="ProfileMenuRef"
+    class="popover profile-menu position-absolute z-50"
     :style="{ ...positionStyle }"
-    :class="{ 'popover-nav': props.origin === 'Nav', 'popover-burger': props.origin === 'BurgerMenu' }"
+    :class="{ 'profile-menu-nav': props.origin === 'Nav', 'profile-menu-burger': props.origin === 'BurgerMenu' }"
   >
     <nav class="p-2 text-white">
-      <div ref="popoverUniversityRef" class="p-2">
+      <div ref="ProfileMenuUniversityRef" class="p-2">
         Hochschule für Technik und Wirtschaft Berlin
       </div>
       <hr class="my-1" />
@@ -62,24 +62,24 @@ const props = defineProps({
     type: String as PropType<"BurgerMenu" | "Nav">,
     required: true,
   },
-  togglePopover: {
+  toggleProfileMenu: {
       type: Function,
       required: false,
   },
 });
 
 // Refs
-const emit = defineEmits(["togglePopover"]);
+const emit = defineEmits(["toggleProfileMenu"]);
 
-const popoverRef: Ref<HTMLElement | null> = ref(null);
-const popoverUniversityRef: Ref<HTMLElement | null> = ref(null);
+const ProfileMenuRef: Ref<HTMLElement | null> = ref(null);
+const ProfileMenuUniversityRef: Ref<HTMLElement | null> = ref(null);
 const positionStyle = ref<Partial<CSSStyleDeclaration>>(null);
 const isFirstClick = ref(true);
 
-// Function to update popover position based on height
-function updatePopoverPosition() {
+// Function to update ProfileMenu position based on height
+function updateProfileMenuPosition() {
   if (props.origin !== "BurgerMenu") return;
-  const universityHeight = popoverUniversityRef.value?.offsetHeight || 0;
+  const universityHeight = ProfileMenuUniversityRef.value?.offsetHeight || 0;
 
   positionStyle.value = {
     top:
@@ -97,15 +97,15 @@ function logout() {
 
 // ResizeObserver handler
 function handleHeightChange(entries: ResizeObserverEntry[]) {
-    updatePopoverPosition();
+    updateProfileMenuPosition();
 }
 function handleClickOutside(event: MouseEvent) {
   if (isFirstClick.value) {
     isFirstClick.value = false;
     return;
   }
-  if (popoverRef.value && !popoverRef.value.contains(event.target as Node)) {
-    emit("togglePopover");
+  if (ProfileMenuRef.value && !ProfileMenuRef.value.contains(event.target as Node)) {
+    emit("toggleProfileMenu");
   }
 }
 
@@ -114,23 +114,23 @@ let resizeObserver: ResizeObserver | null = null;
 // Lifecycle hooks
 onMounted(() => {
   document.addEventListener("click", handleClickOutside);
-  if (popoverUniversityRef.value) {
+  if (ProfileMenuUniversityRef.value) {
     resizeObserver = new ResizeObserver(handleHeightChange);
-    resizeObserver.observe(popoverUniversityRef.value);
+    resizeObserver.observe(ProfileMenuUniversityRef.value);
   }
 });
 
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
-  if (resizeObserver && popoverUniversityRef.value) {
-    resizeObserver.unobserve(popoverUniversityRef.value);
+  if (resizeObserver && ProfileMenuUniversityRef.value) {
+    resizeObserver.unobserve(ProfileMenuUniversityRef.value);
   }
   resizeObserver?.disconnect();
 });
 </script>
 
 <style scoped>
-.popover {
+.profile-menu {
   z-index: 9999;
   width: 100%;
   background-color: var(--color-gray-medium);
@@ -138,19 +138,19 @@ onUnmounted(() => {
   border-width: 1px;
 }
 
-.popover nav a:hover {
+.profile-menu nav a:hover {
   background-color: var(--color-gray-light);
 }
 
 /* from burger-menu */
-.popover-burger {
+.profile-menu-burger {
   top: -135px;
   left: transformX(-50%);
   max-width: 450px;
 }
 
 /* from nav */
-.popover-nav {
+.profile-menu-nav {
   top: 4.5em;
   right: 0;
 }

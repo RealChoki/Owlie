@@ -48,7 +48,7 @@
       <font-awesome-icon
         v-if="showResizeIcon"
         :icon="['fas', 'up-right-and-down-left-from-center']"
-        class="top-right-icon"
+        class="top-right-icon cursor-pointer"
         @click="toggleOverlay"
       />
       <div v-if="isMessageTooLong" class="character-count">
@@ -104,7 +104,7 @@ import { getAssistantThreadId } from '../services/openaiService';
 
 const props = defineProps({
   isExpandedInput: Boolean,
-  isOpenBurgerMenu: Boolean,
+  isBurgerMenuOpen: Boolean,
   messages: {
     type: Array,
     required: true,
@@ -267,7 +267,7 @@ function handleFileChange(event: Event) {
 }
 
 function readLatestAssistantMessage() {
-  if (!props.isOpenBurgerMenu && !isTTSPlaying.value) {
+  if (!props.isBurgerMenuOpen && !isTTSPlaying.value) {
     console.log('readLatestAssistantMessage called');
     const messages = getMessages();
     const assistantMessages = messages.filter(message => message.role === 'assistant');
@@ -421,7 +421,6 @@ watch(message, (newValue) => {
   right: 7px;
   font-size: 0.8rem;
   color: var(--color-gray-dark);
-  cursor: pointer;
   background-color: var(--color-gray-shadow);
   padding: 6px;
   border-radius: 50%;

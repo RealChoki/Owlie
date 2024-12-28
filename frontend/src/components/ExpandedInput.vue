@@ -6,7 +6,7 @@
           <font-awesome-icon
             :icon="['fas', 'down-left-and-up-right-to-center']"
             @click.stop="closeExpandedInput"
-            class="collapse-icon text-white"
+            class="collapse-icon text-white cursor-pointer"
           />
         </div>
         <textarea
@@ -94,7 +94,6 @@ function sendMessage() {
 }
 
 .collapse-icon {
-  cursor: pointer;
   font-size: 1.5rem;
   margin-right: 0.2em;
 }

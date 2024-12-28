@@ -14,15 +14,13 @@
       />
       <font-awesome-icon
         :icon="['fas', 'magnifying-glass']"
-        class="magnifying-glass"
+        class="magnifying-glass cursor-pointer"
         :class="{ 'text-white': isSearchFocused }"
-        style="cursor: pointer"
         @click="focusInput"
       />
       <img
         src="../assets/icons/MenuClose.png"
-        class="ms-3 icon-click-effect"
-        style="cursor: pointer"
+        class="ms-3 icon-click-effect cursor-pointer"
         @click="closeBurgerMenu"
       />
     </div>
@@ -91,7 +89,7 @@
         </v-btn>
         <font-awesome-icon
           :icon="['fas', 'circle-info']"
-          class="circle-info text-white"
+          class="circle-info text-white cursor-pointer"
           @click="toggleInfo"
         />
       </div>
@@ -101,8 +99,8 @@
         class="max-width-450 mt-2 d-flex align-items-center w-100 p-2 text-dark border-0 profile-btn"
         type="button"
         aria-haspopup="menu"
-        @click="togglePopover"
-        :style="{ backgroundColor: isPopoverVisible ? '#41414160' : '' }"
+        @click="toggleProfileMenu"
+        :style="{ backgroundColor: isProfileMenuVisible ? '#41414160' : '' }"
       >
         <div class="me-2">
           <div
@@ -121,10 +119,10 @@
           <span>David Svoboda</span>
         </div>
       </button>
-      <ProfileMenus
-        v-if="isPopoverVisible"
+      <ProfileMenu
+        v-if="isProfileMenuVisible"
         :origin="'BurgerMenu'"
-        @togglePopover="togglePopover"
+        @toggleProfileMenu="toggleProfileMenu"
         :style="{ width: buttonWidth + 'px' }"
         />
     </div>
@@ -163,7 +161,7 @@ import {
   setAssistantMode,
 } from "../services/openaiService";
 import { setNavbarCourseTitle } from "../services/homeService";
-import ProfileMenus from "@/widgets/ProfileMenus.vue";
+import ProfileMenu from "@/widgets/ProfileMenu.vue";
 
 library.add(
   faMagnifyingGlass,
@@ -175,7 +173,7 @@ library.add(
 );
 
 const props = defineProps({
-  isOpenBurgerMenu: Boolean,
+  isBurgerMenuOpen: Boolean,
 });
 
 const emit = defineEmits(["closeBurgerMenu"]);
@@ -200,15 +198,15 @@ const clickableCourses = ref<string[]>([
 
 const profileBtn = ref<HTMLElement | null>(null);
 const buttonWidth = ref(0);
-const updatePopoverWidth = () => {
+const updatetoggleProfileMenuWidth = () => {
   if (profileBtn.value) {
     buttonWidth.value = profileBtn.value.offsetWidth;
   }
 };
 
-const isPopoverVisible = ref(false);
-const togglePopover = () => {
-  isPopoverVisible.value = !isPopoverVisible.value;
+const isProfileMenuVisible = ref(false);
+const toggleProfileMenu = () => {
+  isProfileMenuVisible.value = !isProfileMenuVisible.value;
     if (showInfo.value) {
     toggleInfo();
   }
@@ -297,7 +295,7 @@ function handleResize() {
   if (window.innerWidth >= 768) {
     emit("closeBurgerMenu");
   }
-  updatePopoverWidth();
+  updatetoggleProfileMenuWidth();
 }
 
 onMounted(() => {
@@ -417,7 +415,6 @@ onUnmounted(() => {
 }
 
 .circle-info {
-  cursor: pointer;
   position: absolute;
   top: -4px;
   right: -4px;
@@ -433,10 +430,6 @@ onUnmounted(() => {
 
 .unclickable:hover {
   background-color: transparent !important;
-}
-
-.cursor-pointer {
-  cursor: pointer;
 }
 
 .modes_container {
@@ -468,7 +461,6 @@ onUnmounted(() => {
 }
 
 .icon-click-effect {
-  cursor: pointer;
   display: inline-block;
   transition: transform 0.2s ease;
 }

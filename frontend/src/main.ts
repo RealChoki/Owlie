@@ -10,6 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '@fortawesome/fontawesome-free/css/all.css';
 import "@/assets/styles/colorVariables.css";
+import "@/assets/styles/globalClasses.css";
 
 // Create Vuetify instance
 const vuetify = createVuetify({

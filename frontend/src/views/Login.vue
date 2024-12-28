@@ -41,7 +41,7 @@
           <div
             class="d-flex justify-content-between align-items-center mb-4 gap-3"
           >
-            <span class="small text-start" style="width: 50%; cursor: pointer"
+            <span class="small text-start cursor-pointer" style="width: 50%;"
               >Don't have an account? <strong>Register</strong></span
             >
 
@@ -101,10 +101,11 @@ const onSubmit = () => {
 
 
 <style scoped>
+/*
 .logo {
   width: 30px;
-  cursor: pointer;
 }
+*/
 
 .container-fluid {
   background-color: var(--color-black);

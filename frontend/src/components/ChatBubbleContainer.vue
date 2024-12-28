@@ -4,7 +4,7 @@
     :class="[
       'chat-bubble-container',
       'py-0',
-      { 'no-scroll': props.isOpenBurgerMenu },
+      { 'no-scroll': props.isBurgerMenuOpen },
     ]"
   >
     <div v-for="(message, index) in messages" :key="message.id || index">
@@ -65,7 +65,7 @@ const md = new MarkdownIt();
 const { isWideScreen } = useScreenWidth();
 
 const props = defineProps({
-  isOpenBurgerMenu: {
+  isBurgerMenuOpen: {
     type: Boolean,
     required: true,
   },
