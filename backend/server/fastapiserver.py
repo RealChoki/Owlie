@@ -95,7 +95,7 @@ def contains_pii(text):
 
 # A function to anonymize the users message
 def presidio_anonymize(user_message):
-    results = contains_pii(user_message)
+    results = list(set(contains_pii(user_message)))
     if results:
         allowed_types = [r.entity_type for r in results]
         print("Allowed types:", allowed_types)
@@ -109,11 +109,7 @@ def presidio_anonymize(user_message):
 
 # A function to de-anonymize the assistants response
 def presidio_deanonymize(anonymized_response):
-    print("anonymizer mapping", anonymizer.anonymizer_mapping)
-    print()
-    print("deanonymizer mapping", anonymizer.deanonymizer_mapping)
-    results = contains_pii(anonymized_response)
-    if results:
+    if anonymizer.deanonymizer_mapping:
         de_anonymized_response = anonymizer.deanonymize(text_to_deanonymize=anonymized_response)
         return de_anonymized_response
     return anonymized_response
