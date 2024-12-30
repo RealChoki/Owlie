@@ -63,7 +63,7 @@
     </div>
 
     <div
-      class="mode-toggle d-flex flex-column align-items-center modes_container p-3 pt-2"
+      class="mode-toggle d-flex flex-column align-items-center modes-container p-3 pt-2"
     >
       <div class="d-flex gap-2 text-white">
         <h6 class="m-0">Switch mode to:</h6>
@@ -432,7 +432,7 @@ onUnmounted(() => {
   background-color: transparent !important;
 }
 
-.modes_container {
+.modes-container {
   background-color: var(--color-black);
   overflow: visible;
 }

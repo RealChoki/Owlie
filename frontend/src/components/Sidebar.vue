@@ -28,17 +28,12 @@
     <div class="course-list-container">
       <ul class="p-0 mt-1">
         <li
-          v-for="(course, index) in filteredCourses"
-          :key="index"
-          :class="[
-            'list-item-hover',
-            'rounded',
-            'text-white',
-            'py-1',
-            { 'unclickable': !isCourseClickable(course), 'cursor-pointer': isCourseClickable(course), 'selected-course': isCourseClicked(course) },
-          ]"
-          @click="isCourseClickable(course) ? selectCourse(course) : null; handleCourseClick(course)"
-        >
+    v-for="(course, index) in filteredCourses"
+    :key="index"
+    class="list-item-hover rounded text-white py-1"
+    :class="courseClass(course)"
+    @click="onCourseClick(course)"
+  >
           <p class="m-0 py-2 px-2 d-flex align-items-start position-relative">
             <span class="course-name position-relative">
               {{ course }}
@@ -55,7 +50,7 @@
     </div>
 
     <div
-      class="mode-toggle d-flex flex-column align-items-center modes_container p-3 pt-2"
+      class="mode-toggle d-flex flex-column align-items-center modes-container p-3 pt-2"
     >
       <div class="d-flex gap-2 text-white">
         <h6 class="m-0">
@@ -126,62 +121,62 @@ const props = defineProps({
 
 const emit = defineEmits(["closeSidebar"]);
 
+// Refs
 const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref(getAssistantMode() || 'general');
+const selectedMode = ref(getAssistantMode() || "general");
 const courseClicked = ref<{ course: string; mode: string } | null>(null);
 const showInfo = ref(false);
 
+const clickableCourses = ref<string[]>(["Grundlagen der Programmierung", "Statistik"]);
 
-const clickableCourses = ref<string[]>(["Grundlagen der Programmierung",  "Statistik"]);
-
-function isCourseClickable(course: string): boolean {
-  return clickableCourses.value.includes(course);
-}
-
-function handleCourseClick(course: string) {
-  if (!isCourseClickable(course)) {
-    return;
-  }
-  console.log("Selected course:", course);
-  setNavbarCourseTitle(course, selectedMode.value);
-}
-
-function isCourseClicked(course: string): boolean {
-  return (
-    courseClicked.value !== null &&
-    course === courseClicked.value.course &&
-    selectedMode.value === courseClicked.value.mode
-  );
-}
-
+// Computed
 const filteredCourses = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const filtered = courses.value.filter((course) =>
     course.toLowerCase().includes(query)
   );
-
   const clickable = filtered.filter(isCourseClickable);
   const unclickable = filtered.filter((course) => !isCourseClickable(course));
 
   return [...clickable, ...unclickable.sort()];
 });
 
+// Main methods
+function isCourseClickable(course: string): boolean {
+  return clickableCourses.value.includes(course);
+}
+
+const isCourseClicked = (course: string): boolean =>
+  courseClicked.value !== null &&
+  course === courseClicked.value.course &&
+  selectedMode.value === courseClicked.value.mode;
+
+// Generate dynamic classes for courses
+const courseClass = (course: string) => ({
+  'unclickable': !isCourseClickable(course),
+  'cursor-pointer': isCourseClickable(course),
+  'selected-course': isCourseClicked(course),
+});
+
+const onCourseClick = (course: string) => {
+  if (!isCourseClickable(course)) return;
+  console.log('Selected course:', course);
+  setNavbarCourseTitle(course, selectedMode.value);
+  selectCourse(course);
+};
+
 const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
-
 async function selectCourse(course: string) {
-  if (!isCourseClickable(course)) {
-    return;
-  }
+  if (!isCourseClickable(course)) return;
   console.log("Selected course:", course);
   courseClicked.value = { course, mode: selectedMode.value };
 
   const modeName = selectedMode.value;
   const courseName = course;
-
   const currentCourse = getAssistantCourse();
   const currentMode = getAssistantMode();
 
@@ -189,21 +184,21 @@ async function selectCourse(course: string) {
     console.log("Course or mode changed. Resetting thread and messages.");
     clearThread();
     clearMessages(false);
-
     setAssistantCourse(course);
     setAssistantMode(modeName);
+
     try {
       await fetchAssistantIds(courseName, modeName);
       await initializeThread();
     } catch (error) {
       console.error("Error initializing thread:", error);
-      return;
     }
   } else {
     console.log("Same course and mode selected. No action taken.");
   }
 }
 
+// Utility
 function closeSidebar() {
   emit("closeSidebar");
 }
@@ -216,9 +211,11 @@ function toggleInfo() {
   showInfo.value = !showInfo.value;
 }
 
+// Lifecycle
 onMounted(() => {
   const currentCourse = getAssistantCourse();
   const currentMode = getAssistantMode();
+
   if (currentCourse && currentMode) {
     courseClicked.value = { course: currentCourse, mode: currentMode };
     selectedMode.value = currentMode;
@@ -262,7 +259,6 @@ onMounted(() => {
   display: flex;
   align-items: center;
   position: relative;
-  /* background-color: var(--color-black); */
   padding-bottom: 0.75em;
 }
 
@@ -303,14 +299,13 @@ onMounted(() => {
   transition: width 0.5s ease, opacity 0.5s ease;
 }
 
-
 .unclickable {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
   pointer-events: none !important;
 }
 
-.modes_container {
+.modes-container {
   bottom: 0;
   left: 0;
   width: 100%;
