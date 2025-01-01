@@ -72,7 +72,7 @@
           @click="toggleSidebar"
         />
         <!-- pc and sidebar open -->
-        <div v-else class="icon-holder">
+        <div v-else class="nav-icon-holder">
           <font-awesome-icon
             class="icon-click-effect cursor-pointer"
             :icon="['fas', 'home']"
@@ -82,7 +82,7 @@
         </div>
         <h3 class="text-white text-center m-0">{{ selectedFile.title }}</h3>
 
-        <div class="icon-holder">
+        <div class="nav-icon-holder">
           <!-- if user doesnt have pfp -->
           <!-- <font-awesome-icon
             class="arrows-rotate icon-click-effect cursor-pointer"
@@ -91,14 +91,12 @@
             style="color: var(--color-gray-shadow);"
           /> -->
           <div
-            class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect"
-            style="width: 32px; height: 32px"
+            class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect pfp-container"
           >
             <img
               alt="User"
               src="https://s.gravatar.com/avatar/6276a6c42e2f0f22bb0a96c4b1f2bd32?s=480&amp;r=pg&amp;d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fsh.png"
               class="img-fluid rounded-circle"
-              style="width: 100%; height: 100%"
               @click="toggleProfileMenu"
             />
           </div>
@@ -372,11 +370,16 @@ onMounted(async () => {
   scrollbar-width: none;
 }
 
-.icon-holder {
+.nav-icon-holder {
   width: 29px;
 }
 
 .btn-edit:hover {
   opacity: 0.2;
+}
+
+.pfp-container {
+  width: 32px;
+  height: 32px;
 }
 </style>

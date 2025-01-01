@@ -104,14 +104,12 @@
       >
         <div class="me-2">
           <div
-            class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle"
-            style="width: 32px; height: 32px"
+            class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle pfp-container"
           >
             <img
               alt="User"
               src="https://scontent-ber1-1.cdninstagram.com/v/t51.2885-19/461621119_507240088873650_7983337688478167496_n.jpg?stp=dst-jpg_s100x100_tt6&_nc_cat=103&ccb=1-7&_nc_sid=bf7eb4&_nc_ohc=kHBp3yUY_PwQ7kNvgFeKn_N&_nc_zt=24&_nc_ht=scontent-ber1-1.cdninstagram.com&oh=00_AYBQT7SUl2ZHW8UjAiqcHAlemBrR3CEeujwiaKBKIERGCQ&oe=676F6C48"
               class="img-fluid rounded-circle"
-              style="width: 100%; height: 100%"
             />
           </div>
         </div>
@@ -477,5 +475,10 @@ onUnmounted(() => {
 
 .profile-btn:hover {
   background-color: #41414149;
+}
+
+.pfp-container {
+  width: 32px;
+  height: 32px;
 }
 </style>

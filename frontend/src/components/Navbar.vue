@@ -13,17 +13,15 @@
         src="../assets/icons/MenuOpen.png"
         @click="toggleSidebar"
       />
-      <div v-else class="icon-holder mt-3">
+      <div v-else class="nav-icon-holder mt-3">
         <font-awesome-icon
-          class="icon-click-effect cursor-pointer"
+          class="icon-click-effect cursor-pointer nav-icon"
           :icon="['fas', 'arrows-rotate']"
-          :class="{ 'arrows-rotate': true }"
-          style="color: var(--color-gray-shadow);"
           @click="handleRefreshClick"
         />
       </div>
       <div class="d-flex flex-column align-items-center position-relative w-50">
-        <div class="hearts-container">
+        <div class="hearts-container d-flex align-items-center gap-0.5">
           <span
             v-for="(heartClass, index) in heartClasses"
             :key="index"
@@ -135,32 +133,28 @@
           {{ navbarCourseTitle }}
         </p>
       </div>
-      <div class="icon-holder mt-3">
+      <div class="nav-icon-holder mt-3">
         <!-- if user doesnt have pfp -->
         <!-- <font-awesome-icon
-          class="arrows-rotate icon-click-effect cursor-pointer"
+          class="icon-click-effect cursor-pointer nav-icon"
           v-if="isWideScreen && isSidebarOpen"
           :icon="['fas', 'user-circle']"
-          style="color: var(--color-gray-shadow);"
         /> -->
         <div
           v-if="isWideScreen && isSidebarOpen"
-          class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect cursor-pointer"
-          style="width: 32px; height: 32px"
+          class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect cursor-pointer pfp-container"
         >
           <img
             alt="User"
             src="https://s.gravatar.com/avatar/6276a6c42e2f0f22bb0a96c4b1f2bd32?s=480&amp;r=pg&amp;d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fsh.png"
             class="img-fluid rounded-circle"
-            style="width: 100%; height: 100%"
             @click="toggleProfileMenu"
           />
         </div>
         <font-awesome-icon
           v-else
-          class="icon-click-effect arrows-rotate cursor-pointer"
+          class="icon-click-effect cursor-pointer nav-icon"
           :icon="['fas', 'arrows-rotate']"
-          style="color: var(--color-gray-shadow);"
           @click="handleRefreshClick"
         />
       </div>
@@ -174,15 +168,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, computed, onMounted, onUnmounted, watch } from "vue";
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onUnmounted,
+  defineEmits,
+  defineProps,
+} from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowsRotate,
   faHeart,
-  faUser,
+  faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { useThread } from "../hooks/useThread";
+import { useScreenWidth } from "../utils/useScreenWidth";
+import Profilemenu from "@/widgets/Profilemenu.vue";
 import {
   heartCount,
   messageCount,
@@ -194,25 +198,33 @@ import {
   getMessageCountLS,
   setMessageCountLS,
 } from "../services/localStorageService";
-import { useScreenWidth } from "../utils/useScreenWidth";
 import { navbarCourseTitle } from "../services/homeService";
-import Profilemenu from "@/widgets/Profilemenu.vue";
+import {
+  totalHearts,
+  initializeHeartCount,
+  setupHeartRegeneration,
+  handleStorageChange,
+  heartClasses,
+} from "../services/heartService";
 
-library.add(faArrowsRotate, faHeart, faUser);
+// FontAwesome library setup
+library.add(faArrowsRotate, faHeart, faUserCircle);
 
+// Props and emits
 const props = defineProps({
   isBurgerMenuOpen: Boolean,
   isSidebarOpen: Boolean,
 });
+const emit = defineEmits(["toggleBurgerMenu", "toggleSidebar"]);
 
 const isProfileMenuVisible = ref(false);
+const { isWideScreen } = useScreenWidth();
+
+const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
+
 const toggleProfileMenu = () => {
   isProfileMenuVisible.value = !isProfileMenuVisible.value;
 };
-
-const emit = defineEmits(["toggleBurgerMenu", "toggleSidebar"]);
-
-const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
 const toggleBurgerMenu = () => {
   emit("toggleBurgerMenu", !props.isBurgerMenuOpen);
@@ -224,45 +236,17 @@ const toggleSidebar = () => {
 
 const handleRefreshClick = async () => {
   if (!props.isBurgerMenuOpen) {
-    clearMessages(false); // Do not reset heartCount
+    clearMessages(false);
     clearThread();
     await initializeThread();
   }
 };
-
-const totalHearts = 5;
-
-const heartClasses = computed(() => {
-  const classes = [];
-  const halvesRemaining = heartCount.value * 2; // Convert heartCount to halves
-
-  for (let index = 1; index <= totalHearts; index++) {
-    const heartPosition = index * 2; // Positions 2, 4, 6, 8, 10
-    if (heartPosition - 1 < halvesRemaining) {
-      classes.push("heart-filled");
-    } else if (heartPosition - 2 < halvesRemaining) {
-      classes.push("heart-half-filled");
-    } else {
-      classes.push("heart-empty");
-    }
-  }
-  return classes;
-});
 
 function handleResize() {
   if (window.innerWidth <= 768) {
     isProfileMenuVisible.value = false;
   }
 }
-
-const handleStorageChange = (event: StorageEvent) => {
-  if (event.key === "heartCount") {
-    const newHeartCount = parseFloat(event.newValue || "");
-    if (!isNaN(newHeartCount)) {
-      heartCount.value = newHeartCount;
-    }
-  }
-};
 
 watch(heartCount, (newValue) => {
   setHeartCountLS(newValue);
@@ -272,55 +256,12 @@ watch(messageCount, (newValue) => {
   setMessageCountLS(newValue);
 });
 
-heartCount.value = getHeartCountLS();
-messageCount.value = getMessageCountLS();
-
-const { isWideScreen } = useScreenWidth();
-
 onMounted(() => {
   window.addEventListener("resize", handleResize);
-  handleResize();
-  const lastRegenTimeKey = "lastRegenTime";
-  const regenIntervalMs = 3 * 60 * 1000; // 3 minutes in milliseconds
-
-  // Retrieve the last regeneration timestamp from localStorage
-  const lastRegenTime = parseInt(
-    localStorage.getItem(lastRegenTimeKey) || "0",
-    10
-  );
-  const currentTime = Date.now();
-
-  // Calculate the number of intervals that have passed
-  let intervalsPassed = Math.floor(
-    (currentTime - lastRegenTime) / regenIntervalMs
-  );
-
-  // Update the heart count based on the intervals passed
-  if (intervalsPassed > 0 && heartCount.value < totalHearts) {
-    let heartsToAdd = intervalsPassed * 0.5; // Each interval adds 0.5 heart
-    heartCount.value += heartsToAdd;
-    if (heartCount.value > totalHearts) {
-      heartCount.value = totalHearts; // Cap at totalHearts
-    }
-    setHeartCountLS(heartCount.value);
-  }
-
-  // Update the last regeneration time
-  localStorage.setItem(lastRegenTimeKey, currentTime.toString());
   window.addEventListener("storage", handleStorageChange);
-  // Start the interval for future regeneration
-  const regenInterval = setInterval(() => {
-    if (heartCount.value < totalHearts) {
-      heartCount.value += 0.5; // Regenerate half a heart
-      if (heartCount.value > totalHearts) {
-        heartCount.value = totalHearts; // Cap at totalHearts
-      }
-      setHeartCountLS(heartCount.value);
-
-      // Update the last regeneration time
-      localStorage.setItem(lastRegenTimeKey, Date.now().toString());
-    }
-  }, regenIntervalMs);
+  handleResize();
+  initializeHeartCount();
+  const regenInterval = setupHeartRegeneration();
 
   onUnmounted(() => {
     window.removeEventListener("resize", handleResize);
@@ -329,15 +270,12 @@ onMounted(() => {
   });
 });
 </script>
-<style scoped>
-.navbar {
-  /* background-color: var(--color-background-dark); */
-}
 
-.hearts-container {
-  display: flex;
-  align-items: center;
-  gap: 0.1em;
+
+<style scoped>
+.nav-icon {
+  color: var(--color-gray-shadow);
+  font-size: 1.8rem;
 }
 
 .heart-icon svg {
@@ -348,11 +286,7 @@ onMounted(() => {
   transform: scale(1.1);
 }
 
-.arrows-rotate {
-  font-size: 1.8rem;
-}
-
-.icon-holder {
+.nav-icon-holder {
   width: 29px;
 }
 
@@ -375,5 +309,10 @@ onMounted(() => {
 
 .icon-click-effect:active {
   transform: scale(0.9);
+}
+
+.pfp-container {
+  width: 32px;
+  height: 32px;
 }
 </style>

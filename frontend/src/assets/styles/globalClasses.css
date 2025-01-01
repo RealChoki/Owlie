@@ -2,3 +2,7 @@
   cursor: pointer !important;
 }
 
+.btn-disabled {
+  background-color: var(--color-disabled) !important;
+  cursor: default;
+}

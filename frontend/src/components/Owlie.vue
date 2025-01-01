@@ -1,4 +1,3 @@
-<!-- filepath: /d:/Programming Projects/CodingMentorGPT/frontend/src/components/Owlie.vue -->
 <template>
   <div
     class="d-flex justify-content-center align-items-center h-50 logo-container flex-column"
@@ -60,8 +59,7 @@ function handleOwlClick() {
   const randomValue = Math.random();
   if (randomValue < 0.000001) {
     owlDisplayMessage.value = "Sending endless hoots of gratitude to @davidcraccer and @RealChoki for bringing me to life! 🦉✨";
-  }
-  if (randomValue < 0.001) {
+  } else if (randomValue < 0.001) {
     owlDisplayMessage.value = "The One Piece! The One Piece is real!!!";
   } else if (randomValue < 0.1) {
     displayRandomMessage();
@@ -83,7 +81,7 @@ function displayRandomMessage() {
   font-size: 0.8em;
   min-width: 100px;
   width: fit-content;
-  box-shadow: 1.5px 1.3px 1px #535353; /* Adjusted box-shadow color */
+  box-shadow: 2px 2px 0.5px #535353; /* Adjusted box-shadow color */
   border-radius: 10px;
 }
 
@@ -97,18 +95,6 @@ function displayRandomMessage() {
   border-color: var(--color-gray-dark) transparent;
 }
 
-.username {
-  display: inline;
-  font-style: italic;
-  float: right;
-  font-size: 10px;
-}
-
-.username::before {
-  content: "- ";
-}
-
-/* from the original code */
 .logo-container {
   margin-top: 6em;
 }

@@ -1,27 +1,29 @@
 <template>
   <div
-    :class="[
-      'sticky-footer',
-      'container-fluid',
-      'd-flex',
-      'align-items-end',
-      'gap-2',
-      'pb-2',
-      'px-0',
-      isMessageTooLong ? 'pt-4' : 'pt-2',
-      { 'fixed-grow-0': !messages.length, 'mt-auto': !messages.length}
-    ]"
+    class="sticky-footer container-fluid d-flex align-items-end gap-2 pb-2 px-0"
+    :class="{
+      'pt-4': isMessageTooLong,
+      'pt-2': !isMessageTooLong,
+      'mt-auto': !messages.length,
+    }"
   >
+    <!-- File Upload Button -->
     <div class="position-relative">
       <font-awesome-icon
         :icon="['fas', 'plus']"
-        class="cursor-pointer btn-circle align-bottom"
+        class="cursor-pointer btn-circle align-self-end"
         style="background-color: var(--color-gray-shadow)"
-        @click="triggerFileInput"
+        @click="triggerFileInput(fileInput)"
       />
-      <span v-if="showFileCount" class="file-count-indicator bg-danger text-white">{{ fileCount }}</span>
+      <span
+        v-if="showFileCount"
+        class="file-count-indicator bg-danger text-white"
+      >
+        {{ fileCount }}
+      </span>
     </div>
 
+    <!-- Hidden File Input -->
     <input
       type="file"
       ref="fileInput"
@@ -30,14 +32,15 @@
       multiple
     />
 
-    <div class="textarea-container flex-grow-1">
+    <!-- Textarea Container -->
+    <div class="position-relative d-flex align-items-center flex-grow-1">
       <textarea
         ref="textarea"
-        @input="resizeTextarea"
-        @keydown="handleKeydown"
         placeholder="Type a message..."
         aria-label="Message input"
         v-model="message"
+        @input="resizeTextarea"
+        @keydown="handleKeydown"
         @focus="isSearchFocused = true"
         @blur="isSearchFocused = false"
         :class="{
@@ -45,34 +48,43 @@
           'custom-input': true,
         }"
       ></textarea>
+
+      <!-- Resize Icon -->
       <font-awesome-icon
         v-if="showResizeIcon"
         :icon="['fas', 'up-right-and-down-left-from-center']"
         class="top-right-icon cursor-pointer"
         @click="toggleOverlay"
       />
+
+      <!-- Character Count -->
       <div v-if="isMessageTooLong" class="character-count">
-        <span :class="{ 'text-danger': isMessageTooLong }">{{ messageLength }}</span> / {{ MAX_MESSAGE_LENGTH }}
+        <span :class="{ 'text-danger': isMessageTooLong }">
+          {{ messageLength }}
+        </span>
+        / {{ MAX_MESSAGE_LENGTH }}
       </div>
     </div>
-    <div class="input-actions align-bottom d-flex gap-2">
+
+    <!-- Input Actions -->
+    <div class="input-actions align-self-end d-flex gap-2">
+      <!-- Send Button -->
       <font-awesome-icon
-        class="btn-circle bg-white"
+        v-if="message || fileCount > 0 || isFirstMessage()"
         :icon="['fas', 'arrow-up']"
         :class="{
           'cursor-pointer': !disableSendButton(),
           'btn-disabled': disableSendButton(),
         }"
+        class="btn-circle bg-white"
         @click="sendMessage"
-        v-if="message || fileCount > 0 || isFirstMessage()"
       />
-      <!-- Text to speech when there's no message -->
+
+      <!-- Text-to-Speech Button -->
       <font-awesome-icon
         v-else
         :icon="isTTSPlaying ? ['fas', 'volume-xmark'] : ['fas', 'volume-high']"
-        :class="{
-          'cursor-pointer btn-circle bg-light align-bottom': true,
-        }"
+        class="cursor-pointer btn-circle bg-light align-self-end"
         @click="toggleTTS"
       />
     </div>
@@ -90,17 +102,24 @@ import {
   faVolumeHigh,
   faVolumeXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import { getMessages } from '../services/chatService';
+import { getMessages } from "../services/chatService";
 import {
   sendMessage as sendChatMessage,
   getCurrentMessage,
   setCurrentMessage,
 } from "../services/chatService";
-import { uploadFiles as uploadChatFiles } from "../services/filesService";
-import { franc } from 'franc-min';
-library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faVolumeHigh, faVolumeXmark);
+import { fileCount, uploadedFiles, handleFileChange, resetFileCount, triggerFileInput } from "../services/filesService";
+import { franc } from "franc-min";
+import { loadVoices, readLatestAssistantMessage, stopTTS, toggleTTS, availableVoices, isTTSPlaying } from "../services/ttsService";
+library.add(
+  faUpRightAndDownLeftFromCenter,
+  faPlus,
+  faArrowUp,
+  faVolumeHigh,
+  faVolumeXmark
+);
 
-import { getAssistantThreadId } from '../services/openaiService';
+import { getAssistantThreadId } from "../services/openaiService";
 
 const props = defineProps({
   isExpandedInput: Boolean,
@@ -114,7 +133,7 @@ const props = defineProps({
 const MAX_MESSAGE_LENGTH = 2000;
 
 const isSearchFocused = ref(false);
-const textarea = ref<HTMLTextAreaElement | null>(null)
+const textarea = ref<HTMLTextAreaElement | null>(null);
 const emit = defineEmits(["toggle-overlay", "send-message"]);
 
 const message = computed({
@@ -123,72 +142,39 @@ const message = computed({
 });
 
 const messageLength = computed(() => message.value.length);
-const isMessageTooLong = computed(() => messageLength.value > MAX_MESSAGE_LENGTH);
+const isMessageTooLong = computed(
+  () => messageLength.value > MAX_MESSAGE_LENGTH
+);
 
 const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
-
-const isTTSPlaying = ref(false);
-let utterance: SpeechSynthesisUtterance | null = null;
-const availableVoices = ref<SpeechSynthesisVoice[]>([]);
-
-// Function to load voices
-const loadVoices = () => {
-  availableVoices.value = window.speechSynthesis.getVoices();
-};
-
-// Language detection function using franc-min
-function detectLanguage(text: string): string {
-  const langCode = franc(text, { only: ['deu', 'eng', 'fra', 'spa'] });
-  console.log('Detected language code:', langCode);
-
-  switch (langCode) {
-    case 'deu':
-      return 'de-DE';
-    case 'eng':
-      return 'en-US';
-    case 'fra':
-      return 'fr-FR';
-    case 'spa':
-      return 'es-ES';
-    default:
-      console.warn(`Language detection failed for text: "${text}". Defaulting to 'de-DE'.`);
-      return 'de-DE'; // Fallback language
-  }
-}
-
-const femaleVoicesMap: { [key: string]: string } = {
-  'en-US': 'Microsoft Zira - English (United States)',
-  'de-DE': 'Microsoft Katja - German (Germany)',
-  'fr-FR': 'Microsoft Hortense - French (France)',
-  'es-ES': 'Microsoft Helena - Spanish (Spain)',
-};
 
 onMounted(() => {
   loadVoices();
   window.speechSynthesis.onvoiceschanged = () => {
     loadVoices();
-    console.log('Voices updated:', availableVoices.value.map(voice => `${voice.name} (${voice.lang})`));
+    console.log(
+      "Voices updated:",
+      availableVoices.value.map((voice) => `${voice.name} (${voice.lang})`)
+    );
   };
-  window.addEventListener('beforeunload', stopTTS);
+  window.addEventListener("beforeunload", stopTTS);
 });
 
 function isFirstMessage() {
-  return getMessages()[getMessages().length - 1] === undefined
+  return getMessages()[getMessages().length - 1] === undefined;
 }
 
 function disableSendButton() {
   const messages = getMessages();
   const lastMessage = messages[messages.length - 1];
-  const isLastMessageFromAssistant = lastMessage?.role === "assistant" || isFirstMessage();
+  const isLastMessageFromAssistant =
+    lastMessage?.role === "assistant" || isFirstMessage();
   const isMessageNotEmpty = message.value.trim() !== ""; // Trim whitespace
   const hasFilesAttached = fileCount.value > 0;
   const isThreadInitialized = !!getAssistantThreadId();
 
   return (
-    !(
-      isLastMessageFromAssistant &&
-      (isMessageNotEmpty || hasFilesAttached)
-    ) ||
+    !(isLastMessageFromAssistant && (isMessageNotEmpty || hasFilesAttached)) ||
     isMessageTooLong.value ||
     !isThreadInitialized
   );
@@ -198,13 +184,12 @@ function sendMessage() {
   if (!disableSendButton()) {
     sendChatMessage(message.value.trim()); // Trim the message
     message.value = "";
-    fileCount.value = 0;
-    uploadedFiles.value.clear();
+    resetFileCount();
   }
 }
 
 function handleKeydown(event: KeyboardEvent) {
-  if (event.key === 'Enter' && !event.shiftKey && window.innerWidth > 768) {
+  if (event.key === "Enter" && !event.shiftKey && window.innerWidth > 768) {
     event.preventDefault(); // Prevent newline on Enter key
     sendMessage();
   }
@@ -217,7 +202,7 @@ const resizeTextarea = () => {
   if (!target) return;
 
   // Reset the height to allow shrinkage
-  target.style.height = '45px';
+  target.style.height = "45px";
 
   // Get the computed max-height from CSS
   const computedStyle = window.getComputedStyle(target);
@@ -236,151 +221,47 @@ const resizeTextarea = () => {
   }
 };
 
-const fileCount = ref(0);
 const fileInput = ref<HTMLInputElement | null>(null);
-const uploadedFiles = ref<Set<string>>(new Set());
 
-function triggerFileInput() {
-  if (fileInput.value) {
-    fileInput.value.click();
-  }
-}
-
-function handleFileChange(event: Event) {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    const files = Array.from(input.files);
-    const newFiles = files.filter(file => {
-      const fileKey = `${file.name}-${file.size}`;
-      if (!uploadedFiles.value.has(fileKey)) {
-        uploadedFiles.value.add(fileKey);
-        return true;
-      }
-      return false;
-    });
-    if (newFiles.length > 0) {
-      uploadChatFiles(newFiles);
-      fileCount.value += newFiles.length;
-    }
-    input.value = "";
-  }
-}
-
-function readLatestAssistantMessage() {
-  if (!props.isBurgerMenuOpen && !isTTSPlaying.value) {
-    console.log('readLatestAssistantMessage called');
-    const messages = getMessages();
-    const assistantMessages = messages.filter(message => message.role === 'assistant');
-    console.log('Assistant Messages:', assistantMessages);
-    if (assistantMessages.length > 0) {
-      const latestMessage = assistantMessages[assistantMessages.length - 1];
-      console.log('Latest Assistant Message:', latestMessage.content);
-      const detectedLang = detectLanguage(latestMessage.content);
-      console.log('Detected Language:', detectedLang);
-
-      utterance = new SpeechSynthesisUtterance(latestMessage.content);
-      
-      // Set language based on detection
-      utterance.lang = detectedLang;
-      utterance.pitch = 1.1;
-      utterance.rate = 1.3;
-      utterance.volume = 1;
-
-      // Log available voices
-      console.log('Available Voices:', availableVoices.value.map(voice => voice.name));
-
-      // Select female voice based on detected language
-      const selectedVoiceName = femaleVoicesMap[detectedLang];
-      const selectedVoice = availableVoices.value.find(voice => voice.name === selectedVoiceName);
-
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-        console.log('Selected voice:', selectedVoice.name);
-      } else {
-        console.warn(`No female voice found for language ${detectedLang}. Using default voice.`);
-      }
-
-      utterance.onend = () => {
-        isTTSPlaying.value = false;
-        console.log('TTS playback ended.');
-      };
-
-      window.speechSynthesis.cancel(); // Clear any pending speeches
-      window.speechSynthesis.speak(utterance);
-      isTTSPlaying.value = true;
-      console.log('TTS playback started.');
-    } else {
-      console.log('No assistant messages to read.');
-    }
-  }
-}
-
-function stopTTS() {
-  if (utterance) {
-    window.speechSynthesis.cancel();
-    isTTSPlaying.value = false;
-    console.log('TTS stopped');
-  }
-}
-
-function toggleTTS() {
-  if (isTTSPlaying.value) {
+watch(
+  () => props.messages,
+  () => {
     stopTTS();
-  } else {
-    readLatestAssistantMessage();
-  }
-}
-
-watch(() => props.messages, () => {
-  stopTTS();
-}, { deep: true });
+  },
+  { deep: true }
+);
 
 const showFileCount = computed(() => fileCount.value > 0);
 
 watch(message, (newValue) => {
-  if (newValue === '') {
+  if (newValue === "") {
     if (textarea.value) {
-      textarea.value.style.height = '45px'
+      textarea.value.style.height = "45px";
     }
-    showResizeIcon.value = false
+    showResizeIcon.value = false;
   } else {
     nextTick(() => {
-    resizeTextarea();
+      resizeTextarea();
     });
   }
-})
+});
 </script>
 
 <style scoped>
 .sticky-footer {
-  width: 100%;
-  /* background-color: var(--color-background-dark);  */
   z-index: 1000;
-  display: flex;
-  align-items: center;
 }
 
 .btn-circle {
   border-radius: 50%;
   width: 25px;
   height: 25px;
-  max-width: 25px;
-  max-height: 25px;
-  min-width: 25px;
-  min-height: 25px;
   padding: 0.5em;
 }
 
 .btn-disabled {
   background-color: var(--color-disabled) !important;
   cursor: default;
-}
-
-.textarea-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
 }
 
 .custom-input {
@@ -426,10 +307,6 @@ watch(message, (newValue) => {
   border-radius: 50%;
 }
 
-.align-bottom {
-  align-self: flex;
-}
-
 .input-focused::placeholder {
   color: white !important;
 }
@@ -456,14 +333,9 @@ watch(message, (newValue) => {
   left: 20px;
 }
 
-.text-danger {
-  color: red !important;
-}
-
 @media (min-width: 768px) {
   .custom-input {
-    max-height: calc(1.5em * 10 + 16px) !important; 
+    max-height: calc(1.5em * 10 + 16px) !important;
   }
 }
-
 </style>

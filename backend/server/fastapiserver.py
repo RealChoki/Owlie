@@ -19,7 +19,7 @@ import shutil
 import tempfile  # Add this import
 import yaml
 
-# Configure logging
+# Configure logging d
 logging.basicConfig(level=logging.ERROR)
 
 # Load environment variables
@@ -68,7 +68,7 @@ nlp_engine_with_german = provider.create_engine()
 analyzer = AnalyzerEngine(
     nlp_engine=nlp_engine_with_german, 
     supported_languages=["en", "de"],
-    default_score_threshold=0.6
+    default_score_threshold=0.62
 )
 
 # Initialize the anonymizer
@@ -115,7 +115,7 @@ def presidio_deanonymize(anonymized_response):
     return anonymized_response
 
 def get_course_config(course_name, mode_name):
-    # Traverse the config to find the matching course and mode
+    # Traverse the config to find the matching course and mode s
     for university in config_data['universities'].values():
         for degree_level in university.values():
             for subject in degree_level.values():
@@ -160,7 +160,7 @@ class CreateMessage(BaseModel):
     assistant_id: Optional[str]
 
 
-# Update endpoints to check if assistant_id is initialized
+# Update endpoints to check if assistant_id is initialized d
 @app.post("/api/new")
 async def post_new(request: Request):
     data = await request.json()
@@ -230,7 +230,7 @@ async def get_quiz_files():
         if not QUIZ_FILES_DIR.exists():
             raise FileNotFoundError(f"Quiz files directory not found: {QUIZ_FILES_DIR}")
         
-        # Retrieve only .txt filenames as a list of strings
+        # Retrieve only .txt filenames as a list of strings d
         files = [
             filename.name
             for filename in QUIZ_FILES_DIR.iterdir()
@@ -321,7 +321,7 @@ async def post_thread(thread_id: str, message: CreateMessage):
                     course_id = "51589"  # Hardcoded for now
                     if course_id:
                         content = get_moodle_course_content(courseid=course_id)
-
+                        print("content:", content)
                         # Prepare the tool output with the fetched content
                         print("tool_call.id:", tool_call.id)
                         tool_outputs.append({
@@ -369,6 +369,7 @@ async def handle_get_moodle_course_content(request: Request):
         return {"error": "Course ID is required."}
     try:
         content = get_moodle_course_content(courseid)
+        print("content2:", content)
         return {"status": "success", "content": content}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -456,8 +457,11 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
                     if course_id:
                         content = get_moodle_course_content(courseid=course_id)
 
+
+# e": false, "userid": 74852, "author": "Larisch, Lucas", "license": "allrightsreserved"}], "contentsinfo": {"filescount": 1, "filessize": 4071620, "lastmodified": 1730845714, "mimetypes": ["application/pdf"], "repositorytype": ""}}]}, {"id": 496317, "name": "Anwesenheit", "visible": 1, "summary": "", "summaryformat": 1, "section": 20, "hiddenbynumsections": 0, "uservisible": true, "modules": [{"id": 1818755, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1818755", "name": "Anwesenheit \u00dcbungen - Safitri Di 13:45", "instance": 22, "contextid": 2180253, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"group\",\"id\":123650},{\"type\":\"grouping\",\"id\":6037}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1818882, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1818882", "name": "Anwesenheit \u00dcbungen - Safitri Di 15:30", "instance": 23, "contextid": 2180393, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"grouping\",\"id\":6037},{\"type\":\"group\",\"id\":123649}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1819538, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1819538", "name": "Anwesenheit \u00dcbungen - G\u00e4ble Mi 12:00", "instance": 25, "contextid": 2181094, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"grouping\",\"id\":6037},{\"type\":\"group\",\"id\":123651}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1819544, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1819544", "name": "Anwesenheit \u00dcbungen - Poeser Do 13:45", "instance": 26, "contextid": 2181100, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"group\",\"id\":123653},{\"type\":\"grouping\",\"id\":6037}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1819548, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1819548", "name": "Anwesenheit \u00dcbungen - Pietsch Fr 8:00", "instance": 27, "contextid": 2181104, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"group\",\"id\":123652},{\"type\":\"grouping\",\"id\":6037}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1819550, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1819550", "name": "Anwesenheit \u00dcbungen - Pietsch Fr. 09:45", "instance": 28, "contextid": 2181106, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"group\",\"id\":123654},{\"type\":\"grouping\",\"id\":6037}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1819553, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1819553", "name": "Anwesenheit \u00dcbungen - G\u00e4rtner Fr 15:30", "instance": 29, "contextid": 2181109, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"group\",\"id\":123655},{\"type\":\"grouping\",\"id\":6037}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}]}]
                         # Prepare the tool output with the fetched content
                         print("tool_call.id:", tool_call.id)
+                        print("content:", content)
                         tool_outputs.append({
                             "tool_call_id": tool_call.id,
                             "output": content

@@ -1,15 +1,15 @@
-import { reactive } from 'vue';
-import axios from 'axios';
-import { 
-  getAssistantId, 
-  getAssistantThreadId, 
-  restoreOldAssistantId, 
-  getOldAssistantId, 
-  updateAssistantIdAndStoreOldId, 
+import { reactive, ref } from 'vue'
+import axios from 'axios'
+import {
+  getAssistantId,
+  getAssistantThreadId,
+  restoreOldAssistantId,
+  getOldAssistantId,
+  updateAssistantIdAndStoreOldId,
   removeAssistantThreadId,
   getAssistantMode,
-  getAssistantCourse,
-} from '../services/openaiService';
+  getAssistantCourse
+} from '../services/openaiService'
 
 const fileState = reactive({
   files: [] as string[],
@@ -20,47 +20,46 @@ const fileState = reactive({
 export async function uploadFiles(filesToUpload: File[]) {
   try {
     // Save the file names in the file state
-    filesToUpload.forEach(file => fileState.files.push(file.name));
-    fileState.currentFile = '';
+    filesToUpload.forEach((file) => fileState.files.push(file.name))
+    fileState.currentFile = ''
 
     // Create FormData to send files
-    const formData = new FormData();
+    const formData = new FormData()
     for (const file of filesToUpload) {
-      formData.append('files', file);
+      formData.append('files', file)
     }
 
-    formData.append('thread_id', getAssistantThreadId());
-    formData.append('current_course', getAssistantCourse().replace(/ /g, '_'));
-    formData.append('current_mode',  getAssistantMode());
-    
+    formData.append('thread_id', getAssistantThreadId())
+    formData.append('current_course', getAssistantCourse().replace(/ /g, '_'))
+    formData.append('current_mode', getAssistantMode())
+
     if (fileState.isTempAssistant) {
-      formData.append('assistant_id', getAssistantId());
+      formData.append('assistant_id', getAssistantId())
     }
-    
+
     // Send the files to the FastAPI backend
-    console.log('Uploading files:', filesToUpload);
-    console.log('Uploading formdata:', formData);
+    console.log('Uploading files:', filesToUpload)
+    console.log('Uploading formdata:', formData)
 
     const response = await axios.post('http://localhost:8000/api/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
-    });
+    })
 
     // Log the server response
-    console.log('Server response:', response.data);
-    if(!fileState.isTempAssistant){
-      updateAssistantIdAndStoreOldId(response.data.temporary_assistant_id);
+    console.log('Server response:', response.data)
+    if (!fileState.isTempAssistant) {
+      updateAssistantIdAndStoreOldId(response.data.temporary_assistant_id)
 
-      fileState.isTempAssistant = true;
+      fileState.isTempAssistant = true
     }
-    
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error('Error uploading files:', error.message);
-      console.error('Error details:', error.toJSON());
+      console.error('Error uploading files:', error.message)
+      console.error('Error details:', error.toJSON())
     } else {
-      console.error('Unexpected error:', error);
+      console.error('Unexpected error:', error)
     }
   }
 }
@@ -94,31 +93,66 @@ export function clearFiles() {
 }
 
 export async function resetFileService() {
-  const oldThreadId = getAssistantThreadId();
+  const oldThreadId = getAssistantThreadId()
 
   if (oldThreadId) {
     try {
       // Call the backend API to delete the temporary assistant and vector store
       await axios.post('http://localhost:8000/api/delete_temp_assistant', {
-        old_thread_id: oldThreadId,
-      });
+        old_thread_id: oldThreadId
+      })
     } catch (error) {
-      console.error('Error deleting tempassistant:', error);
+      console.error('Error deleting tempassistant:', error)
     } finally {
-      removeAssistantThreadId();
+      removeAssistantThreadId()
     }
   }
 
   // Reset the file state
-  fileState.files.length = 0;
-  fileState.currentFile = '';
-  fileState.isTempAssistant = false;
+  fileState.files.length = 0
+  fileState.currentFile = ''
+  fileState.isTempAssistant = false
 
   // Restore the old assistant ID if it exists
-  const oldAssistantId = getOldAssistantId();
+  const oldAssistantId = getOldAssistantId()
   if (oldAssistantId) {
     restoreOldAssistantId()
   }
+}
+
+export const fileCount = ref(0)
+export const uploadedFiles = ref<Set<string>>(new Set())
+
+export function triggerFileInput(fileInputRef: HTMLInputElement | null) {
+  if (fileInputRef) {
+    fileInputRef.click()
+  }
+}
+
+export function handleFileChange(event: Event, fileInputRef: HTMLInputElement | null) {
+  const input = event.target as HTMLInputElement
+  if (input.files && input.files.length > 0) {
+    const files = Array.from(input.files)
+    const newFiles = files.filter((file) => {
+      const fileKey = `${file.name}-${file.size}`
+      if (!uploadedFiles.value.has(fileKey)) {
+        uploadedFiles.value.add(fileKey)
+        return true
+      }
+      return false
+    })
+
+    if (newFiles.length > 0) {
+      uploadFiles(newFiles) // Assuming you have this function elsewhere
+      fileCount.value += newFiles.length
+    }
+    input.value = ''
+  }
+}
+
+export function resetFileCount() {
+  fileCount.value = 0
+  uploadedFiles.value.clear()
 }
 
 export default {
@@ -127,5 +161,10 @@ export default {
   getCurrentFile,
   setCurrentFile,
   clearFiles,
-  resetFileService
+  resetFileService,
+  fileCount,
+  uploadedFiles,
+  handleFileChange,
+  resetFileCount,
+  triggerFileInput
 }
