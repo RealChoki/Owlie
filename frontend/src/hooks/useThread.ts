@@ -4,6 +4,7 @@ import { createNewThread, fetchThread } from "../api/restService";
 import { runFinishedStates } from "./constants";
 import type { RunStatus, Thread, ThreadMessage, CreateThreadResponse } from "../api/restService";
 import { getAssistantId ,setAssistantThreadId, removeAssistantThreadId, getAssistantThreadId } from '../services/openaiService';
+import { getThreadIdLS, setOldThreadIdLS } from '../services/localStorageService';
 
 export const useThread = (
   run: Ref<RunStatus | undefined>,
@@ -62,6 +63,7 @@ export const useThread = (
   };
   
   const clearThread = () => {
+    setOldThreadIdLS(getThreadIdLS());
     filesService.resetFileService();
     removeAssistantThreadId();
     threadId.value = undefined;

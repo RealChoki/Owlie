@@ -38,6 +38,7 @@ const keys = {
   assistantId: { key: "assistant_id", defaultValue: null },
   oldAssistantId: { key: "old_assistant_id", defaultValue: null },
   threadId: { key: "thread_id", defaultValue: null },
+  oldThreadId: { key: "old_thread_id", defaultValue: null },
 };
 
 // Heart Count
@@ -98,6 +99,13 @@ export const setThreadIdLS = (value: string) =>
   localStorageUtils.set(keys.threadId.key, value);
 export const removeThreadIdLS = () =>
     localStorageUtils.remove(keys.threadId.key);
+
+export const getOldThreadIdLS = () =>
+    localStorageUtils.get(keys.oldThreadId.key, keys.oldThreadId.defaultValue);
+export const setOldThreadIdLS = (value: string) =>
+    localStorageUtils.set(keys.oldThreadId.key, value);
+export const removeOldThreadIdLS = () =>
+    localStorageUtils.remove(keys.oldThreadId.key);
 
 // Utility to remove an item if needed
 export const removeLocalStorageItem = localStorageUtils.remove;

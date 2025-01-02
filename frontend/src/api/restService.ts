@@ -64,6 +64,7 @@ export interface PostMessageResponse extends RunStatus {}
 
 import { getAssistantId } from '../services/openaiService';
 import { setOwlDisplayMessage } from '../services/homeService';
+import { getOldThreadIdLS } from '@/services/localStorageService';
 
 // REST Service functions
 export const createNewThread = async (): Promise<CreateThreadResponse | undefined> => {
@@ -74,12 +75,14 @@ export const createNewThread = async (): Promise<CreateThreadResponse | undefine
             throw new Error('Assistant ID is not available.');
         }
 
+        const old_thread_id = getOldThreadIdLS();
+
         const response = await fetch("http://localhost:8000/api/new", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ assistant_id, thread_id: "" }),
+            body: JSON.stringify({ assistant_id, old_thread_id }),
         });
         if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);

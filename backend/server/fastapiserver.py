@@ -50,6 +50,7 @@ vector_store_id = None
 current_course = None
 current_mode = None
 assistant_cache = {}  # Cache assistants for reuse
+thread_moodle_cache = {}
 FILES_DIR = ""
 file_ids = []
 
@@ -165,6 +166,12 @@ class CreateMessage(BaseModel):
 async def post_new(request: Request):
     data = await request.json()
     assistant_id = data.get('assistant_id')
+    old_thread_id = decrypt_data(data.get('old_thread_id'))
+
+    # Remove cached content for this thread
+    print("old_thread_id:", old_thread_id)
+    if old_thread_id in thread_moodle_cache:
+        del thread_moodle_cache[old_thread_id]
 
     if not assistant_id:
         return {"error": "Assistant ID is required."}
@@ -455,13 +462,16 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
                 if tool_call.function.name == "get_moodle_course_content":
                     course_id = "50115"  # Hardcoded for now
                     if course_id:
-                        content = get_moodle_course_content(courseid=course_id)
+                        if thread_moodle_cache.get(decrypted_thread_id) is None:
+                            content = get_moodle_course_content(courseid=course_id)
+                            thread_moodle_cache[decrypted_thread_id] = content
+                            print("Fetching content from Moodle.")
+                        else:
+                            content = thread_moodle_cache[decrypted_thread_id]
+                            print("Fetching content from cache.")
 
-
-# e": false, "userid": 74852, "author": "Larisch, Lucas", "license": "allrightsreserved"}], "contentsinfo": {"filescount": 1, "filessize": 4071620, "lastmodified": 1730845714, "mimetypes": ["application/pdf"], "repositorytype": ""}}]}, {"id": 496317, "name": "Anwesenheit", "visible": 1, "summary": "", "summaryformat": 1, "section": 20, "hiddenbynumsections": 0, "uservisible": true, "modules": [{"id": 1818755, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1818755", "name": "Anwesenheit \u00dcbungen - Safitri Di 13:45", "instance": 22, "contextid": 2180253, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"group\",\"id\":123650},{\"type\":\"grouping\",\"id\":6037}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1818882, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1818882", "name": "Anwesenheit \u00dcbungen - Safitri Di 15:30", "instance": 23, "contextid": 2180393, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"grouping\",\"id\":6037},{\"type\":\"group\",\"id\":123649}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1819538, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1819538", "name": "Anwesenheit \u00dcbungen - G\u00e4ble Mi 12:00", "instance": 25, "contextid": 2181094, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"grouping\",\"id\":6037},{\"type\":\"group\",\"id\":123651}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1819544, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1819544", "name": "Anwesenheit \u00dcbungen - Poeser Do 13:45", "instance": 26, "contextid": 2181100, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"group\",\"id\":123653},{\"type\":\"grouping\",\"id\":6037}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1819548, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1819548", "name": "Anwesenheit \u00dcbungen - Pietsch Fr 8:00", "instance": 27, "contextid": 2181104, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"group\",\"id\":123652},{\"type\":\"grouping\",\"id\":6037}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1819550, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1819550", "name": "Anwesenheit \u00dcbungen - Pietsch Fr. 09:45", "instance": 28, "contextid": 2181106, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"group\",\"id\":123654},{\"type\":\"grouping\",\"id\":6037}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}, {"id": 1819553, "url": "https://moodle.htw-berlin.de/mod/attendance/view.php?id=1819553", "name": "Anwesenheit \u00dcbungen - G\u00e4rtner Fr 15:30", "instance": 29, "contextid": 2181109, "visible": 1, "uservisible": true, "visibleoncoursepage": 1, "modicon": "https://moodle.htw-berlin.de/theme/image.php/boost_union/attendance/1731940633/monologo?filtericon=1", "modname": "attendance", "modplural": "Anwesenheit", "availability": "{\"op\":\"&\",\"c\":[{\"type\":\"group\",\"id\":123655},{\"type\":\"grouping\",\"id\":6037}],\"showc\":[true,true]}", "indent": 1, "onclick": "", "afterlink": null, "customdata": "\"\"", "noviewlink": false, "completion": 0, "downloadcontent": 1, "dates": []}]}]
                         # Prepare the tool output with the fetched content
                         print("tool_call.id:", tool_call.id)
-                        print("content:", content)
                         tool_outputs.append({
                             "tool_call_id": tool_call.id,
                             "output": content

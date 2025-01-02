@@ -117,6 +117,7 @@ END
 |--------------------------------------------------------|-----------------|-------------|---------------|  
 | "Welche Themen werden in den Kurs besprochen?"               | ✔️               | ✔️         | ✔️            |  
 | "Wann ist der Virtueller Seminarraum?" | ✔️               | ✔️         | ✔️            |  
-| "Wann sind die Vorlesungen?"                | 🟠               | ✔️         | 🟠            |  
+| "Wann sind die Vorlesungen?"                | 🟠               | ✔️         | ✔️            |  
 | "Welche aufgaben sind noch zu erledigen?" | ✔️               | ✔️         | ✔️            |  
-| "Wer ist die Professorin von den Kurs?"     | 🟠               | ✔️         | 🟠            |  
+| "Gib mir links zu videos über Arrays" | ✔️               | ✔️         | ✔️            |  
+| "Wer ist die Professorin von den Kurs?"     | 🟠               | ✔️         | ✔️            |  
