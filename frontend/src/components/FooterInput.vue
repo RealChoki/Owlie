@@ -95,22 +95,37 @@
 import { ref, defineEmits, computed, watch, nextTick, onMounted } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-  faUpRightAndDownLeftFromCenter,
-  faPlus,
-  faArrowUp,
-  faVolumeHigh,
-  faVolumeXmark,
+import { 
+  faUpRightAndDownLeftFromCenter, 
+  faPlus, 
+  faArrowUp, 
+  faVolumeHigh, 
+  faVolumeXmark 
 } from "@fortawesome/free-solid-svg-icons";
-import { getMessages } from "../services/chatService";
-import {
-  sendMessage as sendChatMessage,
-  getCurrentMessage,
-  setCurrentMessage,
+import { 
+  getMessages, 
+  sendMessage as sendChatMessage, 
+  getCurrentMessage, 
+  setCurrentMessage 
 } from "../services/chatService";
-import { fileCount, uploadedFiles, handleFileChange, resetFileCount, triggerFileInput } from "../services/filesService";
+import { 
+  fileCount, 
+  uploadedFiles, 
+  handleFileChange, 
+  resetFileCount, 
+  triggerFileInput 
+} from "../services/filesService";
 import { franc } from "franc-min";
-import { loadVoices, readLatestAssistantMessage, stopTTS, toggleTTS, availableVoices, isTTSPlaying } from "../services/ttsService";
+import { 
+  loadVoices, 
+  readLatestAssistantMessage, 
+  stopTTS, 
+  toggleTTS, 
+  availableVoices, 
+  isTTSPlaying 
+} from "../services/ttsService";
+import { getAssistantThreadId } from "../services/openaiService";
+
 library.add(
   faUpRightAndDownLeftFromCenter,
   faPlus,
@@ -119,8 +134,10 @@ library.add(
   faVolumeXmark
 );
 
-import { getAssistantThreadId } from "../services/openaiService";
+// Constants
+const MAX_MESSAGE_LENGTH = 2000;
 
+// Props
 const props = defineProps({
   isExpandedInput: Boolean,
   isBurgerMenuOpen: Boolean,
@@ -130,24 +147,26 @@ const props = defineProps({
   },
 });
 
-const MAX_MESSAGE_LENGTH = 2000;
-
-const isSearchFocused = ref(false);
-const textarea = ref<HTMLTextAreaElement | null>(null);
+// Emits
 const emit = defineEmits(["toggle-overlay", "send-message"]);
 
+// Refs
+const isSearchFocused = ref(false);
+const textarea = ref<HTMLTextAreaElement | null>(null);
+const fileInput = ref<HTMLInputElement | null>(null);
+const showResizeIcon = ref(false);
+
+// Computed properties
 const message = computed({
-  get: () => getCurrentMessage(),
-  set: (newMessage) => setCurrentMessage(newMessage),
+  get: getCurrentMessage,
+  set: setCurrentMessage,
 });
 
 const messageLength = computed(() => message.value.length);
-const isMessageTooLong = computed(
-  () => messageLength.value > MAX_MESSAGE_LENGTH
-);
+const isMessageTooLong = computed(() => messageLength.value > MAX_MESSAGE_LENGTH);
+const showFileCount = computed(() => fileCount.value > 0);
 
-const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
-
+// Lifecycle hooks
 onMounted(() => {
   loadVoices();
   window.speechSynthesis.onvoiceschanged = () => {
@@ -160,91 +179,75 @@ onMounted(() => {
   window.addEventListener("beforeunload", stopTTS);
 });
 
-function isFirstMessage() {
-  return getMessages()[getMessages().length - 1] === undefined;
-}
+// Watchers
+watch(
+  () => props.messages,
+  stopTTS,
+  { deep: true }
+);
 
-function disableSendButton() {
+watch(message, (newValue) => {
+  if (newValue === "") {
+    resetTextareaHeight();
+  } else {
+    nextTick(resizeTextarea);
+  }
+});
+
+// Methods
+const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
+
+const isFirstMessage = () => !getMessages().length;
+
+const disableSendButton = () => {
   const messages = getMessages();
   const lastMessage = messages[messages.length - 1];
-  const isLastMessageFromAssistant =
+  const isLastMessageFromAssistant = 
     lastMessage?.role === "assistant" || isFirstMessage();
-  const isMessageNotEmpty = message.value.trim() !== ""; // Trim whitespace
+  const isMessageNotEmpty = message.value.trim() !== "";
   const hasFilesAttached = fileCount.value > 0;
-  const isThreadInitialized = !!getAssistantThreadId();
+  const isThreadInitialized = Boolean(getAssistantThreadId());
 
   return (
     !(isLastMessageFromAssistant && (isMessageNotEmpty || hasFilesAttached)) ||
     isMessageTooLong.value ||
     !isThreadInitialized
   );
-}
+};
 
-function sendMessage() {
+const sendMessage = () => {
   if (!disableSendButton()) {
-    sendChatMessage(message.value.trim()); // Trim the message
+    sendChatMessage(message.value.trim());
     message.value = "";
     resetFileCount();
   }
-}
+};
 
-function handleKeydown(event: KeyboardEvent) {
+const handleKeydown = (event: KeyboardEvent) => {
   if (event.key === "Enter" && !event.shiftKey && window.innerWidth > 768) {
-    event.preventDefault(); // Prevent newline on Enter key
+    event.preventDefault();
     sendMessage();
   }
-}
-
-const showResizeIcon = ref(false);
+};
 
 const resizeTextarea = () => {
   const target = textarea.value;
   if (!target) return;
 
-  // Reset the height to allow shrinkage
-  target.style.height = "45px";
-
-  // Get the computed max-height from CSS
-  const computedStyle = window.getComputedStyle(target);
-  const maxHeight = parseFloat(computedStyle.maxHeight);
-
-  // Calculate the new height, respecting the max-height
+  target.style.height = "45px"; // Reset height
+  const maxHeight = parseFloat(window.getComputedStyle(target).maxHeight);
   const newHeight = Math.min(target.scrollHeight, maxHeight);
 
   target.style.height = `${newHeight}px`;
-
-  // Update the visibility of the resize icon
-  if (newHeight <= 91 || !message.value) {
-    showResizeIcon.value = false;
-  } else {
-    showResizeIcon.value = true;
-  }
+  showResizeIcon.value = newHeight > 91 && Boolean(message.value);
 };
 
-const fileInput = ref<HTMLInputElement | null>(null);
-
-watch(
-  () => props.messages,
-  () => {
-    stopTTS();
-  },
-  { deep: true }
-);
-
-const showFileCount = computed(() => fileCount.value > 0);
-
-watch(message, (newValue) => {
-  if (newValue === "") {
-    if (textarea.value) {
-      textarea.value.style.height = "45px";
-    }
-    showResizeIcon.value = false;
-  } else {
-    nextTick(() => {
-      resizeTextarea();
-    });
+const resetTextareaHeight = () => {
+  if (textarea.value) {
+    textarea.value.style.height = "45px";
   }
-});
+  showResizeIcon.value = false;
+};
 </script>
 
 <style scoped>
