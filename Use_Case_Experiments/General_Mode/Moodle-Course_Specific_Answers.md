@@ -31,9 +31,9 @@
 - **Models**: OpenAI (gpt-4o-mini).  
 
 - **Evaluation Criteria**:  
-  - **Correctness**: Does the response accurately reflect the Moodle course materials?  
+  - **Correctness**: Does the response accurately reflect the Moodle course materials? 
   - **Clarity**: Is the explanation clear, concise, and student-friendly?  
-  - **Relevance**: Does the assistant appropriately handle queries outside the Moodle course's scope by notifying the student?  
+  - **Relevance**: Does the system correctly recognize when the query requires Moodle course-specific content and activate function calling?  
 
 ---  
 
@@ -79,25 +79,35 @@ END
 |--------------------------------------------------------|-----------------|-------------|---------------|  
 | "Welche Themen werden in den Kurs besprochen?"               | ✔️               | ✔️         | ✔️            |  
 | "Wann ist der Virtueller Seminarraum?" | ✔️               | ✔️         | ✔️            |  
-| "Wann sind die Vorlesungen?"                | ❌               | ✔️         | ❌            |  
-| "Welche aufgaben sind noch zu erledigen?" | ❌               | ✔️         | ❌            |  
-| "Wer ist die Professorin von den Kurs?"     | ✔️               | ✔️         | ✔️            |  
+| "Wann sind die Vorlesungen?"                | 🟠               | ✔️         | 🟠            |  
+| "Welche aufgaben sind noch zu erledigen?" | ✔️               | ✔️         | ✔️            |  
+| "Gib mir links zu videos über Arrays" | ✔️               | 🟠         | ❌            |  
+| "Wer ist die Professorin von den Kurs?"     | 🟠               | ✔️         | 🟠            |  
 
 ---  
 
 #### **Instruction Changes**  
 
-1. **"Limit answers strictly to Moodle resources. If a query extends beyond the approved material, explain politely and redirect students as needed."**  
-- **Why:** To ensure responses remain accurate and aligned with the course's intended learning outcomes.  
+1. **"Führe die Möglichkeit ein, die Funktion 'get_moodle_course_content' zu nutzen, um kursbezogene Fragen präzise zu beantworten."**  
+- **Why:** Enables targeted retrieval of Moodle data, ensuring responses are accurate and comprehensive.  
 
-2. **"Use the Moodle API to retrieve specific data when available, such as assignment deadlines or detailed lecture notes."**  
-- **Why:** Provides students with timely and precise information.  
+2. **"Nutze die Funktion, um offene Aufgaben zu identifizieren, indem du nach 'completion: 0' suchst, und gib deren Namen und Fristen zurück."**  
+- **Why:** Helps students stay on track by identifying pending assignments clearly.  
 
-3. **"Encourage students to refer to specific sections of Moodle materials for in-depth learning, ensuring they utilize the provided resources effectively."**  
-- **Why:** Reinforces the habit of using course materials and fosters independent learning.  
+3. **"Für Vorlesungsvideos suche nach 'mimetype: video/*' oder Videolinks und gib die verfügbaren URLs weiter."**  
+- **Why:** Ensures quick access to essential lecture recordings for student learning.  
 
-4. **"Avoid answers that imply knowledge beyond the scope of the course or Moodle materials, keeping responses relevant to the curriculum."**  
-- **Why:** Helps maintain focus on the course's intended objectives and avoids confusing students with extraneous information.  
+4. **"Identifiziere Anwesenheitssitzungen, indem du nach 'modplural: Anwesenheit' suchst, und liefere Gruppenzugehörigkeiten und Uhrzeiten."**  
+- **Why:** Provides clarity on attendance requirements and session schedules.  
+
+5. **"Extrahiere Kursmaterialien, indem du nach 'type: file' oder spezifischen Schlagwörtern suchst, und stelle Dateinamen sowie Download-Links bereit."**  
+- **Why:** Facilitates direct access to learning materials and ensures students utilize available resources effectively.  
+
+6. **"Erstelle eine Kursübersicht, indem du 'name', 'summary' oder 'description' extrahierst, und liste verfügbare Themen auf."**  
+- **Why:** Offers an overview of the course structure, helping students navigate materials more efficiently.  
+
+7. **"Falls eine kursbezogene Frage unklar ist, frage höflich nach mehr Details, bevor du die Moodle-Daten abrufst."**  
+- **Why:** Improves accuracy and ensures the response aligns with the student's intent.  
 
 ---  
 
@@ -105,8 +115,8 @@ END
 
 | **Prompt**                                             | **Correctness** | **Clarity** | **Relevance** |  
 |--------------------------------------------------------|-----------------|-------------|---------------|  
-| "What is the deadline for Assignment 2?"               | ✔️               | ✔️         | ✔️            |  
-| "Can you explain the recursion examples in Lecture 3?" | ✔️               | ✔️         | ✔️            |  
-| "What are advanced sorting algorithms?"                | ✔️               | ✔️         | ✔️            |  
-| "Can you help me solve a programming problem unrelated to the course?" | ✔️               | ✔️         | ✔️            |  
-| "Where can I find more information about hashing?"     | ✔️               | ✔️         | ✔️            |  
+| "Welche Themen werden in den Kurs besprochen?"               | ✔️               | ✔️         | ✔️            |  
+| "Wann ist der Virtueller Seminarraum?" | ✔️               | ✔️         | ✔️            |  
+| "Wann sind die Vorlesungen?"                | 🟠               | ✔️         | 🟠            |  
+| "Welche aufgaben sind noch zu erledigen?" | ✔️               | ✔️         | ✔️            |  
+| "Wer ist die Professorin von den Kurs?"     | 🟠               | ✔️         | 🟠            |  

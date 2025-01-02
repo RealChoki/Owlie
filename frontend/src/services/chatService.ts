@@ -129,7 +129,8 @@ export async function sendMessage(messageToSend: string) {
   }
 
   chatState.thinking = true;
-
+  chatState.currentMessage = "";
+ 
   try {
     await sendToThread(messageToSend);
   } catch (error) {

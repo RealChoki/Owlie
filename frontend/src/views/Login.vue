@@ -15,13 +15,13 @@
         <h1 class="text-center mb-4">Login</h1>
         <form @submit.prevent="onSubmit">
           <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
+            <label for="username" class="form-label">Username</label>
             <input
-              type="email"
-              id="email"
-              v-model="email"
+              type="text"
+              id="username"
+              v-model="username"
               class="login-input w-100"
-              placeholder="Enter your email"
+              placeholder="Enter your username"
               required
             />
           </div>
@@ -41,7 +41,7 @@
           <div
             class="d-flex justify-content-between align-items-center mb-4 gap-3"
           >
-            <span class="small text-start cursor-pointer" style="width: 50%;"
+            <span class="small text-start cursor-pointer" style="width: 50%"
               >Don't have an account? <strong>Register</strong></span
             >
 
@@ -81,24 +81,49 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
-const email = ref("");
+const username = ref("");
 const password = ref("");
 
 const router = useRouter();
 
-const onSubmit = () => {
-  if (!email.value || !password.value) {
+// Store the token in sessionStorage after login
+const onSubmit = async () => {
+  if (!username.value || !password.value) {
     alert("Please fill in all fields.");
     return;
   }
 
-  console.log("Email:", email.value);
-  console.log("Password:", password.value);
+  try {
+    const response = await fetch(
+      "https://moodle.htw-berlin.de/login/token.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          username: username.value,
+          password: password.value,
+          service: "moodle_mobile_app",
+        }),
+      }
+    );
 
-  router.push("/");
+    const data = await response.json();
+
+    if (data.token) {
+      // Store token in sessionStorage
+      sessionStorage.setItem("auth_token", data.token);
+      console.log("Token stored in sessionStorage:", data.token);
+      router.push("/");
+    } else {
+      alert("Login failed. Please check your credentials.");
+    }
+  } catch (error) {
+    console.error("Error during login:", error);
+  }
 };
 </script>
-
 
 <style scoped>
 /*

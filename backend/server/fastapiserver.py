@@ -318,7 +318,7 @@ async def post_thread(thread_id: str, message: CreateMessage):
             # Process each tool call
             for tool_call in tool_calls:
                 if tool_call.function.name == "get_moodle_course_content":
-                    course_id = "51589"  # Hardcoded for now
+                    course_id = "50115"  # Hardcoded for now
                     if course_id:
                         content = get_moodle_course_content(courseid=course_id)
                         print("content:", content)
@@ -453,7 +453,7 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
             tool_calls = run.required_action.submit_tool_outputs.tool_calls
             for tool_call in tool_calls:
                 if tool_call.function.name == "get_moodle_course_content":
-                    course_id = "51589"  # Hardcoded for now
+                    course_id = "50115"  # Hardcoded for now
                     if course_id:
                         content = get_moodle_course_content(courseid=course_id)
 
@@ -642,7 +642,8 @@ async def upload_files(
     # Associate the temporary assistant with the thread
     assistant_cache[decrypted_thread_id] = {
         "assistant_id": temporary_assistant_id,
-        "vector_store_id": temporary_vector_store_id
+        "vector_store_id": temporary_vector_store_id,
+        "file_ids": file_ids
     }
 
     # Encrypt the thread_id, assistant_id, and vector_store_id before returning them
@@ -668,6 +669,15 @@ async def delete_temp_assistant(request: Request):
     # Check if there's a temporary assistant associated with this thread
     assistant_info = assistant_cache.get(old_thread_id)
     if assistant_info:
+        # Delte the temporary files
+        file_ids = assistant_info.get('file_ids', [])
+        for file_id in file_ids:
+            try:
+                client.files.delete(file_id)
+                print(f"Deleted temporary file: {file_id}")
+            except Exception as e:
+                print(f"Error deleting file: {e}")
+
         # Delete the temporary assistant
         try:
             client.beta.assistants.delete(assistant_info['assistant_id'])

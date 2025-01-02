@@ -16,7 +16,7 @@
         @click="triggerFileInput(fileInput)"
       />
       <span
-        v-if="showFileCount"
+        v-if="fileCount"
         class="file-count-indicator bg-danger text-white"
       >
         {{ fileCount }}
@@ -118,10 +118,8 @@ import {
 import { franc } from "franc-min";
 import { 
   loadVoices, 
-  readLatestAssistantMessage, 
   stopTTS, 
   toggleTTS, 
-  availableVoices, 
   isTTSPlaying 
 } from "../services/ttsService";
 import { getAssistantThreadId } from "../services/openaiService";
@@ -164,19 +162,70 @@ const message = computed({
 
 const messageLength = computed(() => message.value.length);
 const isMessageTooLong = computed(() => messageLength.value > MAX_MESSAGE_LENGTH);
-const showFileCount = computed(() => fileCount.value > 0);
 
 // Lifecycle hooks
+
+// Methods
+const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
+
+const isFirstMessage = () => getMessages().length === 0;
+
+const disableSendButton = () => {
+  const isLastMessageFromAssistant = () => {
+    const messages = getMessages();
+    const lastMessage = messages[messages.length - 1];
+    return lastMessage?.role === "assistant" || isFirstMessage();
+  };
+  
+  const isMessageValid = () => {
+    return message.value.trim() !== "" || fileCount.value > 0;
+  };
+  
+  return (
+    !(
+      isLastMessageFromAssistant() &&
+      isMessageValid()
+    ) ||
+    isMessageTooLong.value ||
+    !Boolean(getAssistantThreadId())
+  );
+};
+
+const sendMessage = () => {
+  if (!disableSendButton()) {
+    sendChatMessage(message.value.trim());
+    resetFileCount();
+  }
+};
+
+const handleKeydown = (event: KeyboardEvent) => {
+  if (event.key === "Enter" && !event.shiftKey && window.innerWidth > 768) {
+    event.preventDefault();
+    sendMessage();
+  }
+};
+
+const resizeTextarea = () => {
+  const target = textarea.value;
+  if (!target) return;
+  
+  target.style.height = "45px"; // Reset height
+  const maxHeight = parseFloat(window.getComputedStyle(target).maxHeight);
+  const newHeight = Math.min(target.scrollHeight, maxHeight);
+  
+  target.style.height = `${newHeight}px`;
+  showResizeIcon.value = newHeight > 91 && Boolean(message.value);
+};
+
+const resetTextareaHeight = () => {
+  if (textarea.value) {
+    textarea.value.style.height = "45px";
+  }
+  showResizeIcon.value = false;
+};
+
 onMounted(() => {
   loadVoices();
-  window.speechSynthesis.onvoiceschanged = () => {
-    loadVoices();
-    console.log(
-      "Voices updated:",
-      availableVoices.value.map((voice) => `${voice.name} (${voice.lang})`)
-    );
-  };
-  window.addEventListener("beforeunload", stopTTS);
 });
 
 // Watchers
@@ -193,61 +242,6 @@ watch(message, (newValue) => {
     nextTick(resizeTextarea);
   }
 });
-
-// Methods
-const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
-
-const isFirstMessage = () => !getMessages().length;
-
-const disableSendButton = () => {
-  const messages = getMessages();
-  const lastMessage = messages[messages.length - 1];
-  const isLastMessageFromAssistant = 
-    lastMessage?.role === "assistant" || isFirstMessage();
-  const isMessageNotEmpty = message.value.trim() !== "";
-  const hasFilesAttached = fileCount.value > 0;
-  const isThreadInitialized = Boolean(getAssistantThreadId());
-
-  return (
-    !(isLastMessageFromAssistant && (isMessageNotEmpty || hasFilesAttached)) ||
-    isMessageTooLong.value ||
-    !isThreadInitialized
-  );
-};
-
-const sendMessage = () => {
-  if (!disableSendButton()) {
-    sendChatMessage(message.value.trim());
-    message.value = "";
-    resetFileCount();
-  }
-};
-
-const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === "Enter" && !event.shiftKey && window.innerWidth > 768) {
-    event.preventDefault();
-    sendMessage();
-  }
-};
-
-const resizeTextarea = () => {
-  const target = textarea.value;
-  if (!target) return;
-
-  target.style.height = "45px"; // Reset height
-  const maxHeight = parseFloat(window.getComputedStyle(target).maxHeight);
-  const newHeight = Math.min(target.scrollHeight, maxHeight);
-
-  target.style.height = `${newHeight}px`;
-  showResizeIcon.value = newHeight > 91 && Boolean(message.value);
-};
-
-const resetTextareaHeight = () => {
-  if (textarea.value) {
-    textarea.value.style.height = "45px";
-  }
-  showResizeIcon.value = false;
-};
 </script>
 
 <style scoped>
