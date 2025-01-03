@@ -160,6 +160,106 @@ class CreateMessage(BaseModel):
     content: str
     assistant_id: Optional[str]
 
+# from typing_extensions import override
+# from openai import AssistantEventHandler
+
+# # First, we create a EventHandler class to define
+# # how we want to handle the events in the response stream.
+
+# class EventHandler(AssistantEventHandler):    
+# @override
+# def on_text_created(self, text) -> None:
+#   print(f"\nassistant > ", end="", flush=True)
+    
+# @override
+# def on_text_delta(self, delta, snapshot):
+#   print(delta.value, end="", flush=True)
+    
+# def on_tool_call_created(self, tool_call):
+#   print(f"\nassistant > {tool_call.type}\n", flush=True)
+
+# def on_tool_call_delta(self, delta, snapshot):
+#   if delta.type == 'code_interpreter':
+#     if delta.code_interpreter.input:
+#       print(delta.code_interpreter.input, end="", flush=True)
+#     if delta.code_interpreter.outputs:
+#       print(f"\n\noutput >", flush=True)
+#       for output in delta.code_interpreter.outputs:
+#         if output.type == "logs":
+#           print(f"\n{output.logs}", flush=True)
+
+# # Then, we use the `stream` SDK helper 
+# # with the `EventHandler` class to create the Run 
+# # and stream the response.
+
+# with client.beta.threads.runs.stream(
+# thread_id=thread.id,
+# assistant_id=assistant.id,
+# instructions="Please address the user as Jane Doe. The user has a premium account.",
+# event_handler=EventHandler(),
+# ) as stream:
+# stream.until_done()
+
+from typing_extensions import override
+from openai import AssistantEventHandler
+
+class EventHandler(AssistantEventHandler):    
+    @override
+    def on_text_created(self, text) -> None:
+        print(f"\nassistant > ", end="", flush=True)
+        
+    @override
+    def on_text_delta(self, delta, snapshot):
+        # print(delta.value, end="", flush=True)
+        return
+        
+    def on_tool_call_created(self, tool_call):
+        print(f"\nassistant > {tool_call.type}\n", flush=True)
+
+    def on_tool_call_delta(self, delta, snapshot):
+        if delta.type == 'code_interpreter':
+            if delta.code_interpreter.input:
+                print(delta.code_interpreter.input, end="", flush=True)
+            if delta.code_interpreter.outputs:
+                print(f"\n\noutput >", flush=True)
+            for output in delta.code_interpreter.outputs:
+                if output.type == "logs":
+                    print(f"\n{output.logs}", flush=True)
+
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+import asyncio
+
+@app.get("/api/threads/{thread_id}/send_and_wait_stream")
+async def send_and_wait_stream(thread_id: str, assistant_id: str, message: str):
+    # Decrypt the thread_id and assistant_id
+    decrypted_thread_id = decrypt_data(thread_id)
+    decrypted_assistant_id = decrypt_data(assistant_id)
+
+    async def event_generator():
+        with client.beta.threads.runs.stream(
+            thread_id=decrypted_thread_id,
+            assistant_id=decrypted_assistant_id,
+            instructions=message,
+            event_handler=EventHandler(),
+        ) as stream:
+            # Iterate over each chunk in the stream
+            for chunk in stream:
+                # print(f"chunk: {chunk}\n")
+                # Check if the chunk is of type ThreadMessageDelta
+                if hasattr(chunk, 'data') and hasattr(chunk.data, 'delta') and hasattr(chunk.data.delta, 'content'):
+                    delta_content = chunk.data.delta.content
+                    print()
+                    for block in delta_content:
+                        # Ensure block has a 'text' attribute and print the value
+                        if hasattr(block, 'text') and hasattr(block.text, 'value'):
+                            yield f"{block.text.value}"
+
+                await asyncio.sleep(0.1)  # Sleep for 0.1 seconds before yielding the next chunk
+
+    # Return the StreamingResponse with the correct SSE format
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
 
 # Update endpoints to check if assistant_id is initialized d
 @app.post("/api/new")
@@ -464,17 +564,18 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
                     if course_id:
                         if thread_moodle_cache.get(decrypted_thread_id) is None:
                             content = get_moodle_course_content(courseid=course_id)
-                            thread_moodle_cache[decrypted_thread_id] = content
+                            anonymized_content = presidio_anonymize(content)
+                            thread_moodle_cache[decrypted_thread_id] = anonymized_content
                             print("Fetching content from Moodle.")
                         else:
-                            content = thread_moodle_cache[decrypted_thread_id]
+                            anonymized_content = thread_moodle_cache[decrypted_thread_id]
                             print("Fetching content from cache.")
 
                         # Prepare the tool output with the fetched content
                         print("tool_call.id:", tool_call.id)
                         tool_outputs.append({
                             "tool_call_id": tool_call.id,
-                            "output": content
+                            "output": anonymized_content
                         })
                     else:
                         print("Course ID is missing in the function arguments.")

@@ -1,6 +1,5 @@
 import { reactive, ref, watch } from 'vue';
-import axios from 'axios';
-import { 
+import {
   getHeartCountLS,
   setHeartCountLS,
   getMessageCountLS,
@@ -55,32 +54,77 @@ function resetCounts() {
   setMessageCountLS(messageCount.value);
 }
 
+// async function sendToThread(content: string) {
+//   const assistant_id = getAssistantId();
+//   if (!assistant_id) {
+//     throw new Error('Assistant ID not found.');
+//   }
+
+//   const threadId = getAssistantThreadId();
+//   if (!threadId) {
+//     throw new Error(`Thread ID not found in assistantService. id: ${threadId}`);
+//   }
+
+//   chatState.currentThreadId = threadId;
+
+//   const response = await axios.post(`http://localhost:8000/api/threads/${threadId}/send_and_wait`, {
+//     content,
+//     assistant_id,
+//   });
+
+//   console.log('Received response:', response);
+
+//   if (getAssistantThreadId() == chatState.currentThreadId) {
+//     addAssistantMessage(response.data.content);
+//   } else {
+//     console.log('Received message from old thread. Ignoring.');
+//   }
+// }
+
 async function sendToThread(content: string) {
   const assistant_id = getAssistantId();
-  if (!assistant_id) {
-    throw new Error('Assistant ID not found.');
-  }
-   
   const threadId = getAssistantThreadId();
-  if (!threadId) {
-    throw new Error(`Thread ID not found in assistantService. id: ${threadId}`);
+
+  if (!assistant_id || !threadId) {
+    throw new Error('Assistant ID or Thread ID not found.');
   }
 
   chatState.currentThreadId = threadId;
+  chatState.thinking = true;
 
-  const response = await axios.post(`http://localhost:8000/api/threads/${threadId}/send_and_wait`, {
-    content,
-    assistant_id,
-  });
+  const url = `http://localhost:8000/api/threads/${threadId}/send_and_wait_stream?assistant_id=${assistant_id}&message=${content}`;
 
-  console.log('Received response:', response);
+  const response = await fetch(url);
 
-  if (getAssistantThreadId() == chatState.currentThreadId) {
-    addAssistantMessage(response.data.content);
-  } else {
-    console.log('Received message from old thread. Ignoring.');
+  if (!response.ok) {
+    throw new Error('Failed to connect to the backend');
+  }
+
+  if (!response.body) {
+    throw new Error('Response body is null');
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let done = false;
+  
+  const initialMessage = { content: '', role: 'assistant' };
+  chatState.thinking = false;
+  chatState.messages.push(initialMessage);
+
+  while (!done) {
+    const { value, done: readerDone } = await reader.read();
+    done = readerDone;
+
+    // Decode the chunk and append it to the existing message's content
+    const chunk = decoder.decode(value, { stream: true });
+
+    // Find the last message (the one we are appending to)
+    const currentMessage = chatState.messages[chatState.messages.length - 1];
+    currentMessage.content += chunk;
   }
 }
+
 
 function handleSendMessageError(error: any) {
   console.error('Error sending message:', error);
@@ -108,14 +152,14 @@ function consumeHalfHeart() {
 }
 
 // Exported functions
-export async function sendMessage(messageToSend: string) {
+export async function sendMessage(content: string) {
   console.log(`[sendMessage] Attempting to send message. Current heartCount: ${heartCount.value}, messageCount: ${messageCount.value}`);
 
-  if (!messageToSend.trim()) {
+  if (!content.trim()) {
     return;
   }
 
-  addUserMessage(messageToSend);
+  addUserMessage(content);
 
   if (heartCount.value <= 0) {
     addAssistantMessage(getRandomNoHeartsMessage());
@@ -128,11 +172,10 @@ export async function sendMessage(messageToSend: string) {
     consumeHalfHeart();
   }
 
-  chatState.thinking = true;
   chatState.currentMessage = "";
- 
+
   try {
-    await sendToThread(messageToSend);
+    await sendToThread(content);
   } catch (error) {
     handleSendMessageError(error);
   } finally {

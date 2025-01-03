@@ -35,6 +35,11 @@
           v-html="renderedMessages[index]"
           :style="isWideScreen ? 'margin-left: 50px' : ''"
         ></div>
+        <font-awesome-icon 
+          :icon="['fas', currentIcon]"
+          class="cursor-pointer copy-icon position-absolute"
+          @click="handleCopy(renderedMessages[index])"
+        />
       </div>
     </div>
     <div v-if="thinking">
@@ -55,8 +60,13 @@
 import { ref, watch, nextTick, computed } from "vue";
 import { getMessages, getThinking } from "../services/chatService";
 import { useScreenWidth } from "../utils/useScreenWidth";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCopy, faCheck } from '@fortawesome/free-solid-svg-icons'
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
+
+library.add(faCopy, faCheck);
 
 const messages = getMessages();
 const chatContainer = ref<HTMLDivElement | null>(null);
@@ -74,6 +84,10 @@ const props = defineProps({
 // Klickzähler für das Owl-Bild
 const clickCount = ref(0);
 
+// Funktion, um das Icon zu wechseln
+const currentIcon = ref('copy');
+
+
 // Convert assistant messages from markdown to HTML
 const renderedMessages = computed(() => {
   return messages.map((message) => {
@@ -86,6 +100,25 @@ const renderedMessages = computed(() => {
     }
   });
 });
+
+// Handle the copy event
+function handleCopy(html: string) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  let plainText = tmp.textContent || '';
+  // Replace multiple newlines with a single newline
+  plainText = plainText.replace(/(\r?\n){2,}/g, '\n');
+  copyToClipboard(plainText.trim());
+  currentIcon.value = 'check';
+  setTimeout(() => {
+    currentIcon.value = 'copy';
+  }, 2500);
+}
+
+// Copy the assistant message to the clipboard
+function copyToClipboard(text: string) {
+  navigator.clipboard.writeText(text);
+}
 
 // Watch for changes in messages to scroll to the latest message
 watch(
@@ -133,6 +166,19 @@ watch(
   display: inline-block;
   word-wrap: break-word;
   box-shadow: 0 0px 10px var(--color-gray-shadow);
+}
+
+.copy-icon {
+  color: var(--color-gray-lighter);
+  font-size: 1em;
+  padding: 0.4em 0.5em;
+  border-radius: 8px;
+  bottom: -2.1em;
+  left: 3.1em;
+}
+
+.copy-icon:hover {
+  background-color: var(--color-gray-medium);
 }
 
 .assistant-pfp {
