@@ -166,11 +166,11 @@ class CreateMessage(BaseModel):
 async def post_new(request: Request):
     data = await request.json()
     assistant_id = data.get('assistant_id')
-    old_thread_id = decrypt_data(data.get('old_thread_id'))
-
+    old_thread_id_encrypted = data.get('old_thread_id')
+    old_thread_id = decrypt_data(old_thread_id_encrypted) if old_thread_id_encrypted else None
+    
     # Remove cached content for this thread
-    print("old_thread_id:", old_thread_id)
-    if old_thread_id in thread_moodle_cache:
+    if old_thread_id and old_thread_id in thread_moodle_cache:
         del thread_moodle_cache[old_thread_id]
 
     if not assistant_id:
