@@ -77,7 +77,7 @@
           base-color="var(--color-gray-medium)"
           class="equal-width-toggle"
         >
-        <v-btn
+          <v-btn
             value="general"
             class="equal-width-btn"
             >General</v-btn
@@ -86,6 +86,11 @@
             value="quiz"
             class="equal-width-btn"
             >Quiz</v-btn
+          >
+          <v-btn
+            value="exam"
+            class="equal-width-btn"
+            >Exam</v-btn
           >
         </v-btn-toggle>
       </div>

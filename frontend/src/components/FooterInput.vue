@@ -1,6 +1,6 @@
 <template>
   <div
-    class="sticky-footer container-fluid d-flex align-items-end gap-2 pb-2 px-0"
+    class="sticky-footer container-fluid d-flex align-items-end gap-2 pb-2 px-0 mt-2"
     :class="{
       'pt-4': isMessageTooLong,
       'pt-2': !isMessageTooLong,

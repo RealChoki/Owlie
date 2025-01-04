@@ -81,7 +81,7 @@ function displayRandomMessage() {
   font-size: 0.8em;
   min-width: 100px;
   width: fit-content;
-  box-shadow: 2px 2px 0.5px #535353; /* Adjusted box-shadow color */
+  box-shadow: 2px 2px 0.5px var(--color-gray-light); /* Adjusted box-shadow color */
   border-radius: 10px;
 }
 

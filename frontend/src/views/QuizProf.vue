@@ -86,7 +86,7 @@
 
       <!-- Right Content -->
       <div
-        class="right-side w-100 d-flex flex-column align-items-center rounded pt-3"
+        class="right-side w-100 d-flex flex-column align-items-center rounded pt-3 px-3"
       >
         <div
           v-if="fileTitles.length"
@@ -213,7 +213,7 @@ async function selectFile(fileTitle: string) {
   } finally {
     setTimeout(() => {
       adjustHeight();
-    }, 100)
+    }, 0)
   }
   console.log("Selected file:", fileTitle);
 }
@@ -233,7 +233,7 @@ onMounted(async () => {
   } finally {
     setTimeout(() => {
       adjustHeight();
-    }, 100)
+    }, 0)
   }
 });
 
@@ -243,6 +243,9 @@ const adjustHeight = () => {
   if (textareaRef.value) {
     textareaRef.value.style.height = 'auto';
     textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
+    if (parseInt(textareaRef.value.style.height) < 150) {
+      textareaRef.value.style.height = '150px';
+    }
     console.log("Adjusted height:", textareaRef.value.style.height);
   }
 };
@@ -330,6 +333,8 @@ const adjustHeight = () => {
 
 .right-side {
   background-color: var(--color-background-dark);
+  border: 1px solid var(--color-gray-shadow);
+  margin: 5px;
 }
 
 .unclickable {

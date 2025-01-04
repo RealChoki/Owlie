@@ -1,5 +1,8 @@
 <template>
-  <div class="container-fluid p-0 m-0" style="background-color: var(--color-background-dark);">
+  <div
+    class="container-fluid p-0 m-0"
+    style="background-color: var(--color-background-dark)"
+  >
     <RouterView />
   </div>
 </template>
@@ -25,5 +28,9 @@
 
 .btn-click:active {
   transform: scale(0.9);
+}
+
+html {
+  background-color: var(--color-background-dark);
 }
 </style>

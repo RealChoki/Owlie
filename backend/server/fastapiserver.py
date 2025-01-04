@@ -195,11 +195,16 @@ async def send_and_wait_stream(thread_id: str, assistant_id: str, message: str):
     decrypted_thread_id = decrypt_data(thread_id)
     decrypted_assistant_id = decrypt_data(assistant_id)
 
+    client.beta.threads.messages.create(
+        thread_id=decrypted_thread_id,
+        role="user",
+        content=message
+    )
+
     async def event_generator():
         with client.beta.threads.runs.stream(
             thread_id=decrypted_thread_id,
             assistant_id=decrypted_assistant_id,
-            instructions=message,
             event_handler=EventHandler(),
         ) as stream:
             # Iterate over each chunk in the stream

@@ -10,10 +10,7 @@
     <div v-for="(message, index) in messages" :key="message.id || index">
       <div v-if="message.role === 'user'" class="d-flex justify-content-end">
         <div
-          :class="[
-            'chat-bubble user-msg',
-            index === 0 ? 'mt-3 mb-4' : 'my-4',
-          ]"
+          :class="['chat-bubble user-msg', index === 0 ? 'mt-3 mb-4' : 'my-4']"
         >
           {{ message.content }}
         </div>
@@ -21,9 +18,7 @@
 
       <div
         v-else-if="message.role === 'assistant'"
-        :class="[
-          'assistant-msg text-white',
-        ]"
+        :class="['assistant-msg text-white']"
         :style="isWideScreen ? 'position: relative' : ''"
       >
         <img
@@ -35,11 +30,18 @@
           v-html="renderedMessages[index]"
           :style="isWideScreen ? 'margin-left: 50px' : ''"
         ></div>
-        <font-awesome-icon 
-          :icon="['fas', currentIcon]"
-          class="cursor-pointer copy-icon position-absolute"
-          @click="handleCopy(renderedMessages[index])"
-        />
+        <div class="position-absolute d-flex assistant-response-actions">
+          <font-awesome-icon
+            :icon="['fas', copiedIndex === index ? 'check' : 'copy']"
+            class="cursor-pointer response-action-icons"
+            @click="handleCopy(index)"
+          />
+          <font-awesome-icon
+            :icon="['fas', 'arrow-rotate-right']"
+            class="cursor-pointer response-action-icons"
+            @click="handleRerun(index)"
+          />
+        </div>
       </div>
     </div>
     <div v-if="thinking">
@@ -58,15 +60,23 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick, computed } from "vue";
-import { getMessages, getThinking } from "../services/chatService";
+import {
+  getMessages,
+  getThinking,
+  resendMessage,
+} from "../services/chatService";
 import { useScreenWidth } from "../utils/useScreenWidth";
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCopy, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faCopy,
+  faCheck,
+  faArrowRotateRight,
+} from "@fortawesome/free-solid-svg-icons";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
 
-library.add(faCopy, faCheck);
+library.add(faCopy, faCheck, faArrowRotateRight);
 
 const messages = getMessages();
 const chatContainer = ref<HTMLDivElement | null>(null);
@@ -81,12 +91,9 @@ const props = defineProps({
   },
 });
 
-// Klickzähler für das Owl-Bild
-const clickCount = ref(0);
-
 // Funktion, um das Icon zu wechseln
-const currentIcon = ref('copy');
-
+const copiedIndex = ref<number | null>(null);
+let copyTimer: ReturnType<typeof setTimeout> | null = null;
 
 // Convert assistant messages from markdown to HTML
 const renderedMessages = computed(() => {
@@ -102,16 +109,19 @@ const renderedMessages = computed(() => {
 });
 
 // Handle the copy event
-function handleCopy(html: string) {
-  const tmp = document.createElement('div');
+function handleCopy(index: number) {
+  const html = renderedMessages.value[index];
+  const tmp = document.createElement("div");
   tmp.innerHTML = html;
-  let plainText = tmp.textContent || '';
-  // Replace multiple newlines with a single newline
-  plainText = plainText.replace(/(\r?\n){2,}/g, '\n');
-  copyToClipboard(plainText.trim());
-  currentIcon.value = 'check';
-  setTimeout(() => {
-    currentIcon.value = 'copy';
+  let plainText = tmp.textContent || "";
+  plainText = plainText.replace(/(\r?\n){2,}/g, "\n").trim();
+  navigator.clipboard.writeText(plainText);
+
+  if (copyTimer) clearTimeout(copyTimer);
+  copiedIndex.value = index;
+  copyTimer = setTimeout(() => {
+    copiedIndex.value = null;
+    copyTimer = null;
   }, 2500);
 }
 
@@ -120,7 +130,14 @@ function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
 }
 
-// Watch for changes in messages to scroll to the latest message
+async function handleRerun(index: number) {
+  try {
+    await resendMessage(index);
+  } catch (error) {
+    console.error("Rerun error:", error);
+  }
+}
+
 watch(
   messages,
   async () => {
@@ -168,16 +185,22 @@ watch(
   box-shadow: 0 0px 10px var(--color-gray-shadow);
 }
 
-.copy-icon {
+.response-action-icons {
   color: var(--color-gray-lighter);
   font-size: 1em;
   padding: 0.4em 0.5em;
   border-radius: 8px;
   bottom: -2.1em;
   left: 3.1em;
+  visibility: hidden; /* Hide icons by default */
 }
 
-.copy-icon:hover {
+.assistant-msg:hover .response-action-icons,
+.assistant-response-actions:hover .response-action-icons {
+  visibility: visible; /* Show icons on hover */
+}
+
+.response-action-icons:hover {
   background-color: var(--color-gray-medium);
 }
 
@@ -189,6 +212,11 @@ watch(
 
 .thinking-animation {
   display: inline-block;
+}
+
+.assistant-response-actions {
+  bottom: -2.1em;
+  left: 3.07em;
 }
 
 .dot {
