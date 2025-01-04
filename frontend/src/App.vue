@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid vh-100 p-0 m-0" style="background-color: var(--color-background-dark);">
+  <div class="container-fluid p-0 m-0" style="background-color: var(--color-background-dark);">
     <RouterView />
   </div>
 </template>

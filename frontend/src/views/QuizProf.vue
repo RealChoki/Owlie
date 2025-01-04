@@ -1,87 +1,23 @@
 <template>
   <div
-    class="d-flex vh-100"
-    :class="{ 'container-fluid': isWideScreen && !isSidebarOpen }"
+    class="d-flex flex-column vh-100"
+    style="background-color: var(--color-black)"
   >
-    <div v-if="isSidebarOpen" class="sidebar py-3 px-3">
-      <div class="search-container">
-        <input
-          ref="searchInput"
-          type="text"
-          v-model="searchQuery"
-          class="sidebar-search-bar w-100"
-          placeholder="Search files..."
-          @focus="isSearchFocused = true"
-          @blur="isSearchFocused = false"
-          :class="{ 'input-focused': isSearchFocused }"
-        />
-        <font-awesome-icon
-          :icon="['fas', 'magnifying-glass']"
-          class="magnifying-glass cursor-pointer"
-          :class="{ 'text-white': isSearchFocused }"
-          @click="focusInput"
-        />
-        <img
-          src="../assets/icons/MenuClose.png"
-          class="ms-3 icon-click-effect cursor-pointer"
-          @click="toggleSidebar"
-        />
-      </div>
-
-      <div class="file-list-container">
-        <ul class="p-0 mt-1">
-          <li
-            v-for="(fileTitle, index) in filteredFileTitles"
-            :key="index"
-            :class="[
-              'list-item-hover',
-              'rounded',
-              'text-white',
-              'py-1',
-              'cursor-pointer',
-              { 'selected-file': fileTitle === selectedFile.title },
-            ]"
-            @click="selectFile(fileTitle)"
-          >
-            <p class="m-0 py-2 px-2 d-flex align-items-start position-relative">
-              <span class="file-name position-relative">
-                {{ fileTitle }}
-              </span>
-            </p>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <div
-      class="right-side w-100 container pt-3 pb-5 d-flex flex-column align-items-center"
-    >
-      <nav class="navbar px-2 d-flex justify-content-between w-100 mb-3">
-        <!-- phone -->
-        <img
-          v-if="!isWideScreen"
-          class="icon-click-effect cursor-pointer"
-          src="../assets/icons/MenuOpen.png"
-          @click="toggleBurgerMenu"
-        />
-        <!-- pc and sidebar closed -->
-        <img
-          v-else-if="isWideScreen && !isSidebarOpen"
-          class="icon-click-effect cursor-pointer"
-          src="../assets/icons/MenuOpen.png"
-          @click="toggleSidebar"
-        />
-        <!-- pc and sidebar open -->
-        <div v-else class="nav-icon-holder">
+    <!-- Navbar -->
+    <div class="container-fluid navbar-container">
+      <nav class="py-2 px-3 d-flex align-items-center justify-content-between">
+        <!-- Home Icon -->
+        <button
+          class="btn btn-link p-0 d-flex align-items-center"
+          @click="handleHomeClick"
+          aria-label="Home"
+        >
           <font-awesome-icon
-            class="icon-click-effect cursor-pointer"
+            class="icon-click-effect"
             :icon="['fas', 'home']"
             style="color: var(--color-gray-shadow); width: 29px; height: 29px"
-            @click="handleHomeClick"
           />
-        </div>
-        <h3 class="text-white text-center m-0">{{ selectedFile.title }}</h3>
-
+        </button>
         <div class="nav-icon-holder">
           <!-- if user doesnt have pfp -->
           <!-- <font-awesome-icon
@@ -107,40 +43,90 @@
           @toggleProfileMenu="toggleProfileMenu"
         />
       </nav>
+    </div>
+
+    <!-- Content Container -->
+    <div class="d-flex flex-grow-1">
+      <!-- Sidebar -->
+      <div v-if="isSidebarOpen" class="sidebar py-3 px-3">
+        <div class="search-container">
+          <input
+            ref="searchInput"
+            type="text"
+            v-model="searchQuery"
+            class="sidebar-search-bar w-100"
+            placeholder="Search files..."
+            @focus="isSearchFocused = true"
+            @blur="isSearchFocused = false"
+            :class="{ 'input-focused': isSearchFocused }"
+          />
+          <font-awesome-icon
+            :icon="['fas', 'magnifying-glass']"
+            class="magnifying-glass cursor-pointer"
+            :class="{ 'text-white': isSearchFocused }"
+            @click="focusInput"
+          />
+        </div>
+        <div class="file-list-container">
+          <ul class="p-0 mt-1">
+            <li
+              v-for="(fileTitle, index) in filteredFileTitles"
+              :key="index"
+              class="list-item-hover rounded text-white py-1 cursor-pointer"
+              :class="{ 'selected-file': fileTitle === selectedFile.title }"
+              @click="selectFile(fileTitle)"
+            >
+              <p class="m-0 py-2 px-2 d-flex align-items-start">
+                <span class="file-name">{{ fileTitle }}</span>
+              </p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Right Content -->
       <div
-        v-if="fileTitles.length"
-        class="d-flex flex-column w-100 h-100 align-items-center"
+        class="right-side w-100 d-flex flex-column align-items-center rounded pt-3"
       >
-        <div class="textarea-container position-relative w-100 flex-grow-1">
-          <textarea
-            v-model="selectedFile.content"
-            rows="10"
-            class="w-100 h-100 p-3 rounded file-textarea"
-            readonly
-          ></textarea>
-          <button
-            class="btn btn-edit bg-white position-absolute bottom-0 end-0 mx-3 my-3 icon-click-effect"
-            style="z-index: 1"
-            @click="toggleEdit"
-          >
-            <span v-if="isEditMode"> Save </span>
-            <span v-else>
-              Edit
-              <font-awesome-icon
-                :icon="['fas', 'pen-to-square']"
-                class="cursor-pointer"
-                style="color: var(--color-gray-shadow)"
-              />
-            </span>
-          </button>
+        <div
+          v-if="fileTitles.length"
+          class="d-flex flex-column w-100 align-items-center"
+        >
+          <div class="textarea-container position-relative w-100 flex-grow-1">
+            <h3 class="text-white text-center mb-3 flex-grow-1">
+              {{ selectedFile.title }}
+            </h3>
+
+            <textarea
+              v-model="selectedFile.content"
+              class="w-100 p-3 rounded file-textarea"
+              ref="textareaRef"
+              readonly
+            ></textarea>
+            <button
+              class="btn btn-edit bg-white position-absolute bottom-0 end-0 mx-3 my-3 icon-click-effect"
+              @click="toggleEdit"
+            >
+              <span v-if="isEditMode"> Save </span>
+              <span v-else>
+                Edit
+                <font-awesome-icon
+                  :icon="['fas', 'pen-to-square']"
+                  class="cursor-pointer"
+                  style="color: var(--color-gray-shadow)"
+                />
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
+
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -224,6 +210,10 @@ async function selectFile(fileTitle: string) {
     };
   } catch (error) {
     console.error("Error fetching file:", error);
+  } finally {
+    setTimeout(() => {
+      adjustHeight();
+    }, 100)
   }
   console.log("Selected file:", fileTitle);
 }
@@ -240,15 +230,31 @@ onMounted(async () => {
     console.log("Files fetched:", fileTitles.value);
   } catch (error) {
     console.error("Error fetching files:", error);
+  } finally {
+    setTimeout(() => {
+      adjustHeight();
+    }, 100)
   }
 });
+
+const textareaRef = ref<HTMLTextAreaElement | null>(null);
+
+const adjustHeight = () => {
+  if (textareaRef.value) {
+    textareaRef.value.style.height = 'auto';
+    textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
+    console.log("Adjusted height:", textareaRef.value.style.height);
+  }
+};
 </script>
 
 <style scoped>
+.navbar-container {
+  background-color: var(--color-black);
+}
+
 .sidebar {
   background-color: var(--color-black);
-  height: 100vh;
-  overflow-y: auto;
   min-width: 305px;
   max-width: 305px;
   position: relative;
@@ -322,6 +328,10 @@ onMounted(async () => {
   transition: width 0.5s ease, opacity 0.5s ease;
 }
 
+.right-side {
+  background-color: var(--color-background-dark);
+}
+
 .unclickable {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
@@ -361,8 +371,8 @@ onMounted(async () => {
 
 .file-textarea {
   background-color: var(--color-gray-dark);
-  max-width: 800px;
-
+  max-width: 1000px;
+  max-height: 80vh;
   border: none;
   outline: none;
   resize: none;

@@ -1,23 +1,28 @@
-import os
+import asyncio
 import json
-from dotenv import load_dotenv
-from fastapi import FastAPI, Request, File, UploadFile, HTTPException, Form
-from fastapi.middleware.cors import CORSMiddleware
+import logging
+import os
+import shutil
+import tempfile
+import time
 from typing import List, Optional
-from pydantic import BaseModel
-from openai import OpenAI
-from openai.types.beta.threads.run import RequiredAction, LastError
-from tools.fernet import encrypt_data, decrypt_data
-from tools.function_calling import get_moodle_course_content
-from langchain_experimental.data_anonymizer import PresidioReversibleAnonymizer
+
+import yaml
+from dotenv import load_dotenv
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from langdetect import detect, LangDetectException
+from openai import AssistantEventHandler, OpenAI
+from openai.types.beta.threads.run import LastError, RequiredAction
 from presidio_analyzer import AnalyzerEngine
 from presidio_analyzer.nlp_engine import NlpEngineProvider
-from langdetect import detect, LangDetectException
-import time
-import logging
-import shutil
-import tempfile  # Add this import
-import yaml
+from pydantic import BaseModel
+from typing_extensions import override
+
+from langchain_experimental.data_anonymizer import PresidioReversibleAnonymizer
+from tools.fernet import decrypt_data, encrypt_data
+from tools.function_calling import get_moodle_course_content
 
 # Configure logging d
 logging.basicConfig(level=logging.ERROR)
@@ -160,53 +165,11 @@ class CreateMessage(BaseModel):
     content: str
     assistant_id: Optional[str]
 
-# from typing_extensions import override
-# from openai import AssistantEventHandler
-
-# # First, we create a EventHandler class to define
-# # how we want to handle the events in the response stream.
-
-# class EventHandler(AssistantEventHandler):    
-# @override
-# def on_text_created(self, text) -> None:
-#   print(f"\nassistant > ", end="", flush=True)
-    
-# @override
-# def on_text_delta(self, delta, snapshot):
-#   print(delta.value, end="", flush=True)
-    
-# def on_tool_call_created(self, tool_call):
-#   print(f"\nassistant > {tool_call.type}\n", flush=True)
-
-# def on_tool_call_delta(self, delta, snapshot):
-#   if delta.type == 'code_interpreter':
-#     if delta.code_interpreter.input:
-#       print(delta.code_interpreter.input, end="", flush=True)
-#     if delta.code_interpreter.outputs:
-#       print(f"\n\noutput >", flush=True)
-#       for output in delta.code_interpreter.outputs:
-#         if output.type == "logs":
-#           print(f"\n{output.logs}", flush=True)
-
-# # Then, we use the `stream` SDK helper 
-# # with the `EventHandler` class to create the Run 
-# # and stream the response.
-
-# with client.beta.threads.runs.stream(
-# thread_id=thread.id,
-# assistant_id=assistant.id,
-# instructions="Please address the user as Jane Doe. The user has a premium account.",
-# event_handler=EventHandler(),
-# ) as stream:
-# stream.until_done()
-
-from typing_extensions import override
-from openai import AssistantEventHandler
-
 class EventHandler(AssistantEventHandler):    
     @override
     def on_text_created(self, text) -> None:
-        print(f"\nassistant > ", end="", flush=True)
+        # print(f"\nassistant > ", end="", flush=True)
+        return
         
     @override
     def on_text_delta(self, delta, snapshot):
@@ -225,10 +188,6 @@ class EventHandler(AssistantEventHandler):
             for output in delta.code_interpreter.outputs:
                 if output.type == "logs":
                     print(f"\n{output.logs}", flush=True)
-
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
-import asyncio
 
 @app.get("/api/threads/{thread_id}/send_and_wait_stream")
 async def send_and_wait_stream(thread_id: str, assistant_id: str, message: str):
@@ -249,13 +208,12 @@ async def send_and_wait_stream(thread_id: str, assistant_id: str, message: str):
                 # Check if the chunk is of type ThreadMessageDelta
                 if hasattr(chunk, 'data') and hasattr(chunk.data, 'delta') and hasattr(chunk.data.delta, 'content'):
                     delta_content = chunk.data.delta.content
-                    print()
                     for block in delta_content:
                         # Ensure block has a 'text' attribute and print the value
                         if hasattr(block, 'text') and hasattr(block.text, 'value'):
                             yield f"{block.text.value}"
 
-                await asyncio.sleep(0.1)  # Sleep for 0.1 seconds before yielding the next chunk
+                await asyncio.sleep(0.1)
 
     # Return the StreamingResponse with the correct SSE format
     return StreamingResponse(event_generator(), media_type="text/event-stream")
