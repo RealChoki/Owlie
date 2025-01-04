@@ -39,7 +39,7 @@
           <font-awesome-icon
             :icon="['fas', 'arrow-rotate-right']"
             class="cursor-pointer response-action-icons"
-            @click="handleRerun(index)"
+            @click="resendMessage(index)"
           />
         </div>
       </div>
@@ -128,14 +128,6 @@ function handleCopy(index: number) {
 // Copy the assistant message to the clipboard
 function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
-}
-
-async function handleRerun(index: number) {
-  try {
-    await resendMessage(index);
-  } catch (error) {
-    console.error("Rerun error:", error);
-  }
 }
 
 watch(
