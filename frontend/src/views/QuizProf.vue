@@ -55,7 +55,7 @@
             type="text"
             v-model="searchQuery"
             class="sidebar-search-bar w-100"
-            placeholder="Search files..."
+            placeholder="Search courses..."
             @focus="isSearchFocused = true"
             @blur="isSearchFocused = false"
             :class="{ 'input-focused': isSearchFocused }"
@@ -70,14 +70,14 @@
         <div class="file-list-container">
           <ul class="p-0 mt-1">
             <li
-              v-for="(fileTitle, index) in filteredFileTitles"
+              v-for="(course, index) in filteredCourses"
               :key="index"
               class="list-item-hover rounded text-white py-1 cursor-pointer"
-              :class="{ 'selected-file': fileTitle === selectedFile.title }"
-              @click="selectFile(fileTitle)"
+              :class="{ 'selected-course': course === courseSelected }"
+              @click="selectCourse(course)"
             >
               <p class="m-0 py-2 px-2 d-flex align-items-start">
-                <span class="file-name">{{ fileTitle }}</span>
+                <span class="file-name">{{ course }}</span>
               </p>
             </li>
           </ul>
@@ -89,25 +89,34 @@
         class="right-side w-100 d-flex flex-column align-items-center rounded pt-3 px-3"
       >
         <div
-          v-if="fileTitles.length"
-          class="d-flex flex-column w-100 align-items-center"
+          v-for="(file, index) in files"
+          :key="file.title"
+          :class="[
+            'd-flex flex-column w-100 align-items-center mt-3',
+            index !== files.length - 1 ? 'file-container' : '',
+          ]"
         >
-          <div class="textarea-container position-relative w-100 flex-grow-1">
+          <div
+            :key="file.title"
+            class="textarea-container position-relative w-100 flex-grow-1 mb-4"
+          >
             <h3 class="text-white text-center mb-3 flex-grow-1">
-              {{ selectedFile.title }}
+              {{ file.title }}
             </h3>
 
             <textarea
-              v-model="selectedFile.content"
+              v-model="file.content"
               class="w-100 p-3 rounded file-textarea"
-              ref="textareaRef"
-              readonly
+              :ref="(el) => setTextareaRef(el, index)"
+              :readonly="!file.isEditMode"
+              @input="adjustHeight"
             ></textarea>
+
             <button
               class="btn btn-edit bg-white position-absolute bottom-0 end-0 mx-3 my-3 icon-click-effect"
-              @click="toggleEdit"
+              @click="toggleEdit(index)"
             >
-              <span v-if="isEditMode"> Save </span>
+              <span v-if="file.isEditMode"> Save </span>
               <span v-else>
                 Edit
                 <font-awesome-icon
@@ -140,6 +149,7 @@ import {
   fetchQuizFile,
   postQuizFile,
 } from "../services/filesService";
+// import { courses, fetchCourses } from "../services/courseService";
 import Profilemenu from "../widgets/Profilemenu.vue";
 import { useScreenWidth } from "../utils/useScreenWidth";
 import { useRouter } from "vue-router";
@@ -149,11 +159,12 @@ library.add(faMagnifyingGlass, faCircleInfo, faHome, faPenToSquare);
 const searchQuery = ref("");
 const isSearchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
-const fileTitles = ref<string[]>([]);
-const selectedFile = ref<{ title: string; content: string }>({
+const files = ref<{ title: string; content: string; isEditMode: boolean }>({
   title: "",
   content: "",
+  isEditMode: false,
 });
+
 const { isWideScreen } = useScreenWidth();
 
 const isSidebarOpen = ref(true);
@@ -167,12 +178,10 @@ const toggleProfileMenu = () => {
 
 const toggleBurgerMenu = () => {
   isBurgerMenuOpen.value = !isBurgerMenuOpen.value;
-  console.log("Burger menu open:", isBurgerMenuOpen.value);
 };
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
-  console.log("sidebar menu open:", isSidebarOpen.value);
 };
 
 const router = useRouter();
@@ -180,42 +189,44 @@ const handleHomeClick = () => {
   router.push("/");
 };
 
-const toggleEdit = () => {
-  isEditMode.value = !isEditMode.value;
-  const textarea = document.querySelector(
-    ".file-textarea"
-  ) as HTMLTextAreaElement;
-  if (isEditMode.value) {
-    textarea.readOnly = false;
+const toggleEdit = (index) => {
+  const file = files.value[index];
+  const textarea = textareaRefs.value[index];
+
+  file.isEditMode = !file.isEditMode;
+
+  if (file.isEditMode) {
     textarea.focus();
   } else {
-    textarea.readOnly = true;
-    postQuizFile(selectedFile.value.title, selectedFile.value.content);
+    postQuizFile(file.title, file.content);
+    adjustHeight();
   }
 };
 
-const filteredFileTitles = computed(() => {
+const courses = ref<string[]>([
+  // "Grundlagen der Programmierung",
+  // "Statistik",
+  // "Datenbanken",
+  // "Web-Entwicklung",
+  // "Künstliche Intelligenz",
+  // "Betriebssysteme",
+  // "Netzwerke",
+  // "IT-Sicherheit",
+  // "Projektmanagement",
+  // "Soft Skills",
+]);
+const courseSelected = ref<string | null>(null);
+
+const filteredCourses = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  return fileTitles.value.filter((title) =>
-    title.toLowerCase().includes(query)
+  const filtered = courses.value.filter((course) =>
+    course.toLowerCase().includes(query)
   );
+  return filtered;
 });
 
-async function selectFile(fileTitle: string) {
-  try {
-    const response = await fetchQuizFile(fileTitle);
-    selectedFile.value = {
-      title: response.data.title,
-      content: response.data.content,
-    };
-  } catch (error) {
-    console.error("Error fetching file:", error);
-  } finally {
-    setTimeout(() => {
-      adjustHeight();
-    }, 0)
-  }
-  console.log("Selected file:", fileTitle);
+function selectCourse(course: string) {
+  courseSelected.value = course;
 }
 
 function focusInput() {
@@ -223,31 +234,39 @@ function focusInput() {
 }
 
 onMounted(async () => {
+  const storedCourses = localStorage.getItem("courses");
+  courses.value = storedCourses ? JSON.parse(storedCourses) : [];
   try {
     const response = await fetchQuizFiles();
-    fileTitles.value = response.data.sort();
-    selectFile(fileTitles.value[0]);
-    console.log("Files fetched:", fileTitles.value);
+    files.value = response.data.sort((a: any, b: any) => a.title.localeCompare(b.title));
+    console.log("Files fetched:", files.value);
   } catch (error) {
     console.error("Error fetching files:", error);
   } finally {
     setTimeout(() => {
       adjustHeight();
-    }, 0)
+    }, 0);
   }
 });
 
-const textareaRef = ref<HTMLTextAreaElement | null>(null);
+const textareaRefs = ref([]);
+
+const setTextareaRef = (el, index) => {
+  if (el) {
+    textareaRefs.value[index] = el;
+  }
+};
 
 const adjustHeight = () => {
-  if (textareaRef.value) {
-    textareaRef.value.style.height = 'auto';
-    textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
-    if (parseInt(textareaRef.value.style.height) < 150) {
-      textareaRef.value.style.height = '150px';
+  textareaRefs.value.forEach((textarea) => {
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+      if (parseInt(textarea.style.height) < 150) {
+        textarea.style.height = "150px";
+      }
     }
-    console.log("Adjusted height:", textareaRef.value.style.height);
-  }
+  });
 };
 </script>
 
@@ -335,6 +354,8 @@ const adjustHeight = () => {
   background-color: var(--color-background-dark);
   border: 1px solid var(--color-gray-shadow);
   margin: 5px;
+  overflow-y: auto;
+  max-height: calc(100vh - 60px);
 }
 
 .unclickable {
@@ -343,14 +364,14 @@ const adjustHeight = () => {
   pointer-events: none !important;
 }
 
-.selected-file {
+.selected-course {
   background-color: var(--color-gray-medium);
   position: relative;
   overflow: hidden;
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-.selected-file::before {
+.selected-course::before {
   content: "";
   position: absolute;
   top: 0;
@@ -368,6 +389,13 @@ const adjustHeight = () => {
 
 .icon-click-effect:active {
   transform: scale(0.9);
+}
+
+.file-container2 {
+  border-bottom: 1px solid var(--color-gray-shadow);
+  max-width: 800px;
+  margin-bottom: 2em;
+  padding-bottom: 2em ;
 }
 
 .textarea-container {

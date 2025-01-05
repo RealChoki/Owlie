@@ -18,6 +18,8 @@ export async function fetchCourses() {
     courses.value = data.courses.map((course: string) =>
       course.replace(/_/g, " ")
     );
+    // temp for /quiz
+    localStorage.setItem("courses", JSON.stringify(courses.value));
   } catch (error) {
     console.error("There has been a problem with your fetch operation:", error);
     throw error;

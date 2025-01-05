@@ -19,7 +19,7 @@
       <div
         v-else-if="message.role === 'assistant'"
         :class="['assistant-msg text-white']"
-        :style="isWideScreen ? 'position: relative' : ''"
+        class="position-relative"
       >
         <img
           src="../assets/icons/OwlLogo.png"
@@ -30,7 +30,10 @@
           v-html="renderedMessages[index]"
           :style="isWideScreen ? 'margin-left: 50px' : ''"
         ></div>
-        <div class="position-absolute d-flex assistant-response-actions">
+        <div
+        v-if="message.isComplete"
+        class="position-absolute d-flex assistant-response-actions" 
+        :style="isWideScreen ? 'bottom: -2.1em; left: 3.07em' : 'bottom: -2.1em; left: 0em'">
           <font-awesome-icon
             :icon="['fas', copiedIndex === index ? 'check' : 'copy']"
             class="cursor-pointer response-action-icons"
@@ -204,11 +207,6 @@ watch(
 
 .thinking-animation {
   display: inline-block;
-}
-
-.assistant-response-actions {
-  bottom: -2.1em;
-  left: 3.07em;
 }
 
 .dot {

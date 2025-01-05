@@ -5,7 +5,7 @@ import { getAssistantId, getAssistantThreadId } from '../services/openaiService'
 
 // Reactive state
 const chatState = reactive({
-  messages: [] as { content: string; role: string; index: number; id?: string }[],
+  messages: [] as { content: string; role: string; index: number; id?: string; isComplete?: boolean }[],
   currentMessage: '' as string,
   thinking: false as boolean,
   currentThreadId: '' as string
@@ -88,9 +88,7 @@ async function sendToThread(content: string) {
   chatState.thinking = true
 
   const url = `http://localhost:8000/api/threads/${threadId}/send_and_wait_stream?assistant_id=${assistant_id}&message=${content}`
-
   const response = await fetch(url)
-
   if (!response.ok) {
     throw new Error('Failed to connect to the backend')
   }
@@ -103,21 +101,23 @@ async function sendToThread(content: string) {
   const decoder = new TextDecoder()
   let done = false
 
-  const initialMessage = { content: '', role: 'assistant', index: chatState.messages.length }
+  const initialMessage = {
+    content: '',
+    role: 'assistant',
+    index: chatState.messages.length,
+    isComplete: false
+  }
   chatState.thinking = false
   chatState.messages.push(initialMessage)
+  const lastMessageIndex = chatState.messages.length - 1
 
   while (!done) {
     const { value, done: readerDone } = await reader.read()
     done = readerDone
-
-    // Decode the chunk and append it to the existing message's content
     const chunk = decoder.decode(value, { stream: true })
-
-    // Find the last message (the one we are appending to)
-    const currentMessage = chatState.messages[chatState.messages.length - 1]
-    currentMessage.content += chunk
+    chatState.messages[lastMessageIndex].content += chunk
   }
+  chatState.messages[lastMessageIndex].isComplete = true
 }
 
 function handleSendMessageError(error: any) {
@@ -210,7 +210,7 @@ export async function resendMessage(index: number) {
 }
 
 function deleteMessagesFromIndex(index: number): void {
-  chatState.messages.splice(index);
+  chatState.messages.splice(index)
 }
 
 export function getMessages() {

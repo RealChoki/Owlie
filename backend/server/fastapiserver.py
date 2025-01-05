@@ -300,19 +300,22 @@ async def get_quiz_files():
         if not QUIZ_FILES_DIR.exists():
             raise FileNotFoundError(f"Quiz files directory not found: {QUIZ_FILES_DIR}")
         
-        # Retrieve only .txt filenames as a list of strings d
-        files = [
-            filename.name
-            for filename in QUIZ_FILES_DIR.iterdir()
-            if filename.is_file() and filename.suffix == ".txt"
+        # Retrieve all .txt files with their content
+        files_with_content = [
+            {
+                "title": filename.name,
+                "content": filename.read_text(encoding="utf-8")
+            }
+            for filename in QUIZ_FILES_DIR.iterdir() if filename.is_file() and filename.suffix == ".txt"
         ]
 
-        return files
+        return files_with_content
 
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @app.get("/api/quiz_files/{filename}")

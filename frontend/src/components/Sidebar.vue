@@ -28,12 +28,12 @@
     <div class="course-list-container">
       <ul class="p-0 mt-1">
         <li
-    v-for="(course, index) in filteredCourses"
-    :key="index"
-    class="list-item-hover rounded text-white py-1"
-    :class="courseClass(course)"
-    @click="onCourseClick(course)"
-  >
+          v-for="(course, index) in filteredCourses"
+          :key="index"
+          class="list-item-hover rounded text-white py-1"
+          :class="courseClass(course)"
+          @click="onCourseClick(course)"
+        >
           <p class="m-0 py-2 px-2 d-flex align-items-start position-relative">
             <span class="course-name position-relative">
               {{ course }}
@@ -63,8 +63,8 @@
         </h6>
       </div>
       <div v-if="showInfo" class="small mt-1 text-warning text-center">
-        Quiz mode: A quiz feature that assesses knowledge, tracks
-        performance, and provides personalized feedback.
+        Quiz mode: A quiz feature that assesses knowledge, tracks performance,
+        and provides personalized feedback.
       </div>
 
       <div
@@ -77,21 +77,9 @@
           base-color="var(--color-gray-medium)"
           class="equal-width-toggle"
         >
-          <v-btn
-            value="general"
-            class="equal-width-btn"
-            >General</v-btn
-          >
-          <v-btn
-            value="quiz"
-            class="equal-width-btn"
-            >Quiz</v-btn
-          >
-          <v-btn
-            value="exam"
-            class="equal-width-btn"
-            >Exam</v-btn
-          >
+          <v-btn value="general" class="equal-width-btn">General</v-btn>
+          <v-btn value="quiz" class="equal-width-btn">Quiz</v-btn>
+          <v-btn value="exam" class="equal-width-btn">Exam</v-btn>
         </v-btn-toggle>
       </div>
     </div>
@@ -135,7 +123,10 @@ const selectedMode = ref(getAssistantMode() || "general");
 const courseClicked = ref<{ course: string; mode: string } | null>(null);
 const showInfo = ref(false);
 
-const clickableCourses = ref<string[]>(["Grundlagen der Programmierung", "Statistik"]);
+const clickableCourses = ref<string[]>([
+  "Grundlagen der Programmierung",
+  "Statistik",
+]);
 
 // Computed
 const filteredCourses = computed(() => {
@@ -161,14 +152,13 @@ const isCourseClicked = (course: string): boolean =>
 
 // Generate dynamic classes for courses
 const courseClass = (course: string) => ({
-  'unclickable': !isCourseClickable(course),
-  'cursor-pointer': isCourseClickable(course),
-  'selected-course': isCourseClicked(course),
+  unclickable: !isCourseClickable(course),
+  "cursor-pointer": isCourseClickable(course),
+  "selected-course": isCourseClicked(course),
 });
 
 const onCourseClick = (course: string) => {
   if (!isCourseClickable(course)) return;
-  console.log('Selected course:', course);
   setNavbarCourseTitle(course, selectedMode.value);
   selectCourse(course);
 };
@@ -293,7 +283,7 @@ onMounted(() => {
 }
 
 .list-item-hover::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -344,10 +334,7 @@ onMounted(() => {
 }
 
 .test-mode-text {
-  transform: translate(
-    30px,
-    -5px
-  );
+  transform: translate(30px, -5px);
   font-size: 0.7rem;
 }
 
@@ -359,7 +346,7 @@ onMounted(() => {
 }
 
 .selected-course::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;

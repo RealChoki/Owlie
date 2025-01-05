@@ -174,13 +174,13 @@ const disableSendButton = () => {
   const isLastMessageFromAssistant = () => {
     const messages = getMessages();
     const lastMessage = messages[messages.length - 1];
-    return lastMessage?.role === "assistant" || isFirstMessage();
+    return (lastMessage?.role === "assistant" && lastMessage.isComplete) || isFirstMessage();
   };
   
   const isMessageValid = () => {
     return message.value.trim() !== "" || fileCount.value > 0;
   };
-  
+
   return (
     !(
       isLastMessageFromAssistant() &&
