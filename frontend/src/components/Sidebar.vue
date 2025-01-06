@@ -105,6 +105,7 @@ import {
   setAssistantMode,
 } from "../services/openaiService";
 import { setNavbarCourseTitle } from "../services/homeService";
+import { stopTTS } from "../services/ttsService";
 
 library.add(faMagnifyingGlass, faCircleInfo);
 
@@ -172,11 +173,12 @@ async function selectCourse(course: string) {
 
   const modeName = selectedMode.value;
   const courseName = course;
-  const currentCourse = getAssistantCourse();
   const currentMode = getAssistantMode();
+  const currentCourse = getAssistantCourse();
 
   if (course !== currentCourse || modeName !== currentMode) {
     console.log("Course or mode changed. Resetting thread and messages.");
+    stopTTS();
     clearThread();
     clearMessages(false);
     setAssistantCourse(course);

@@ -35,13 +35,19 @@
         class="position-absolute d-flex assistant-response-actions" 
         :style="isWideScreen ? 'bottom: -2.1em; left: 3.07em' : 'bottom: -2.1em; left: 0em'">
           <font-awesome-icon
+            :icon="ttsPlayingIndex === index ? ['fas', 'volume-xmark'] : ['fas', 'volume-high']"
+            class="cursor-pointer response-action-icon"
+            @click="handleToggleTTS(message.content, index)"
+            style="width: 0.85em"
+          />
+          <font-awesome-icon
             :icon="['fas', copiedIndex === index ? 'check' : 'copy']"
-            class="cursor-pointer response-action-icons"
+            class="cursor-pointer response-action-icon"
             @click="handleCopy(index)"
           />
           <font-awesome-icon
             :icon="['fas', 'arrow-rotate-right']"
-            class="cursor-pointer response-action-icons"
+            class="cursor-pointer response-action-icon"
             @click="resendMessage(index)"
           />
         </div>
@@ -62,12 +68,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, computed } from "vue";
+import { ref, watch, nextTick, computed, onMounted } from "vue";
 import {
   getMessages,
   getThinking,
   resendMessage,
 } from "../services/chatService";
+import { 
+  loadVoices, 
+  stopTTS, 
+  toggleTTS 
+} from "../services/ttsService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -75,11 +86,19 @@ import {
   faCopy,
   faCheck,
   faArrowRotateRight,
+  faVolumeHigh, 
+  faVolumeXmark 
 } from "@fortawesome/free-solid-svg-icons";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
 
-library.add(faCopy, faCheck, faArrowRotateRight);
+library.add(
+  faCopy,
+  faCheck,
+  faArrowRotateRight,
+  faVolumeHigh,
+  faVolumeXmark
+);
 
 const messages = getMessages();
 const chatContainer = ref<HTMLDivElement | null>(null);
@@ -133,6 +152,26 @@ function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
 }
 
+const ttsPlayingIndex = ref<number | null>(null)
+
+// Handle the tts
+function handleToggleTTS(content: string, index: number) {
+  if (ttsPlayingIndex.value === index) {
+    stopTTS()
+    ttsPlayingIndex.value = null
+  } else {
+    stopTTS()
+    toggleTTS(content, () => {
+      ttsPlayingIndex.value = null
+    })
+    ttsPlayingIndex.value = index
+  }
+}
+
+onMounted(() => {
+  loadVoices();
+});
+
 watch(
   messages,
   async () => {
@@ -150,6 +189,7 @@ watch(
         chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
       }
     }
+    stopTTS()
   },
   { deep: true }
 );
@@ -180,7 +220,7 @@ watch(
   box-shadow: 0 0px 10px var(--color-gray-shadow);
 }
 
-.response-action-icons {
+.response-action-icon {
   color: var(--color-gray-lighter);
   font-size: 1em;
   padding: 0.4em 0.5em;
@@ -190,12 +230,12 @@ watch(
   visibility: hidden; /* Hide icons by default */
 }
 
-.assistant-msg:hover .response-action-icons,
-.assistant-response-actions:hover .response-action-icons {
+.assistant-msg:hover .response-action-icon,
+.assistant-response-actions:hover .response-action-icon {
   visibility: visible; /* Show icons on hover */
 }
 
-.response-action-icons:hover {
+.response-action-icon:hover {
   background-color: var(--color-gray-medium);
 }
 

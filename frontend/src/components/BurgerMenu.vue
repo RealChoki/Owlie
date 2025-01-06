@@ -31,17 +31,8 @@
         <li
           v-for="(course, index) in filteredCourses"
           :key="index"
-          :class="[
-            'list-item-hover',
-            'rounded',
-            'text-white',
-            'py-1',
-            {
-              unclickable: !isCourseClickable(course),
-              'cursor-pointer': isCourseClickable(course),
-              'selected-course': isCourseClicked(course),
-            },
-          ]"
+          class="list-item-hover rounded text-white py-1"
+          :class="courseClass(course)"
           @click="
             isCourseClickable(course) ? selectCourse(course) : null;
             handleCourseClick(course);
@@ -160,6 +151,7 @@ import {
 } from "../services/openaiService";
 import { setNavbarCourseTitle } from "../services/homeService";
 import ProfileMenu from "@/widgets/ProfileMenu.vue";
+import { stopTTS } from "../services/ttsService";
 
 library.add(
   faMagnifyingGlass,
@@ -214,6 +206,13 @@ function isCourseClickable(course: string): boolean {
   return clickableCourses.value.includes(course);
 }
 
+// Generate dynamic classes for courses
+const courseClass = (course: string) => ({
+  unclickable: !isCourseClickable(course),
+  "cursor-pointer": isCourseClickable(course),
+  "selected-course": isCourseClicked(course),
+});
+
 function handleCourseClick(course: string) {
   if (!isCourseClickable(course)) {
     return;
@@ -244,25 +243,23 @@ const filteredCourses = computed(() => {
 const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
 
 async function selectCourse(course: string) {
+  if (!isCourseClickable(course)) {return;}
+  console.log("Selected course:", course);
   setTimeout(() => {
     closeBurgerMenu();
   }, 350);
-
-  if (!isCourseClickable(course)) {
-    return;
-  }
   courseClicked.value = { course, mode: selectedMode.value };
 
   const modeName = selectedMode.value;
-  const courseName = course.replace(/ /g, "_");
-
-  const currentCourse = getAssistantCourse();
+  const courseName = course;
   const currentMode = getAssistantMode();
+  const currentCourse = getAssistantCourse();
 
   if (course !== currentCourse || modeName !== currentMode) {
+    console.log("Course or mode changed. Resetting thread and messages.");
+    stopTTS();
     clearThread();
     clearMessages(false);
-
     setAssistantCourse(course);
     setAssistantMode(modeName);
     try {
@@ -377,6 +374,18 @@ onUnmounted(() => {
 
 .list-item-hover:hover {
   background-color: var(--color-gray-light);
+}
+
+.list-item-hover::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(to bottom, white, var(--color-gray-shadow));
+  opacity: 0;
+  transition: width 0.5s ease, opacity 0.5s ease;
 }
 
 .unclickable {

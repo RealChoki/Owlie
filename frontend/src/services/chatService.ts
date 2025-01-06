@@ -8,7 +8,8 @@ const chatState = reactive({
   messages: [] as { content: string; role: string; index: number; id?: string; isComplete?: boolean }[],
   currentMessage: '' as string,
   thinking: false as boolean,
-  currentThreadId: '' as string
+  currentThreadId: '' as string,
+  currentRunId: '' as string
 })
 
 // Reactive references
@@ -87,7 +88,7 @@ async function sendToThread(content: string) {
   chatState.currentThreadId = threadId
   chatState.thinking = true
 
-  const url = `http://localhost:8000/api/threads/${threadId}/send_and_wait_stream?assistant_id=${assistant_id}&message=${content}`
+  const url = `http://localhost:8000/api/threads/${threadId}/stream?assistant_id=${assistant_id}&message=${content}`
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error('Failed to connect to the backend')
@@ -107,17 +108,49 @@ async function sendToThread(content: string) {
     index: chatState.messages.length,
     isComplete: false
   }
-  chatState.thinking = false
   chatState.messages.push(initialMessage)
   const lastMessageIndex = chatState.messages.length - 1
 
-  while (!done) {
+  let runIdReceived = false
+
+  while (!done && initialMessage.isComplete === false) {
     const { value, done: readerDone } = await reader.read()
     done = readerDone
     const chunk = decoder.decode(value, { stream: true })
-    chatState.messages[lastMessageIndex].content += chunk
+
+    if (!runIdReceived && chunk.startsWith("run_id: ")) {
+      const runId = chunk.split(": ")[1].trim()
+      console.log(`Received run_id: ${runId}`)
+      runIdReceived = true
+      chatState.currentRunId = runId
+      chatState.thinking = false
+      
+    } else {
+      chatState.messages[lastMessageIndex].content += chunk
+    }
   }
+  chatState.currentRunId = ''
   chatState.messages[lastMessageIndex].isComplete = true
+}
+
+export async function cancelAssistantResponse() {
+  const lastMessageIndex = chatState.messages.length - 1
+  chatState.messages[lastMessageIndex].isComplete = true
+  const threadId = getAssistantThreadId();
+  const runId = chatState.currentRunId;
+  const url = `http://localhost:8000/api/threads/${threadId}/runs/${runId}/cancel`;
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const result = await response.json();
+    console.log(result.message);
+  } catch (error) {
+    console.error("Failed to stop the thread:", error);
+  }
 }
 
 function handleSendMessageError(error: any) {

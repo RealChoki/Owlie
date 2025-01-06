@@ -154,7 +154,8 @@
         </div>
         <font-awesome-icon
           v-else
-          class="icon-click-effect cursor-pointer nav-icon"
+          class="nav-icon"
+          :class="{ 'cursor-pointer icon-click-effect': !isBurgerMenuOpen }"
           :icon="['fas', 'arrows-rotate']"
           @click="handleRefreshClick"
         />

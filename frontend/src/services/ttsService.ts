@@ -3,7 +3,7 @@ import { franc } from 'franc-min'
 import { getMessages } from '../services/chatService'
 
 const availableVoices = ref<SpeechSynthesisVoice[]>([])
-const isTTSPlaying = ref(false)
+// const isTTSPlaying = ref(false)
 let utterance: SpeechSynthesisUtterance | null = null
 
 const femaleVoicesMap: { [key: string]: string } = {
@@ -36,72 +36,67 @@ function detectLanguage(text: string): string {
   }
 }
 
-function readLatestAssistantMessage() {
-  if (!isTTSPlaying.value) {
-    console.log('readLatestAssistantMessage called')
-    const messages = getMessages()
-    const assistantMessages = messages.filter((message) => message.role === 'assistant')
-    console.log('Assistant Messages:', assistantMessages)
-    if (assistantMessages.length > 0) {
-      const latestMessage = assistantMessages[assistantMessages.length - 1]
-      console.log('Latest Assistant Message:', latestMessage.content)
-      const detectedLang = detectLanguage(latestMessage.content)
-      console.log('Detected Language:', detectedLang)
+function readAssistantMessage(content: string, onEnd: () => void) {
+  if (!utterance) {
+    console.log('readAssistantMessage called')
+    console.log('Message Content:', content)
 
-      utterance = new SpeechSynthesisUtterance(latestMessage.content)
+    const detectedLang = detectLanguage(content)
+    console.log('Detected Language:', detectedLang)
 
-      // Set language based on detection
-      utterance.lang = detectedLang
-      utterance.pitch = 1.1
-      utterance.rate = 1.3
-      utterance.volume = 1
+    utterance = new SpeechSynthesisUtterance(content)
 
-      // Log available voices
-      console.log(
-        'Available Voices:',
-        availableVoices.value.map((voice) => voice.name)
-      )
+    // Set language based on detection
+    utterance.lang = detectedLang
+    utterance.pitch = 1.1
+    utterance.rate = 1.3
+    utterance.volume = 1
 
-      // Select female voice based on detected language
-      const selectedVoiceName = femaleVoicesMap[detectedLang]
-      const selectedVoice = availableVoices.value.find((voice) => voice.name === selectedVoiceName)
+    // Log available voices
+    console.log(
+      'Available Voices:',
+      availableVoices.value.map((voice) => voice.name)
+    )
 
-      if (selectedVoice) {
-        utterance.voice = selectedVoice
-        console.log('Selected voice:', selectedVoice.name)
-      } else {
-        console.warn(`No female voice found for language ${detectedLang}. Using default voice.`)
-      }
+    // Select female voice
+    const selectedVoiceName = femaleVoicesMap[detectedLang]
+    const selectedVoice = availableVoices.value.find(
+      (voice) => voice.name === selectedVoiceName
+    )
 
-      utterance.onend = () => {
-        isTTSPlaying.value = false
-        console.log('TTS playback ended.')
-      }
-
-      window.speechSynthesis.cancel() // Clear any pending speeches
-      window.speechSynthesis.speak(utterance)
-      isTTSPlaying.value = true
-      console.log('TTS playback started.')
+    if (selectedVoice) {
+      utterance.voice = selectedVoice
+      console.log('Selected voice:', selectedVoice.name)
     } else {
-      console.log('No assistant messages to read.')
+      console.warn(`No female voice found for language ${detectedLang}. Using default voice.`)
     }
+
+    utterance.onend = () => {
+      onEnd()
+      utterance = null // Reset utterance after playback ends
+      console.log('TTS playback ended.')
+    }
+
+    window.speechSynthesis.cancel() // Clear pending
+    window.speechSynthesis.speak(utterance)
+    console.log('TTS playback started.')
   }
 }
 
 function stopTTS() {
   if (utterance) {
     window.speechSynthesis.cancel()
-    isTTSPlaying.value = false
+    utterance = null // Reset utterance when TTS is stopped
     console.log('TTS stopped')
   }
 }
 
-function toggleTTS() {
-  if (isTTSPlaying.value) {
-    stopTTS()
+function toggleTTS(content: string, onEnd: () => void) {
+  if (utterance) {
+    window.speechSynthesis.cancel()
   } else {
-    readLatestAssistantMessage()
+    readAssistantMessage(content, onEnd)
   }
 }
 
-export { loadVoices, stopTTS, toggleTTS, isTTSPlaying }
+export { loadVoices, stopTTS, toggleTTS }

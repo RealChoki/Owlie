@@ -82,6 +82,7 @@ import {
 } from "../services/openaiService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 import { setNavbarCourseTitle } from "../services/homeService";
+import { stopTTS } from "../services/ttsService";
 
 const isExpandedInput = ref(false);
 const isBurgerMenuOpen = ref(false);
@@ -153,8 +154,14 @@ function handleClickOutside(event: MouseEvent) {
   }
 }
 
+// Define the beforeunload handler
+const handleBeforeUnload = () => {
+  stopTTS();
+};
+
 onMounted(async () => {
   clearThread();
+  window.addEventListener('beforeunload', handleBeforeUnload);
   setNavbarCourseTitle(getAssistantCourse(), getAssistantMode());
   document.addEventListener("click", handleClickOutside);
   fetchCourses();
@@ -170,6 +177,7 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload);
   document.removeEventListener("click", handleClickOutside);
 });
 

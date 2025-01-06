@@ -46,6 +46,7 @@
         :class="{
           'input-focused': isSearchFocused,
           'custom-input': true,
+          'cursor-default': isBurgerMenuOpen
         }"
       ></textarea>
 
@@ -73,20 +74,21 @@
         v-if="message || fileCount > 0 || isFirstMessage()"
         :icon="['fas', 'arrow-up']"
         :class="{
-          'cursor-pointer': !disableSendButton(),
+          'cursor-pointer': !disableSendButton() && !isBurgerMenuOpen,
           'btn-disabled': disableSendButton(),
         }"
         class="btn-circle bg-white"
         @click="sendMessage"
       />
 
-      <!-- Text-to-Speech Button -->
-      <font-awesome-icon
+      <!-- Text-to-Speech Button (In the future STOP STREAMING BUTTON)-->
+      <!-- <font-awesome-icon
         v-else
         :icon="isTTSPlaying ? ['fas', 'volume-xmark'] : ['fas', 'volume-high']"
         class="cursor-pointer btn-circle bg-light align-self-end"
         @click="toggleTTS"
-      />
+      /> -->
+      <button class="btn btn-primary" @click="cancelAssistantResponse()">stop</button>
     </div>
   </div>
 </template>
@@ -106,7 +108,8 @@ import {
   getMessages, 
   sendMessage as sendChatMessage, 
   getCurrentMessage, 
-  setCurrentMessage 
+  setCurrentMessage,
+  cancelAssistantResponse
 } from "../services/chatService";
 import { 
   fileCount, 
@@ -116,12 +119,6 @@ import {
   triggerFileInput 
 } from "../services/filesService";
 import { franc } from "franc-min";
-import { 
-  loadVoices, 
-  stopTTS, 
-  toggleTTS, 
-  isTTSPlaying 
-} from "../services/ttsService";
 import { getAssistantThreadId } from "../services/openaiService";
 
 library.add(
@@ -192,7 +189,7 @@ const disableSendButton = () => {
 };
 
 const sendMessage = () => {
-  if (!disableSendButton()) {
+  if (!disableSendButton() && !props.isBurgerMenuOpen) {
     sendChatMessage(message.value.trim());
     resetFileCount();
   }
@@ -224,14 +221,9 @@ const resetTextareaHeight = () => {
   showResizeIcon.value = false;
 };
 
-onMounted(() => {
-  loadVoices();
-});
-
 // Watchers
 watch(
   () => props.messages,
-  stopTTS,
   { deep: true }
 );
 

@@ -189,7 +189,7 @@ class EventHandler(AssistantEventHandler):
                 if output.type == "logs":
                     print(f"\n{output.logs}", flush=True)
 
-@app.get("/api/threads/{thread_id}/send_and_wait_stream")
+@app.get("/api/threads/{thread_id}/stream")
 async def send_and_wait_stream(thread_id: str, assistant_id: str, message: str):
     # Decrypt the thread_id and assistant_id
     decrypted_thread_id = decrypt_data(thread_id)
@@ -202,6 +202,7 @@ async def send_and_wait_stream(thread_id: str, assistant_id: str, message: str):
     )
 
     async def event_generator():
+        run_id = None
         with client.beta.threads.runs.stream(
             thread_id=decrypted_thread_id,
             assistant_id=decrypted_assistant_id,
@@ -210,8 +211,15 @@ async def send_and_wait_stream(thread_id: str, assistant_id: str, message: str):
             # Iterate over each chunk in the stream
             for chunk in stream:
                 # print(f"chunk: {chunk}\n")
+                # Check if the chunk is of type ThreadRunCreated and ThreadRunQueued
+                if type(chunk).__name__ in ['ThreadRunCreated', 'ThreadRunQueued', 'ThreadRunInProgress']:
+                    if hasattr(chunk, 'data') and hasattr(chunk.data, 'id'):
+                        if run_id is None:
+                            run_id = chunk.data.id
+                            yield f"run_id: {run_id}\n"
+
                 # Check if the chunk is of type ThreadMessageDelta
-                if hasattr(chunk, 'data') and hasattr(chunk.data, 'delta') and hasattr(chunk.data.delta, 'content'):
+                if type(chunk).__name__ in ['ThreadMessageDelta']:
                     delta_content = chunk.data.delta.content
                     for block in delta_content:
                         # Ensure block has a 'text' attribute and print the value
@@ -223,6 +231,15 @@ async def send_and_wait_stream(thread_id: str, assistant_id: str, message: str):
     # Return the StreamingResponse with the correct SSE format
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
+@app.post("/api/threads/{thread_id}/runs/{run_id}/cancel")
+async def stop_thread(thread_id: str, run_id: str):
+    # Decrypt the thread_id
+    decrypted_thread_id = decrypt_data(thread_id)
+    print(f"Stopping thread: {decrypted_thread_id}")
+    # Stop the thread
+    client.beta.threads.runs.cancel(run_id=run_id,thread_id=decrypted_thread_id)
+    # print(client.beta.threads.runs.cancel(run_id=run_id,thread_id=decrypted_thread_id))
+    return {"message": "Thread stopped successfully."}
 
 # Update endpoints to check if assistant_id is initialized d
 @app.post("/api/new")
