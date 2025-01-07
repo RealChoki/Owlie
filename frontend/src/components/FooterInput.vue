@@ -38,7 +38,7 @@
         ref="textarea"
         placeholder="Type a message..."
         aria-label="Message input"
-        v-model="message"
+        v-model="currentUserInput"
         @input="resizeTextarea"
         @keydown="handleKeydown"
         @focus="isSearchFocused = true"
@@ -71,7 +71,7 @@
     <div class="input-actions align-self-end d-flex gap-2">
       <!-- Send Button -->
       <font-awesome-icon
-        v-if="message || fileCount > 0 || isFirstMessage()"
+        v-if="isCurrentAssistantResponseComplete"
         :icon="['fas', 'arrow-up']"
         :class="{
           'cursor-pointer': !disableSendButton() && !isBurgerMenuOpen,
@@ -81,14 +81,12 @@
         @click="sendMessage"
       />
 
-      <!-- Text-to-Speech Button (In the future STOP STREAMING BUTTON)-->
-      <!-- <font-awesome-icon
+      <font-awesome-icon
         v-else
-        :icon="isTTSPlaying ? ['fas', 'volume-xmark'] : ['fas', 'volume-high']"
+        :icon="['fas', 'stop']"
         class="cursor-pointer btn-circle bg-light align-self-end"
-        @click="toggleTTS"
-      /> -->
-      <button class="btn btn-primary" @click="cancelAssistantResponse()">stop</button>
+        @click="cancelAssistantResponse"
+      />
     </div>
   </div>
 </template>
@@ -100,16 +98,15 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { 
   faUpRightAndDownLeftFromCenter, 
   faPlus, 
-  faArrowUp, 
-  faVolumeHigh, 
-  faVolumeXmark 
+  faArrowUp,
+  faStop
 } from "@fortawesome/free-solid-svg-icons";
 import { 
   getMessages, 
   sendMessage as sendChatMessage, 
-  getCurrentMessage, 
-  setCurrentMessage,
-  cancelAssistantResponse
+  currentUserInput,
+  cancelAssistantResponse,
+  isCurrentAssistantResponseComplete
 } from "../services/chatService";
 import { 
   fileCount, 
@@ -118,15 +115,14 @@ import {
   resetFileCount, 
   triggerFileInput 
 } from "../services/filesService";
-import { franc } from "franc-min";
 import { getAssistantThreadId } from "../services/openaiService";
+import { get } from "http";
 
 library.add(
   faUpRightAndDownLeftFromCenter,
   faPlus,
   faArrowUp,
-  faVolumeHigh,
-  faVolumeXmark
+  faStop
 );
 
 // Constants
@@ -152,15 +148,10 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const showResizeIcon = ref(false);
 
 // Computed properties
-const message = computed({
-  get: getCurrentMessage,
-  set: setCurrentMessage,
-});
 
-const messageLength = computed(() => message.value.length);
+
+const messageLength = computed(() => currentUserInput.value.length);
 const isMessageTooLong = computed(() => messageLength.value > MAX_MESSAGE_LENGTH);
-
-// Lifecycle hooks
 
 // Methods
 const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
@@ -175,7 +166,7 @@ const disableSendButton = () => {
   };
   
   const isMessageValid = () => {
-    return message.value.trim() !== "" || fileCount.value > 0;
+    return currentUserInput.value.trim() !== "" || fileCount.value > 0;
   };
 
   return (
@@ -190,7 +181,7 @@ const disableSendButton = () => {
 
 const sendMessage = () => {
   if (!disableSendButton() && !props.isBurgerMenuOpen) {
-    sendChatMessage(message.value.trim());
+    sendChatMessage(currentUserInput.value.trim());
     resetFileCount();
   }
 };
@@ -211,7 +202,7 @@ const resizeTextarea = () => {
   const newHeight = Math.min(target.scrollHeight, maxHeight);
   
   target.style.height = `${newHeight}px`;
-  showResizeIcon.value = newHeight > 91 && Boolean(message.value);
+  showResizeIcon.value = newHeight > 91 && Boolean(currentUserInput.value);
 };
 
 const resetTextareaHeight = () => {
@@ -227,7 +218,7 @@ watch(
   { deep: true }
 );
 
-watch(message, (newValue) => {
+watch(currentUserInput, (newValue) => {
   if (newValue === "") {
     resetTextareaHeight();
   } else {

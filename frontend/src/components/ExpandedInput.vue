@@ -14,7 +14,7 @@
           style="background-color: var(--color-gray-dark)"
           placeholder="Type a message..."
           aria-label="Message input"
-          v-model="message"
+          v-model="currentUserInput"
           @focus="isSearchFocused = true"
           @blur="isSearchFocused = false"
           :class="{ 'input-focused': isSearchFocused }"
@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import {ref, computed } from 'vue'
-import chatService from '../services/chatService'
+import { currentUserInput } from '../services/chatService'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faDownLeftAndUpRightToCenter, faArrowUp } from '@fortawesome/free-solid-svg-icons'
@@ -58,12 +58,7 @@ const emit = defineEmits(['closeExpandedInput'])
 
 const MAX_MESSAGE_LENGTH = 2000; // Maximum allowed message length
 
-const message = computed({
-  get: () => chatService.getCurrentMessage(),
-  set: (newMessage) => chatService.setCurrentMessage(newMessage)
-})
-
-const messageLength = computed(() => message.value.length)
+const messageLength = computed(() => currentUserInput.value.length)
 const isMessageTooLong = computed(() => messageLength.value > MAX_MESSAGE_LENGTH)
 
 function closeExpandedInput() {
@@ -71,13 +66,13 @@ function closeExpandedInput() {
 }
 
 function disableSendButton() {
-  return isMessageTooLong.value || message.value.trim() === ''
+  return isMessageTooLong.value || currentUserInput.value.trim() === ''
 }
 
 function sendMessage() {
   if (!disableSendButton()) {
-    sendChatMessage(message.value)
-    message.value = ''
+    sendChatMessage(currentUserInput.value)
+    currentUserInput.value = ''
     closeExpandedInput()
   }
 }

@@ -1,4 +1,4 @@
-import { reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { getHeartCountLS, setHeartCountLS, getMessageCountLS, setMessageCountLS } from '../services/localStorageService'
 
 import { getAssistantId, getAssistantThreadId } from '../services/openaiService'
@@ -6,7 +6,7 @@ import { getAssistantId, getAssistantThreadId } from '../services/openaiService'
 // Reactive state
 const chatState = reactive({
   messages: [] as { content: string; role: string; index: number; id?: string; isComplete?: boolean }[],
-  currentMessage: '' as string,
+  currentUserInput: '' as string,
   thinking: false as boolean,
   currentThreadId: '' as string,
   currentRunId: '' as string
@@ -112,6 +112,8 @@ async function sendToThread(content: string) {
   const lastMessageIndex = chatState.messages.length - 1
 
   let runIdReceived = false
+  chatState.thinking = false
+
 
   while (!done && initialMessage.isComplete === false) {
     const { value, done: readerDone } = await reader.read()
@@ -123,7 +125,6 @@ async function sendToThread(content: string) {
       console.log(`Received run_id: ${runId}`)
       runIdReceived = true
       chatState.currentRunId = runId
-      chatState.thinking = false
       
     } else {
       chatState.messages[lastMessageIndex].content += chunk
@@ -161,7 +162,7 @@ function handleSendMessageError(error: any) {
 // Message handling functions
 function addUserMessage(content: string) {
   chatState.messages.push({ content, role: 'user', index: chatState.messages.length })
-  chatState.currentMessage = ''
+  chatState.currentUserInput = ''
 }
 
 function addAssistantMessage(content: string) {
@@ -201,7 +202,7 @@ export async function sendMessage(content: string) {
     consumeHalfHeart()
   }
 
-  chatState.currentMessage = ''
+  chatState.currentUserInput = ''
 
   try {
     await sendToThread(content)
@@ -250,12 +251,17 @@ export function getMessages() {
   return chatState.messages
 }
 
-export function getCurrentMessage() {
-  return chatState.currentMessage
+export const currentUserInput = computed({
+  get: getCurrentUserInput,
+  set: setCurrentUserInput,
+});
+
+export function getCurrentUserInput() {
+  return chatState.currentUserInput
 }
 
-export function setCurrentMessage(newMessage: string) {
-  chatState.currentMessage = newMessage
+export function setCurrentUserInput(newMessage: string) {
+  chatState.currentUserInput = newMessage
 }
 
 export function clearMessages(resetCount: boolean = true) {
@@ -264,7 +270,25 @@ export function clearMessages(resetCount: boolean = true) {
     resetCounts()
   }
   chatState.thinking = false
-  chatState.currentMessage = ''
+  chatState.currentUserInput = ''
+}
+
+export const isCurrentAssistantResponseComplete = computed({
+  get: getIsCurrentAssistantResponseComplete,
+  set: setIsCurrentAssistantResponseComplete
+})
+
+function getIsCurrentAssistantResponseComplete() {
+  if (chatState.messages.length === 0) {
+    return true
+  }
+  const lastMessage = chatState.messages[chatState.messages.length - 1]
+  return lastMessage.isComplete
+}
+
+function setIsCurrentAssistantResponseComplete(value: boolean) {
+  const lastMessage = chatState.messages[chatState.messages.length - 1]
+  lastMessage.isComplete = value
 }
 
 export function getThinking() {
@@ -274,8 +298,6 @@ export function getThinking() {
 export default {
   sendMessage,
   getMessages,
-  getCurrentMessage,
-  setCurrentMessage,
   clearMessages,
   getThinking,
   messageCount
