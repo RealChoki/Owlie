@@ -36,7 +36,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # Construct the path to 'config.json' in the same directory as the script
 config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
 
-# Load and parse config.json
+# Load and parse config.json y
 with open(config_path, 'r') as f:
     config_data = json.load(f)
 
@@ -44,7 +44,7 @@ with open(config_path, 'r') as f:
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
+    allow_origins=["*"],  # Allow all originss
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,7 +54,7 @@ assistant_id = None
 vector_store_id = None
 current_course = None
 current_mode = None
-assistant_cache = {}  # Cache assistants for reuse
+assistant_cache = {}  # Cache assistants for reuse s
 thread_moodle_cache = {}
 FILES_DIR = ""
 file_ids = []
@@ -113,7 +113,7 @@ def presidio_anonymize(user_message):
         return anonymized_user_message
     return user_message
 
-# A function to de-anonymize the assistants response
+# A function to de-anonymize the assistants response s
 def presidio_deanonymize(anonymized_response):
     if anonymizer.deanonymizer_mapping:
         de_anonymized_response = anonymizer.deanonymize(text_to_deanonymize=anonymized_response)
@@ -190,7 +190,7 @@ class EventHandler(AssistantEventHandler):
                     print(f"\n{output.logs}", flush=True)
 
 @app.get("/api/threads/{thread_id}/stream")
-async def send_and_wait_stream(thread_id: str, assistant_id: str, message: str):
+async def send_and_stream(thread_id: str, assistant_id: str, message: str):
     # Decrypt the thread_id and assistant_id
     decrypted_thread_id = decrypt_data(thread_id)
     decrypted_assistant_id = decrypt_data(assistant_id)
@@ -523,7 +523,8 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
     try:
         run = client.beta.threads.runs.create(
             thread_id=decrypted_thread_id,
-            assistant_id=decrypted_assistant_id
+            assistant_id=decrypted_assistant_id,
+            tool_choice="required"
         )
     except Exception as e:
         return {"error": f"Failed to start conversation run: {e}"}
@@ -547,7 +548,7 @@ async def send_message_and_wait_for_response(thread_id: str, message: CreateMess
                     if course_id:
                         if thread_moodle_cache.get(decrypted_thread_id) is None:
                             content = get_moodle_course_content(courseid=course_id)
-                            anonymized_content = presidio_anonymize(content)
+                            anonymized_content = content
                             thread_moodle_cache[decrypted_thread_id] = anonymized_content
                             print("Fetching content from Moodle.")
                         else:

@@ -43,33 +43,24 @@
                             "data_path": "data/hochschule_fuer_technik_und_wirtschaft_berlin/bachelor/wirtschaftsinformatik/Grundlagen_der_Programmierung/test",
                             "tools": [
                                 {
-                                    "type": "function",
-                                    "function": {
-                                        "name": "get_moodle_course_content",
-                                        "description": "Fetches Moodle course content based on course ID.",
-                                        "strict": true,
-                                        "parameters": {
-                                            "type": "object",
-                                            "required": [
-                                                "courseid"
-                                            ],
-                                            "properties": {
-                                                "courseid": {
-                                                    "type": "string",
-                                                    "description": "The Moodle course ID, e.g., '50115'."
-                                                }
-                                            },
-                                            "additionalProperties": false
-                                        }
-                                    }
-                                },
-                                {
                                     "type": "file_search"
                                 }
                             ],
                             "model": "gpt-4o-mini",
                             "assistant_id": "asst_DKczMwDsRfnOJUnH1HAtgCo5",
                             "vector_store_id": "vs_WqdfRhhCVZEGZmMy8IjyErUd"
+                        },
+                        "exam": {
+                            "instructions": "Deine Aufgabe ist es, als Owlie zu agieren, ein weiser Eulen-Lehrassistent für den Kurs 'Grundlagen der Programmierung', der Erstsemesterstudierende bei der Klausurvorbereitung unterstützt. Nutze eulenartige Ausdrücke wie 'hoo-h', 'hoo' oder 'HOO-hoo' am Anfang oder Ende deiner Nachrichten, um den Effekt zu verstärken. Du bist dafür verantwortlich, Übungsklausurfragen zu erstellen und bereitzustellen, die mit den Prüfungsanforderungen in deinem Gedächtnis übereinstimmen. Gib minimale Hinweise, wenn Studierende Fragen stellen, ahme damit einen Dozenten während der Prüfung nach und biete Lösungen, Korrekturen oder Feedback nur dann an, wenn Studierende aufgeben oder ihre eigene Lösung einreichen. Schließe mit Feedback ab, das auf die Verbesserungspotenziale der Studierenden hinweist. # Schritte 1. **Erstelle Übungsklausurfragen** - Erstelle Fragen, die das Format und den Schwierigkeitsgrad der echten Klausur simulieren. - Stelle sicher, dass eine Vielzahl von Themen behandelt wird, die dem Modulplan entsprechen. 2. **Gib Minimale Hinweise** - Antworte auf Anfragen der Studierenden mit kurzen, nützlichen Hinweisen. - Vermeide vollständige Erklärungen, es sei denn, der/die Studierende hat die Aufgabe abgeschlossen oder gibt auf. 3. **Bewerte Lösungen der Studierenden** - Korrigiere Lösungen von Studierenden. - Gib die richtige Lösung nur an, wenn der/die Studierende sich entscheidet, nicht weiterzumachen. 4. **Gib Feedback** - Gib konstruktives Feedback, das sich auf die Stärken und Schwächen der Studierenden konzentriert. - Mache Vorschläge für weiteres Studium, um die Studierenden auf die Prüfung vorzubereiten. # Format der Antworten - Verwende kurze, prägnante Aussagen für Hinweise. - Liefere detaillierte Lösungen und Feedback in Paragrafenformat. - Integriere Eulenausdrücke 'hoo-h', 'hoo' oder 'HOO-hoo' angemessen in die Sätze. # Beispiele **Beispiel 1: Erstellung einer Frage** - Input: Ein/e Studierende/r möchte eine Übung zu Schleifen. - Output: 'Hoo-hoo, lass uns das angehen: Schreibe ein Programm, das die Zahlen von 1 bis 10 mit einer Schleife ausgibt. hoo!' **Beispiel 2: Einen Hinweis geben** - Input: Ein/e Studierende/r bittet um einen Hinweis zu einer Aufgabe über Rekursion. - Output: 'HOO-hoo, überlege, wie eine Funktion sich selbst mit einem kleineren Teil des Problems aufrufen kann. hoo!' **Beispiel 3: Korrektur einer Lösung** - Input: Ein/e Studierende/r reicht eine falsche Lösung ein. - Output: 'hoo-h, ich sehe hier einen Fehler. Denk daran, deine Schleife sollte eine weitere Iteration haben, um alle Fälle abzudecken. hoo-h' **Beispiel 4: Feedback geben** - Input: Ein/e Studierende/r reicht eine vollständige Lösung ein. - Output: 'hoo, guter Versuch! Konzentriere dich darauf, die Effizienz deines Codes zu optimieren. Schau dir das Thema Algorithmuskomplexität an. HOO-hoo!' # Wichtige Hinweise - Bleibe ermutigend und unterstützend in allen Interaktionen. - Behalte eine akademische Tonalität bei, die einer Prüfungssituation entspricht und halte deine Hilfe minimal. - Nutze Anfragen der Studierenden, um die Übungsaufgaben auf spezifische Themen abzustimmen. - Ermutige die Studierenden, eigenständig nachzudenken, bevor sie um Lösungen bitten.",
+                            "data_path": "data/hochschule_fuer_technik_und_wirtschaft_berlin/bachelor/wirtschaftsinformatik/Grundlagen_der_Programmierung/exam",
+                            "tools": [
+                                {
+                                    "type": "file_search"
+                                }
+                            ],
+                            "model": "gpt-4o-mini",
+                            "assistant_id": "asst_4F2dwCpuWq6a2JjJjpoUWpCO",
+                            "vector_store_id": "vs_QqZRPHREU3tZTgvpwf5hRaSH"
                         }
                     },
                     "Statistik": {

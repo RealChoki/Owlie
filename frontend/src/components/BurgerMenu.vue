@@ -122,8 +122,6 @@
 import {
   ref,
   computed,
-  defineProps,
-  defineEmits,
   onMounted,
   onUnmounted,
   watch,

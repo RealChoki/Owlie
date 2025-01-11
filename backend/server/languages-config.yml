@@ -15,8 +15,7 @@ ner_model_configuration:
     LOCATION: LOCATION
     ORG: ORGANIZATION
     ORGANIZATION: ORGANIZATION
-    DATE: DATE_TIME
-    TIME: DATE_TIME
+    URL: URL
 
   low_confidence_score_multiplier: 0.71
   low_score_entity_names:
@@ -38,3 +37,5 @@ ner_model_configuration:
   - PRODUCT
   - QUANTITY
   - WORK_OF_ART
+  - DATE_TIME
+  - URL

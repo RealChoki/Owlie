@@ -1,8 +1,14 @@
 <template>
   <div class="full-screen-overlay">
-    <div class="h-100 p-2 pb-2" style="background-color: var(--color-gray-dark);">
-      <div class="container" style="background-color: var(--color-gray-dark);">
-        <div class="minimize-screen d-flex justify-content-end mt-2 mb-3" style="position: fixed; top: 10px; right: 10px; z-index: 10">
+    <div
+      class="h-100 p-2 pb-2"
+      style="background-color: var(--color-gray-dark)"
+    >
+      <div class="container" style="background-color: var(--color-gray-dark)">
+        <div
+          class="minimize-screen d-flex justify-content-end mt-2 mb-3"
+          style="position: fixed; top: 10px; right: 10px; z-index: 10"
+        >
           <font-awesome-icon
             :icon="['fas', 'down-left-and-up-right-to-center']"
             @click.stop="closeExpandedInput"
@@ -20,14 +26,17 @@
           :class="{ 'input-focused': isSearchFocused }"
         ></textarea>
         <div class="character-count">
-          <span :class="{ 'text-danger': isMessageTooLong }">{{ messageLength }}</span> / {{ MAX_MESSAGE_LENGTH }}
+          <span :class="{ 'text-danger': isMessageTooLong }">{{
+            messageLength
+          }}</span>
+          / {{ MAX_MESSAGE_LENGTH }}
         </div>
         <font-awesome-icon
           class="btn-circle bg-white"
           :icon="['fas', 'arrow-up']"
           :class="{
             'cursor-pointer': !disableSendButton(),
-            'btn-disabled': disableSendButton()
+            'btn-disabled': disableSendButton(),
           }"
           style="position: fixed; bottom: 10px; right: 10px; z-index: 10"
           @click="sendMessage"
@@ -39,41 +48,46 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed } from 'vue'
-import { currentUserInput } from '../services/chatService'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faDownLeftAndUpRightToCenter, faArrowUp } from '@fortawesome/free-solid-svg-icons'
-import { sendMessage as sendChatMessage } from '../services/chatService'
+import { ref, computed } from "vue";
+import { currentUserInput } from "../services/chatService";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faDownLeftAndUpRightToCenter,
+  faArrowUp,
+} from "@fortawesome/free-solid-svg-icons";
+import { sendMessage as sendChatMessage } from "../services/chatService";
 
-library.add(faDownLeftAndUpRightToCenter, faArrowUp)
+library.add(faDownLeftAndUpRightToCenter, faArrowUp);
 
 const props = defineProps({
-  isExpandedInput: Boolean
-})
+  isExpandedInput: Boolean,
+});
 
 const isSearchFocused = ref(false);
 
-const emit = defineEmits(['closeExpandedInput'])
+const emit = defineEmits(["closeExpandedInput"]);
 
 const MAX_MESSAGE_LENGTH = 2000; // Maximum allowed message length
 
-const messageLength = computed(() => currentUserInput.value.length)
-const isMessageTooLong = computed(() => messageLength.value > MAX_MESSAGE_LENGTH)
+const messageLength = computed(() => currentUserInput.value.length);
+const isMessageTooLong = computed(
+  () => messageLength.value > MAX_MESSAGE_LENGTH
+);
 
 function closeExpandedInput() {
-  emit('closeExpandedInput')
+  emit("closeExpandedInput");
 }
 
 function disableSendButton() {
-  return isMessageTooLong.value || currentUserInput.value.trim() === ''
+  return isMessageTooLong.value || currentUserInput.value.trim() === "";
 }
 
 function sendMessage() {
   if (!disableSendButton()) {
-    sendChatMessage(currentUserInput.value)
-    currentUserInput.value = ''
-    closeExpandedInput()
+    sendChatMessage(currentUserInput.value);
+    currentUserInput.value = "";
+    closeExpandedInput();
   }
 }
 </script>
@@ -156,24 +170,23 @@ function sendMessage() {
 }
 
 @media (min-width: 768px) {
-  ::v-deep .minimize-screen {
+  :deep(.minimize-screen) {
     position: absolute !important;
     right: 0;
     top: 0.5em;
   }
 
-  ::v-deep .character-count {
+  :deep(.character-count) {
     position: absolute !important;
     top: 0.8em;
     left: 2em;
   }
 
-  ::v-deep .btn-circle {
+  :deep(.btn-circle) {
     position: absolute !important;
     bottom: 0;
     right: 0;
     margin-bottom: -0.5px !important;
   }
 }
-
 </style>

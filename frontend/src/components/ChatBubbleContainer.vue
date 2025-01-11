@@ -278,7 +278,7 @@ watch(
   }
 }
 
-::v-deep p:last-of-type {
+:deep(p:last-of-type) {
   margin-bottom: 10px;
 }
 

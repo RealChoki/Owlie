@@ -39,9 +39,15 @@
               {{ course }}
               <span
                 v-if="selectedMode === 'quiz'"
-                class="test-mode-text text-secondary small position-absolute top-0 end-0"
+                class="quiz-mode-text text-secondary small position-absolute top-0 end-0"
               >
                 (Quiz)
+              </span>
+              <span
+                v-if="selectedMode === 'exam'"
+                class="exam-mode-text text-secondary small position-absolute top-0 end-0"
+              >
+                (Exam)
               </span>
             </span>
           </p>
@@ -87,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -225,7 +231,7 @@ onMounted(() => {
   background-color: var(--color-black);
   height: 100vh;
   overflow-y: auto;
-  min-width: 305px;
+  min-width: 309px;
   position: relative;
   z-index: 1000;
   padding-right: 10px !important;
@@ -335,8 +341,12 @@ onMounted(() => {
   white-space: normal;
 }
 
-.test-mode-text {
+.quiz-mode-text {
   transform: translate(30px, -5px);
+  font-size: 0.7rem;
+}
+.exam-mode-text {
+  transform: translate(34px, -5px);
   font-size: 0.7rem;
 }
 
