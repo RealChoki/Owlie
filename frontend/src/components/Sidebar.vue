@@ -368,12 +368,7 @@ onMounted(() => {
   opacity: 1;
 }
 
-.icon-click-effect {
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
 
-.icon-click-effect:active {
-  transform: scale(0.9);
-}
+
+
 </style>

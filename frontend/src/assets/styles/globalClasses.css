@@ -6,3 +6,22 @@
   background-color: var(--color-disabled) !important;
   cursor: default;
 }
+
+.icon-click-effect {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.icon-click-effect:active {
+  transform: scale(0.9);
+}
+
+.nav-icon-holder {
+  width: 29px;
+  height: 29px;
+}
+
+.pfp-container {
+  width: 32px;
+  height: 32px;
+}

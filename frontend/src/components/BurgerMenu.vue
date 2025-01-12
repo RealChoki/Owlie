@@ -465,14 +465,9 @@ onUnmounted(() => {
   opacity: 1;
 }
 
-.icon-click-effect {
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
 
-.icon-click-effect:active {
-  transform: scale(0.9);
-}
+
+
 
 .profile-btn {
   border-radius: 5px;
@@ -484,8 +479,4 @@ onUnmounted(() => {
   background-color: #41414149;
 }
 
-.pfp-container {
-  width: 32px;
-  height: 32px;
-}
 </style>

@@ -13,19 +13,12 @@
           aria-label="Home"
         >
           <font-awesome-icon
-            class="icon-click-effect"
+            class="icon-click-effect nav-icon-holder"
             :icon="['fas', 'home']"
-            style="color: var(--color-gray-shadow); width: 29px; height: 29px"
+            style="color: var(--color-gray-shadow);"
           />
         </button>
         <div class="nav-icon-holder">
-          <!-- if user doesnt have pfp -->
-          <!-- <font-awesome-icon
-            class="arrows-rotate icon-click-effect cursor-pointer"
-            v-if="isWideScreen && isSidebarOpen"
-            :icon="['fas', 'user-circle']"
-            style="color: var(--color-gray-shadow);"
-          /> -->
           <div
             class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect pfp-container"
           >
@@ -382,14 +375,9 @@ const adjustHeight = () => {
   opacity: 1;
 }
 
-.icon-click-effect {
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
 
-.icon-click-effect:active {
-  transform: scale(0.9);
-}
+
+
 
 .file-container2 {
   border-bottom: 1px solid var(--color-gray-shadow);
@@ -413,16 +401,8 @@ const adjustHeight = () => {
   scrollbar-width: none;
 }
 
-.nav-icon-holder {
-  width: 29px;
-}
-
 .btn-edit:hover {
   opacity: 0.2;
 }
 
-.pfp-container {
-  width: 32px;
-  height: 32px;
-}
 </style>

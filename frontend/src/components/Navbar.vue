@@ -135,12 +135,6 @@
         </p>
       </div>
       <div class="nav-icon-holder mt-3">
-        <!-- if user doesnt have pfp -->
-        <!-- <font-awesome-icon
-          class="icon-click-effect cursor-pointer nav-icon"
-          v-if="isWideScreen && isSidebarOpen"
-          :icon="['fas', 'user-circle']"
-        /> -->
         <div
           v-if="isWideScreen && isSidebarOpen"
           class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect cursor-pointer pfp-container"
@@ -286,10 +280,6 @@ onMounted(() => {
   transform: scale(1.1);
 }
 
-.nav-icon-holder {
-  width: 29px;
-}
-
 .assistant-title {
   background: linear-gradient(90deg, white, var(--color-gray-shadow));
   -webkit-background-clip: text;
@@ -302,17 +292,8 @@ onMounted(() => {
   white-space: nowrap;
 }
 
-.icon-click-effect {
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
 
-.icon-click-effect:active {
-  transform: scale(0.9);
-}
 
-.pfp-container {
-  width: 32px;
-  height: 32px;
-}
+
+
 </style>
