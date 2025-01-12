@@ -1,13 +1,13 @@
-# HTWCodingMentor - HTW Berlin Coding Assistant
+# Owlie - HTW Berlin Programming Teaching Assistant
 
-**HTWCodingMentor** is an AI-powered learning assistant tailored for students enrolled in the "Grundlagen der Programmierung" (Fundamentals of Programming) course at HTW Berlin. The project addresses challenges in providing personalized support to large classes while promoting independent problem-solving and academic integrity. Unlike typical AI tools that offer direct answers, HTWCodingMentor encourages active learning by guiding students with hints, pseudocode, and personalized tasks.
+**Owlie** is an AI-powered learning assistant tailored for students enrolled in the "Grundlagen der Programmierung" (Fundamentals of Programming) course at HTW Berlin. The project addresses challenges in providing personalized support to large classes while promoting independent problem-solving and academic integrity. Unlike typical AI tools that offer direct answers, Owlie encourages active learning by guiding students with hints, pseudocode, and personalized tasks.
 
 ---
 
 ## Project Overview
 
 ### Motivation
-The rise of generative AI in education presents both opportunities and challenges. While tools like ChatGPT offer significant assistance, they risk hindering independent learning by providing overly detailed or complete solutions, especially for beginners. HTWCodingMentor bridges this gap by acting as a mentor rather than a solver, fostering critical thinking and self-reliance.
+The rise of generative AI in education presents both opportunities and challenges. While tools like ChatGPT offer significant assistance, they risk hindering independent learning by providing overly detailed or complete solutions, especially for beginners. Owlie bridges this gap by acting as a mentor rather than a solver, fostering critical thinking and self-reliance.
 
 Key goals:
 - Encourage students to solve problems independently with guidance rather than answers.
@@ -19,8 +19,8 @@ Key goals:
 ### Key Features
 1. **Constructive Guidance**: Assists students by offering hints and pseudocode rather than solving problems outright.
 2. **Mode-Specific Assistance**:  
-   - **General Mode**: Answers only course-relevant questions, avoids advanced topics not covered in lectures, and provides concise hints for debugging. It uses course-specific lecture transcripts to ensure accurate information, mitigating hallucinations.  
-   - **Test Mode**: Evaluates student understanding through tailored questions created by the professor, covering the full scope of student needs and knowledge required for the course.
+   - **General Mode**: Answers only course-relevant questions, avoids advanced topics not covered in lectures, and provides concise hints for debugging. It uses course-specific lecture transcripts and Moodle content from the specefic course to ensure accurate information, mitigating hallucinations.  
+   - **Quiz Mode**: Evaluates student understanding through tailored questions created by the professor, covering the full scope of student needs and knowledge required for the course.
 3. **Interactive Learning**: Tracks student progress and adapts tasks based on areas of difficulty, ensuring a personalized learning experience.
 4. **Contextual File Upload**: Allows students to upload files, adding context to their queries and enhancing the assistant's ability to provide relevant guidance.
 5. **Usage Throttling**: Implements a throttling mechanism with limited "hearts" per student query, encouraging thoughtful interactions. Hearts regenerate over time, promoting intentional use and fostering independent problem-solving.
@@ -44,47 +44,35 @@ Key goals:
 
 ---
 
-### General and Test Mode Functionality
-
-- **General Mode**:
-  - Focuses on providing concise answers to programming fundamentals.
-  - Uses pseudocode to guide solutions (e.g., `START INITIALISIERE sum mit 0 FÜR jede Zahl von 1 bis 5 MACH... END`).
-  - Encourages understanding and problem-solving without discussing advanced or irrelevant topics.
-
-- **Test Mode**:
-  - Conducts structured evaluations using questions drawn from the vector store and picked by given professor.
-  - Tracks student weaknesses and offers additional exercises or explanations.
-  - Repeats or rephrases topics as needed to ensure comprehension.
-
----
-
 ## Directory Structure
 
 ```plaintext
 ├── backend/
-│   ├── data/          : Stores course-specific data, including lecture transcripts (general mode) and test questions (test mode).
-│   ├── server/        : Backend logic, using FastAPI server and tools for function calling (e.g., fetching Moodle course content).
-│   └── config.json    : Configuration for universities, courses, tools, and AI models with specific behavior instructions.
+│   ├── data/              : Stores course-specific data, including lecture transcripts (general mode) and quiz questions (Quiz Mode).
+│   ├── server/            : Backend logic, using FastAPI server and tools for function calling (e.g., fetching Moodle course content) and encryption.
+│   └── config.json        : Configuration for universities, courses, tools, and AI models with specific behavior instructions.
 ├── frontend/
-│   ├── public/        : Static assets like app favicons.
-│   ├── src/           : Core frontend codebase.
-│   │   ├── api/       : Defines interfaces and functions for REST API communication and WebSocket management.
-│   │   ├── axios/     : Contains Axios configuration for HTTP requests, including message handling.
-│   │   ├── components/: Reusable UI components, such as chat bubbles and navigation menus.
-│   │   ├── hooks/     : Custom hooks for logic reuse, like polling, action management, and status updates.
-│   │   ├── icons/     : Icons used within the application, such as logos and menu icons.
-│   │   ├── router/    : Manages application navigation.
-│   │   ├── services/  : Provides services for chat interactions and file uploads to enhance the vector store.
-│   │   └── views/     : Primary application views, such as the home screen.
-│   ├── App.vue        : Main application layout.
-│   └── main.ts        : Entry point for initializing the frontend application.
-├── README.md          : Documentation for project setup and usage.
-├── requirements.txt   : Python dependencies for the backend.
+│   ├── public/            : Static assets like app favicons.
+│   ├── src/               : Core frontend codebase.
+│   │   ├── api/           : Defines interfaces and functions for REST API communication.
+│   │   ├── assets/        : Different static content such as icons and global styling variables.
+│   │   ├── components/    : Reusable UI components, such as chat bubbles and navigation menus.
+│   │   ├── hooks/         : Custom hooks for logic reuse, like polling, action management, and status updates.
+│   │   ├── router/        : Manages application navigation.
+│   │   ├── services/      : A collection of service modules for app functionalities like chat, file handling, storage, and TTS.
+│   │   ├── utils/         : Reusable utility functions for common app logic, like screen width detection.
+│   │   └── views/         : Primary application views, such as the home screen and the login page.
+│   ├── App.vue            : Main application layout.
+│   └── main.ts            : Entry point for initializing the frontend application.
+├── Use_Case_Experiments/
+│   ├── General_Mode/      : Documentation and experiments for use cases in the general mode, focusing on concepts such as Debugging Assistance.
+│   ├── Quiz_Mode/         : Documentation and experiments for use cases in the quiz mode, focusing on concepts such as Progress Tracking.
+├── README.md              : Outlines the Owlie project, its features, use cases, and directory structure,
 ```
 
 ---
 
-**HTWCodingMentor** exemplifies how generative AI can be used constructively in education, empowering students while safeguarding academic integrity. By aligning AI capabilities with the course's pedagogical objectives, it offers an innovative, scalable solution to enhance programming education at HTW Berlin.
+**Owlie** exemplifies how generative AI can be used constructively in education, empowering students while safeguarding academic integrity. By aligning AI capabilities with the course's pedagogical objectives, it offers an innovative, scalable solution to enhance the educational experience at Universities.
 
 
 
