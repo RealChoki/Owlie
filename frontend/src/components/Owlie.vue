@@ -13,7 +13,7 @@
       </div>
       <img
         src="../assets/icons/OwlLogo.png"
-        class="img-fluid"
+        class="img-fluid owl-logo"
         style="width: 75px"
         @click="handleOwlClick"
       />
@@ -97,5 +97,15 @@ function displayRandomMessage() {
 
 .logo-container {
   margin-top: 6em;
+}
+
+.owl-logo{  
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+
 }
 </style>
