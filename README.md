@@ -4,6 +4,16 @@
 
 ---
 
+## System Architecture
+
+Below is an overview of Owlie's architecture, showcasing its key components and workflow:
+
+![System Architecture of Owlie](./assets/owlie-diagram.png)
+
+*Figure: High-Level Architecture of Owlie*
+
+---
+
 ## Project Overview
 
 ### Motivation
@@ -18,29 +28,29 @@ Key goals:
 
 ### Key Features
 1. **Constructive Guidance**: Assists students by offering hints and pseudocode rather than solving problems outright.
-2. **Mode-Specific Assistance**:  
-   - **General Mode**: Answers only course-relevant questions, avoids advanced topics not covered in lectures, and provides concise hints for debugging. It uses course-specific lecture transcripts and Moodle content from the specefic course to ensure accurate information, mitigating hallucinations.  
-   - **Quiz Mode**: Evaluates student understanding through tailored questions created by the professor, covering the full scope of student needs and knowledge required for the course.
-3. **Interactive Learning**: Tracks student progress and adapts tasks based on areas of difficulty, ensuring a personalized learning experience.
-4. **Contextual File Upload**: Allows students to upload files, adding context to their queries and enhancing the assistant's ability to provide relevant guidance.
-5. **Usage Throttling**: Implements a throttling mechanism with limited "hearts" per student query, encouraging thoughtful interactions. Hearts regenerate over time, promoting intentional use and fostering independent problem-solving.
+2. **Mode-Specific Assistance**:
+   - **General Mode**: Focuses on course-relevant questions, avoids advanced topics not covered in lectures, and provides concise hints for debugging. It leverages lecture transcripts and Moodle content for accuracy.
+   - **Quiz Mode**: Evaluates student understanding through tailored professor-created questions.
+3. **Interactive Learning**: Tracks student progress and adapts tasks based on areas of difficulty, ensuring a personalized experience.
+4. **Contextual File Upload**: Enhances the assistant's ability to provide relevant guidance by allowing students to upload code files for analysis.
+5. **Usage Throttling**: Implements a throttling mechanism using "hearts" for queries, encouraging thoughtful and independent problem-solving.
 
---- 
+---
 
-### Use Cases 
+### Use Cases
 
-#### **General Mode**  
-1. **Debugging Assistance**: Hints or points at potential error causes in code without revealing solutions or explicitly identifying the issue.  
-2. **Independent Problem-Solving**: Encourages students to solve programming tasks independently by offering guidance that fosters critical thinking and conceptual understanding.  
-3. **Concept Clarification**: Explains programming fundamentals in a simple, beginner-friendly way, tailored for first-semester students and aligned with lecture materials.  
-4. **Course-Specific Answers**: Provides information strictly aligned with the course content. Avoids irrelevant topics and notifies students when a topic exceeds the scope of the course or is too advanced before providing a response.
-5. **Moodle-Course Specific Answers**: Responds to questions directly related to the Moodle course by leveraging approved content through function calling.
+#### **General Mode**
+1. **Debugging Assistance**: Offers hints or points out potential error causes in code without revealing solutions.
+2. **Independent Problem-Solving**: Encourages critical thinking by guiding students to solve programming tasks on their own.
+3. **Concept Clarification**: Explains programming fundamentals in simple, beginner-friendly terms, tailored for first-semester students.
+4. **Course-Specific Answers**: Aligns responses strictly with course content, avoiding irrelevant or advanced topics.
+5. **Moodle-Specific Answers**: Answers questions related to Moodle course content by retrieving information through APIs.
 
-#### **Quiz Mode**  
-1. **Instructor-Approved Questions**: Uses a curated set of instructor-approved questions to ensure alignment with the syllabus and reinforce key exam concepts.  
-2. **Adaptive Support**: Adapts to student struggles by offering follow-up questions, hints, or additional exercises to clarify challenging topics until the student understands the given topic.  
-3. **Progress Tracking**: Tracks completed and remaining subtopics dynamically, providing clear progress updates to ensure comprehensive coverage of the subject.  
-4. **Dynamic Question Adjustment**: Adjusts question difficulty based on performance, presenting more challenging problems after successfully answering multiple questions in a row and simpler ones when the student struggles.  
+#### **Quiz Mode**
+1. **Instructor-Approved Questions**: Uses a curated set of questions aligned with the syllabus.
+2. **Adaptive Support**: Provides follow-up questions and hints based on student struggles.
+3. **Progress Tracking**: Tracks completed and remaining subtopics dynamically to ensure comprehensive coverage.
+4. **Dynamic Question Adjustment**: Modifies question difficulty based on performance, balancing challenges with support.
 
 ---
 
@@ -48,31 +58,43 @@ Key goals:
 
 ```plaintext
 ├── backend/
-│   ├── data/              : Stores course-specific data, including lecture transcripts (general mode) and quiz questions (Quiz Mode).
-│   ├── server/            : Backend logic, using FastAPI server and tools for function calling (e.g., fetching Moodle course content) and encryption.
-│   └── config.json        : Configuration for universities, courses, tools, and AI models with specific behavior instructions.
+│   ├── data/                       : Course-specific data, including lecture transcripts and quiz questions.
+│   ├── server/                     
+│   │   ├── fastapiserver.py        : FastAPI server for chatbot interactions, course content, and PII anonymization.
+│   │   ├── assistant_init.py       : Initializes assistants using OpenAI API configurations.
+│   │   ├── tools/                  
+│   │   │   ├── clean_up.py         : Deletes all assistants, files, and vector stores.
+│   │   │   ├── fernet.py           : Encrypts and decrypts data.
+│   │   │   └── function_calling.py : Processes Moodle course content via API.
+│   │   ├── config.json             : Configuration file for universities, courses, and AI models.
+│   │   └── language-config.yml     : NLP engine configuration for supported languages and entities.
+
 ├── frontend/
-│   ├── public/            : Static assets like app favicons.
-│   ├── src/               : Core frontend codebase.
-│   │   ├── api/           : Defines interfaces and functions for REST API communication.
-│   │   ├── assets/        : Different static content such as icons and global styling variables.
-│   │   ├── components/    : Reusable UI components, such as chat bubbles and navigation menus.
-│   │   ├── hooks/         : Custom hooks for logic reuse, like polling, action management, and status updates.
-│   │   ├── router/        : Manages application navigation.
-│   │   ├── services/      : A collection of service modules for app functionalities like chat, file handling, storage, and TTS.
-│   │   ├── utils/         : Reusable utility functions for common app logic, like screen width detection.
-│   │   └── views/         : Primary application views, such as the home screen and the login page.
-│   ├── App.vue            : Main application layout.
-│   └── main.ts            : Entry point for initializing the frontend application.
+│   ├── public/                     : Static assets, including favicons.
+│   ├── src/                        : Core frontend codebase.
+│   │   ├── api/                    : REST API interfaces and functions.
+│   │   ├── assets/                 : Static content like icons and styling variables.
+│   │   ├── components/             : Reusable UI components like chat bubbles and menus.
+│   │   ├── hooks/                  : Custom hooks for polling, action management, and status updates.
+│   │   ├── router/                 : Application navigation logic.
+│   │   ├── services/               : Modules for app functionalities like file handling and storage.
+│   │   ├── utils/                  : Utility functions for common logic.
+│   │   └── views/                  : Primary application views (home, login, etc.).
+│   ├── App.vue                     : Main application layout.
+│   └── main.ts                     : Entry point for the frontend application.
+
 ├── Use_Case_Experiments/
-│   ├── General_Mode/      : Documentation and experiments for use cases in the general mode, focusing on concepts such as Debugging Assistance.
-│   ├── Quiz_Mode/         : Documentation and experiments for use cases in the quiz mode, focusing on concepts such as Progress Tracking.
-├── README.md              : Outlines the Owlie project, its features, use cases, and directory structure,
+│   ├── General_Mode/               : Documentation and experiments for general mode use cases.
+│   ├── Quiz_Mode/                  : Documentation and experiments for quiz mode use cases.
+
+├── README.md                       : Project overview, features, and directory structure.
 ```
 
 ---
 
-**Owlie** exemplifies how generative AI can be used constructively in education, empowering students while safeguarding academic integrity. By aligning AI capabilities with the course's pedagogical objectives, it offers an innovative, scalable solution to enhance the educational experience at Universities.
+## Conclusion
+
+**Owlie** exemplifies how generative AI can be constructively applied in education, empowering students while safeguarding academic integrity. By aligning AI capabilities with the course's pedagogical objectives, it offers an innovative, scalable solution to enhance the learning experience at HTW Berlin.
 
 
 

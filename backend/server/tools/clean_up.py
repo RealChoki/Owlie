@@ -1,4 +1,4 @@
-# This script deletes all assistants, files, and vector stores from your OpenAI account.
+
 # !!! Proceed with caution, as this action is irreversible. !!!
 
 import os
