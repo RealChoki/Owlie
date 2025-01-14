@@ -51,111 +51,111 @@ function resetCounts() {
   setMessageCountLS(messageCount.value)
 }
 
+// async function sendToThread(content: string) {
+//   const assistant_id = getAssistantId();
+//   if (!assistant_id) {
+//     throw new Error('Assistant ID not found.');
+//   }
+
+//   chatState.thinking = true;
+//   const threadId = getAssistantThreadId();
+//   if (!threadId) {
+//     throw new Error(`Thread ID not found in assistantService. id: ${threadId}`);
+//   }
+
+//   chatState.currentThreadId = threadId;
+
+//   const response = await axios.post(`http://localhost:8000/api/threads/${threadId}/send_and_wait`, {
+//     content,
+//     assistant_id,
+//   });
+
+//   console.log('Received response:', response);
+
+//   if (getAssistantThreadId() == chatState.currentThreadId) {
+//     addAssistantMessage(response.data.content);
+//   } else {
+//     console.log('Received message from old thread. Ignoring.');
+//   }
+//   chatState.thinking = false;
+// }
+
 async function sendToThread(content: string) {
-  const assistant_id = getAssistantId();
-  if (!assistant_id) {
-    throw new Error('Assistant ID not found.');
+  const assistant_id = getAssistantId()
+  const threadId = getAssistantThreadId()
+
+  if (!assistant_id || !threadId) {
+    throw new Error('Assistant ID or Thread ID not found.')
   }
 
-  chatState.thinking = true;
-  const threadId = getAssistantThreadId();
-  if (!threadId) {
-    throw new Error(`Thread ID not found in assistantService. id: ${threadId}`);
+  chatState.currentThreadId = threadId
+  chatState.thinking = true
+
+  const url = `http://localhost:8000/api/threads/${threadId}/stream?assistant_id=${assistant_id}&message=${content}`
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error('Failed to connect to the backend')
   }
 
-  chatState.currentThreadId = threadId;
-
-  const response = await axios.post(`http://localhost:8000/api/threads/${threadId}/send_and_wait`, {
-    content,
-    assistant_id,
-  });
-
-  console.log('Received response:', response);
-
-  if (getAssistantThreadId() == chatState.currentThreadId) {
-    addAssistantMessage(response.data.content);
-  } else {
-    console.log('Received message from old thread. Ignoring.');
+  if (!response.body) {
+    throw new Error('Response body is null')
   }
-  chatState.thinking = false;
+
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let done = false
+
+  const initialMessage = {
+    content: '',
+    role: 'assistant',
+    index: chatState.messages.length,
+    isComplete: false
+  }
+  chatState.messages.push(initialMessage)
+  const lastMessageIndex = chatState.messages.length - 1
+
+  let runIdReceived = false
+  chatState.thinking = false
+
+
+  while (!done && initialMessage.isComplete === false) {
+    const { value, done: readerDone } = await reader.read()
+    done = readerDone
+    const chunk = decoder.decode(value, { stream: true })
+
+    if (!runIdReceived && chunk.startsWith("run_id: ")) {
+      const runId = chunk.split(": ")[1].trim()
+      console.log(`Received run_id: ${runId}`)
+      runIdReceived = true
+      chatState.currentRunId = runId
+      
+    } else {
+      chatState.messages[lastMessageIndex].content += chunk
+    }
+  }
+  chatState.currentRunId = ''
+  chatState.messages[lastMessageIndex].isComplete = true
 }
 
-// async function sendToThread(content: string) {
-//   const assistant_id = getAssistantId()
-//   const threadId = getAssistantThreadId()
-
-//   if (!assistant_id || !threadId) {
-//     throw new Error('Assistant ID or Thread ID not found.')
-//   }
-
-//   chatState.currentThreadId = threadId
-//   chatState.thinking = true
-
-//   const url = `http://localhost:8000/api/threads/${threadId}/stream?assistant_id=${assistant_id}&message=${content}`
-//   const response = await fetch(url)
-//   if (!response.ok) {
-//     throw new Error('Failed to connect to the backend')
-//   }
-
-//   if (!response.body) {
-//     throw new Error('Response body is null')
-//   }
-
-//   const reader = response.body.getReader()
-//   const decoder = new TextDecoder()
-//   let done = false
-
-//   const initialMessage = {
-//     content: '',
-//     role: 'assistant',
-//     index: chatState.messages.length,
-//     isComplete: false
-//   }
-//   chatState.messages.push(initialMessage)
-//   const lastMessageIndex = chatState.messages.length - 1
-
-//   let runIdReceived = false
-//   chatState.thinking = false
-
-
-//   while (!done && initialMessage.isComplete === false) {
-//     const { value, done: readerDone } = await reader.read()
-//     done = readerDone
-//     const chunk = decoder.decode(value, { stream: true })
-
-//     if (!runIdReceived && chunk.startsWith("run_id: ")) {
-//       const runId = chunk.split(": ")[1].trim()
-//       console.log(`Received run_id: ${runId}`)
-//       runIdReceived = true
-//       chatState.currentRunId = runId
-      
-//     } else {
-//       chatState.messages[lastMessageIndex].content += chunk
-//     }
-//   }
-//   chatState.currentRunId = ''
-//   chatState.messages[lastMessageIndex].isComplete = true
-// }
-
-// export async function cancelAssistantResponse() {
-//   const lastMessageIndex = chatState.messages.length - 1
-//   chatState.messages[lastMessageIndex].isComplete = true
-//   const threadId = getAssistantThreadId();
-//   const runId = chatState.currentRunId;
-//   const url = `http://localhost:8000/api/threads/${threadId}/runs/${runId}/cancel`;
-//   try {
-//     const response = await fetch(url, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     });
-//     const result = await response.json();
-//     console.log(result.message);
-//   } catch (error) {
-//     console.error("Failed to stop the thread:", error);
-//   }
-// }
+export async function cancelAssistantResponse() {
+  const lastMessageIndex = chatState.messages.length - 1
+  chatState.messages[lastMessageIndex].isComplete = true
+  const threadId = getAssistantThreadId();
+  const runId = chatState.currentRunId;
+  const url = `http://localhost:8000/api/threads/${threadId}/runs/${runId}/cancel`;
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const result = await response.json();
+    console.log(result.message);
+  } catch (error) {
+    console.error("Failed to stop the thread:", error);
+  }
+}
 
 function handleSendMessageError(error: any) {
   console.error('Error sending message:', error)
