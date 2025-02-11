@@ -71,20 +71,21 @@
     <div class="input-actions align-self-end d-flex gap-2">
       <!-- Send Button -->
       <font-awesome-icon
+        v-if="isCurrentAssistantResponseComplete"
         :icon="['fas', 'arrow-up']"
         :class="{
           'cursor-pointer': !disableSendButton() && !isBurgerMenuOpen,
-          // 'btn-disabled': disableSendButton(),
+          'btn-disabled': disableSendButton(),
         }"
         class="btn-circle bg-white"
         @click="sendMessage"
       />
-      <!-- <font-awesome-icon
+      <font-awesome-icon
         v-else
         :icon="['fas', 'stop']"
         class="cursor-pointer btn-circle bg-light align-self-end"
         @click="cancelAssistantResponse"
-      /> -->
+      />
     </div>
   </div>
 </template>
@@ -103,7 +104,7 @@ import {
   getMessages, 
   sendMessage as sendChatMessage, 
   currentUserInput,
-  // cancelAssistantResponse,
+  cancelAssistantResponse,
   isCurrentAssistantResponseComplete
 } from "../services/chatService";
 import { 
@@ -176,10 +177,10 @@ const disableSendButton = () => {
 };
 
 const sendMessage = () => {
-  // if (!disableSendButton() && !props.isBurgerMenuOpen) {
+  if (!disableSendButton() && !props.isBurgerMenuOpen) {
     sendChatMessage(currentUserInput.value.trim());
     resetFileCount();
-  // }
+  }
 };
 
 const handleKeydown = (event: KeyboardEvent) => {

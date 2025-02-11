@@ -1,0 +1,109 @@
+start	end	text
+0	7660	Hallo zusammen, wir schauen uns jetzt unser allererstes Java-Programm an, das heißt wir schreiben auch unseren allerersten Code.
+8160	11660	Klassischerweise heißt das dann Hello World oder auf Deutsch Hallo Welt.
+13420	21060	Genau, das heißt wir gucken uns heute unsere allererste Java-Datei an, beziehungsweise die sogenannte Main-Methode, was es damit auf sich hat, sehen wir sofort.
+21640	27800	Und wir werden dabei sehen, was man unter sogenannter Syntax versteht, das haben wir im vorherigen Video schon mal kurz erwähnt.
+27800	31660	Und eben auf der anderen Seite auch, was es mit sogenannten Syntax-Fehlern auf sich hat.
+32500	34220	Okay, ich würde sagen, wir legen direkt los.
+34860	42080	Ich habe hier mal so ein kleines Demo-VPL für mich zum Spielen angelegt und das ist so neu, dass ich noch nicht mal irgendeine Datei erstellt habe.
+42200	43280	Das heißt, das mache ich hier sofort.
+43720	50160	Ich lege hier eine neue Java-Datei an, der schlägt mir schon glorreiche Namen vor, die ich offenbar früher mal verwendet habe.
+50260	53640	Schweinsgerlok.java, super Name, machen wir jetzt nicht.
+53640	58300	Ich würde die Datei einfach mal Start.java nennen, hatte ich auch schon mal gemacht.
+59220	63500	Wichtig ist natürlich dieses Kürzel, dieses Datei-Kürzel, Dateiendung.java.
+63500	83420	Wichtig ist auch, dass ich hier die Datei mit einem großen Buchstaben benenne und das liegt da dran, wir müssen hier so ein bisschen vorgreifen, ohne zu tief reinzugehen, dass ich in Java klassischerweise beginnen muss mit Public Class und dann dem Namen, den ich hier eingegeben habe.
+83420	86160	Auch hier natürlich Groß- und Kleinschreibung beachten, Start.
+86720	89000	Das hat mit diesem Thema Objektorientierung zu tun.
+89080	100340	Wir erinnern uns, Java ist eine objektorientierte Programmiersprache und das ist am Anfang natürlich schwierig, einen Bogen, um Objektorientierung zu machen, wenn man in einer objektorientierten Programmiersprache unterwegs ist.
+101180	109780	Deswegen gehört das so ein bisschen zu dem Teil der Sprache, den wir anfangs erst mal so ein bisschen akzeptieren, aber dann uns nach und nach erschließen im Laufe der kommenden Wochen.
+109780	125500	Okay, nach diesem Public Class, in unserem Fall Start, weil die Datei auch Start.java heißt, setze ich geschweifte Klammern und das VPL ist hier auch schon so nett, so eine schließende geschweifte Klammer anzulegen, beziehungsweise hier auch so ein bisschen einzurücken.
+126040	133680	In diesen geschweiften Klammern steht sozusagen ein Scope, ein Umfang sozusagen, das wäre jetzt hier der Umfang von dieser Public Class Start.
+133680	146380	Wie gesagt, das hinterfragen wir jetzt erst mal gar nicht so sehr und hier können wir jetzt den Startpunkt von unserem Java-Code anlegen oder festlegen und das wäre die sogenannte Main-Methode.
+146480	154180	Hier gibt es, sage ich mal, die klassische veraltete Syntax, wenn man so will oder immer noch gültige Syntax, aber die, die es schon immer gab sozusagen.
+154180	161360	Es gibt inzwischen auch in neueren Java-Versionen eine neue Syntax, um die Main-Methode zu schreiben.
+161720	175320	Das Problem ist nur, dass das im VPL nicht funktioniert, weil man dafür, weil diese neue Syntax so ein experimentelles Release ist oder so ähnlich wird das genannt von Java und das VPL das einfach noch nicht akzeptiert.
+175320	184580	Das heißt, hier zeige ich jetzt einmal die klassische, immer gültige sozusagen Variante, um die Main-Methode zu schreiben, das heißt den Einstieg in unser Java-Programm.
+185060	192880	Hier stoßen wir jetzt auch wieder auf so ein paar Begriffe, die wir erst mal ein bisschen ignorieren und ausklammern und uns dann im Laufe des Semesters erschließen.
+193500	199920	Und zwar sage ich Public Static Void Main. Main ist der Name, also der Name der Methode.
+199920	211560	Die Main-Methode heißt Main. Und dann setze ich runde Klammern und sage String, eckige Klammern, öffnendes und schließende eckige Klammern, Arcs.
+212160	222800	Und auch hier nach diesem langen Satzgefühl, den ich hier hingeschrieben habe, setze ich wieder geschweifte Klammern oder eine geschweifte Klammer und kriege hier so eine schließende geschweifte Klammer direkt erkannt.
+222800	234480	Das ist der Start unserer Java-Anwendung. Wie gesagt, es gibt noch eine neuere Syntax, die akzeptiert das VPL aber nicht, kann ich gerne später nochmal ganz kurz zeigen.
+235340	242520	Jetzt möchte ich aber auch natürlich irgendwas sehen. Ich kann hier die Datei speichern und die Datei ausführen, sehe aber natürlich noch nicht viel.
+242520	249440	Das heißt, was ich hier einmal machen möchte, ist irgendeinen Text auf diesem schwarzen Fenster, was wir gerade gesehen haben, auf der Konsole auszugeben.
+249800	261000	Und dafür schreibe ich System.out.println. Runde Klammern. Nach diesen runden Klammern ein Semikolon.
+261120	269520	Das ist wichtig, in Java ein Statement, also sowas wie eine Anweisung letzten Endes, durch so ein Semikolon abzuschließen.
+269520	276800	Und in die runde Klammern kann ich jetzt den Text mit Anführungszeichen schreiben, den ich gerne auf meiner Konsole sehen würde.
+276900	286020	Und wir hatten ja schon auf der ersten Folie stehen Hallo Welt, also übernehme ich das jetzt einfach mal, speichere die Datei, führe das Ganze aus und sehe jetzt hier Hallo Welt.
+286500	286700	Super.
+286700	292900	Wir haben jetzt hier bei diesem System.out.println stehen.
+293140	298760	Das sorgt dafür, dass wir automatisch, nachdem dieser Text auf der Konsole ausgegeben wird, so einen Zeilenumbruch haben.
+298860	308460	Das heißt, wenn ich mir das jetzt einfach mal kopiere und nochmal aus einfüge und hier dann vielleicht sage Hallo Brock 1 in der zweiten Zeile,
+308460	314020	hier würden die Texte direkt untereinander ausgegeben werden.
+314740	321680	Es gibt auch noch die Möglichkeit, hier dieses ln wegzulassen und dann eben entsprechend keinen Zeilenumbruch zu haben.
+321780	323600	Das heißt, die Texte würden nebeneinander gezeigt werden.
+324460	324660	Okay.
+325200	325880	So viel dazu.
+326280	331340	Wir haben natürlich bis jetzt sinnvollerweise nur gültigen Java-Code geschrieben.
+331340	334600	Das heißt, wir haben der Java-Syntax gefolgt.
+334700	343960	Die Java-Syntax oder die Syntax der Programmiersprache Java legt fest, welchen Aufbau so ein Programm haben soll, was gültige Zeichen sind und so weiter und so fort.
+344360	350040	Das heißt, wenn ich jetzt hier zum Beispiel einmal auf der Tastatur ausrutsche, die Datei speichere und dann versuche auszuführen,
+350940	353560	dann wird es hier heißen, beim Kompilieren ist ein Fehler aufgetreten.
+353720	359540	Dieses fsd, was auch immer ich da gerade reingehauen habe, ist irgendwas, womit Java nichts anfangen kann.
+359540	362160	Und dementsprechend kann der Code nicht kompilieren.
+362920	364700	Das sieht jetzt natürlich relativ logisch aus.
+364880	371120	Wir hatten vorhin gesagt, das ist so ein ganz, ganz klassischer Fall, der einem auch später in der Programmierung immer nochmal passieren kann,
+371200	376980	dass man zum Beispiel so ein Semikolon vergisst, was dann natürlich auch keine gültige Java-Syntax mehr eigentlich ist.
+377060	382900	Also ich muss nicht auf der Tastatur ausrutschen, um sozusagen was zu machen, was nicht von Java kompiliert werden kann.
+383480	384260	Wir probieren es mal aus.
+384260	390220	Ich habe jetzt hier, wie gesagt, so ein Semikolon gelöscht und würde auch hier angezeigt bekommen,
+390340	396300	dass eben eigentlich so ein Semikolon an der Stelle erwartet worden wäre und dass der Code deswegen nicht so, wie wir es vorhin hatten,
+396400	398400	in so diesem schicken schwarzen Fenster gestartet wird.
+399280	399500	Okay.
+400280	401980	Also nehmen wir dieses Semikolon gerne hin.
+402520	408560	Eine Sache, die ich abschließend noch zeigen möchte, ist ein Kommentar in Java.
+408560	415300	Wir haben jetzt einmal schön was auf der Konsole ausgegeben, also in diesem schwarzen Fenster, was erscheint, wird in unserem Fall Hallo Welt angezeigt.
+415400	416920	Ich habe dieses Hallo Probe 1 wieder gelöscht.
+418000	423060	Jetzt kann es natürlich sein, dass ich mir zum Beispiel ranschreiben möchte, was dieser Code hier macht.
+424080	428660	Und da gibt es die Möglichkeit in Java, es gibt verschiedene Möglichkeiten für Kommentare,
+428800	433120	aber ich zeige jetzt erstmal die hier, die ich auch persönlich eigentlich für eine ziemlich einfache halte,
+433120	440600	nehme ich zwei solche Slashes und dann hier hinschreiben, was auch immer dieser Code gibt.
+442120	447280	Hallo Welt auf der Konsole aus.
+447940	450420	Und dieser Kommentar hier, der ist jetzt nur für mich.
+450660	456320	Das heißt, wenn ich jetzt den Code speichere und ausführe, zeigt jetzt hier immer noch so ein rotes X,
+456540	458980	aber es liegt an der VPL, die war ein bisschen langsam.
+458980	465600	Deswegen sehe ich natürlich immer noch Hallo Welt, aber habe mir hier so einen kleinen Kommentar angeschrieben.
+465760	469020	Und der Kommentar ist ein Kommentar.
+469240	474320	Das heißt, hier ist natürlich keine Java-Syntax mehr erfordert, sondern das ist sozusagen eine Information für mich,
+474400	477860	die ich mir reinschreibe, um zum Beispiel meinen Code irgendwie besser nachvollziehen zu können.
+478600	480020	Ich fasse nochmal ganz kurz zusammen.
+480020	488720	Wir haben in Java eine Datei oder wir legen eine Datei an, die hat dann die Endung .java.
+489540	493620	Diese Datei hat einen Namen, der beginnt mit einem großen Buchstaben.
+494080	499200	Was es damit auf sich hat, gucken wir uns in, ich würde sagen, eineinhalb Monaten ungefähr an.
+499280	501520	Das hat mit diesem großen Thema Objektorientierung zu tun.
+501520	509920	Genauso wie hier diese erste Zeile, Public Class Start, weil die Datei Start heißt, gucken wir uns alles an.
+510120	514860	Wichtig ist hier auch natürlich, das genauso zu schreiben wie hier, sprich mit einem Großbuchstaben eingeläutet.
+516060	520800	Und alles andere klären wir dann irgendwann später im Laufe des Semesters.
+520800	528760	Durch diese geschweiften Klammern gebe ich immer einen Scope, also einen Umfang sozusagen an, in dem Fall der Umfang von dieser Public Class Start.
+529260	535560	Und in dieser Public Class Start haben wir hier die Main-Methode deklariert, Public Static Void Main, String Arcs.
+535640	541380	Auch das ist eine relativ sperrige Syntax, die man oder die wir im Laufe des Semesters auch verstehen werden,
+541480	548160	die aber vielleicht anfangs so ein bisschen auswendig gelernt werden muss oder vielleicht noch nicht so ganz trivial erscheint.
+548920	549720	Aber da kommen wir hin.
+549720	555680	Und innerhalb dieser Main-Methode haben wir jetzt angefangen, richtig in Anführungszeichen zu programmieren,
+555800	559780	also unsere ersten Sachen hinzuschreiben, die man auch schon wirklich nachvollziehen konnte,
+560060	563040	sprich einmal auf der Konsole einfach Hallo Welt ausgegeben.
+563560	569280	Wir haben dabei auch kennengelernt, was die Java-Syntax ist, beziehungsweise was eben nicht die Java-Syntax ist,
+569280	572540	also was passieren kann, wenn ich einen sogenannten Syntax-Fehler begehe.
+572820	578000	Und wir haben uns hier auch noch angeguckt, wie wir uns selber zum Beispiel Kommentare setzen können,
+578000	581200	die dann entsprechend auch vom Compiler ignoriert werden.
+581860	584600	Okay, soviel dazu. Bis zum nächsten Mal.
+584600	590880	Doch noch nicht ganz. Ich hatte eine Kleinigkeit versprochen und am Ende des Videos gemerkt,
+590980	594160	dass ich sie nicht gezeigt habe. Und zwar hatte ich gesagt, es gibt eine neue Möglichkeit,
+594400	598040	um diese Main-Methode zu schreiben, die wie gesagt nicht vom VPL unterstützt wird.
+598380	601500	Ich wollte es aber trotzdem einmal zeigen. Und zwar wäre die ganz einfach.
+601500	609800	Wir sparen uns den ganzen Kram, den wir gemacht haben und sagen Void Main, setzen dann runde Klammern und die geschweiften Klammern
+609800	617800	und könnten jetzt hier zum Beispiel System Out Print Line irgendwas hinschreiben mit einem Semikolon am Ende,
+618280	619820	speichern und das Ganze ausführen.
+620280	626960	Das Problem ist nur, dass VPL an der Stelle sagt, dass diese unbenannten Klassen ein Vorschau-Feature sind,
+626960	631680	was standardmäßig deaktiviert ist. Also, dass wir es letzten Endes nicht in VPL nutzen können ohne weiteres
+631680	636920	und dementsprechend, ja, vielleicht später im Laufe des Semesters uns nochmal ansehen können,
+637020	638820	aber hier nicht unbedingt verwenden können.

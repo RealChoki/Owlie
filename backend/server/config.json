@@ -69,7 +69,8 @@
                             "instructions": "Statistik general instructions.",
                             "data_path": "backend/htw/bachelor/wirtschaftsinformatik/Statistik/general_mode/data",
                             "tools": [],
-                            "model": "gpt-4o-mini"
+                            "model": "gpt-4o-mini",
+                            "assistant_id": "asst_yRjX2NkQwcyqXPK6QnCNUMf5"
                         },
                         "quiz": {
                             "instructions": "Statistik quiz instructions.",

@@ -25,6 +25,7 @@
       <a
         href="#"
         class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+        @click="navigateToAboutUs"
       >
         <font-awesome-icon :icon="['fas', 'info-circle']" /> About Us
       </a>
@@ -93,6 +94,10 @@ function updateProfileMenuPosition() {
 
 function logout() {
   router.push("/login");
+}
+
+function navigateToAboutUs() {
+  router.push("/aboutus");
 }
 
 // ResizeObserver handler

@@ -6,10 +6,11 @@ import shutil
 import tempfile
 import time
 from typing import List, Optional
-
+from queue import Queue
+import threading
 import yaml
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from langdetect import detect, LangDetectException
@@ -49,6 +50,97 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Store the connected WebSocket clients
+connected_websockets = set()
+
+from fastapi import WebSocket, WebSocketDisconnect
+import asyncio
+import json
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            # Receive and parse client message
+            data = await websocket.receive_text()
+            try:
+                payload = json.loads(data)
+                thread_id = payload["thread_id"]
+                assistant_id = payload["assistant_id"]
+                message = payload["message"]
+            except Exception as e:
+                await websocket.send_text(f"Error: Invalid payload - {str(e)}")
+                continue
+
+            # Decrypt IDs
+            try:
+                decrypted_thread_id = decrypt_data(thread_id)
+                decrypted_assistant_id = decrypt_data(assistant_id)
+            except Exception as e:
+                await websocket.send_text(f"Error: Decryption failed - {str(e)}")
+                continue
+
+            # Anonymize user message
+            try:
+                anonymized_message = presidio_anonymize(message)
+            except Exception as e:
+                await websocket.send_text(f"Error: Anonymization failed - {str(e)}")
+                continue
+
+            # Create user message in thread
+            try:
+                client.beta.threads.messages.create(
+                    thread_id=decrypted_thread_id,
+                    role="user",
+                    content=anonymized_message
+                )
+            except Exception as e:
+                await websocket.send_text(f"Error: Message creation failed - {str(e)}")
+                continue
+
+            # Create communication queue and event handler
+            output_queue = Queue()
+            handler = MyEventHandler(decrypted_thread_id, output_queue)
+
+            # Stream processing thread
+            def run_stream():
+                try:
+                    with client.beta.threads.runs.stream(
+                        thread_id=decrypted_thread_id,
+                        assistant_id=decrypted_assistant_id,
+                        event_handler=handler,
+                    ) as stream:
+                        for chunk in stream:
+                            if hasattr(chunk, "event") and chunk.event == "thread.message.delta":
+                                for block in chunk.data.delta.content:
+                                    if hasattr(block, "text"):
+                                        try:
+                                            deanonymized = presidio_deanonymize(block.text.value)
+                                            output_queue.put(deanonymized)
+                                        except Exception as e:
+                                            output_queue.put(f"Error: Deanonymization failed - {str(e)}")
+                    output_queue.put(None)
+                except Exception as e:
+                    output_queue.put(f"Error: Streaming failed - {str(e)}")
+                    output_queue.put(None)
+
+            stream_thread = threading.Thread(target=run_stream)
+            stream_thread.start()
+
+            # Stream results to client
+            while True:
+                item = await asyncio.to_thread(output_queue.get)
+                if item is None:
+                    await websocket.send_text("˘DONE˘")  # Send completion signal
+                    break
+                await websocket.send_text(item)
+                
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+    finally:
+        await websocket.close()
 
 assistant_id = None
 vector_store_id = None
@@ -165,76 +257,109 @@ class CreateMessage(BaseModel):
     content: str
     assistant_id: Optional[str]
 
-class EventHandler(AssistantEventHandler):    
-    @override
-    def on_text_created(self, text) -> None:
-        # print(f"\nassistant > ", end="", flush=True)
-        return
-        
-    @override
-    def on_text_delta(self, delta, snapshot):
-        # print(delta.value, end="", flush=True)
-        return
-        
-    def on_tool_call_created(self, tool_call):
-        print(f"\nassistant > {tool_call.type}\n", flush=True)
+# Custom EventHandler for streaming that uses a shared output queue.
+class MyEventHandler(AssistantEventHandler):
+    def __init__(self, thread_id: str, output_queue: Queue):
+        super().__init__()
+        self.thread_id = thread_id
+        self.output_queue = output_queue
 
-    def on_tool_call_delta(self, delta, snapshot):
-        if delta.type == 'code_interpreter':
-            if delta.code_interpreter.input:
-                print(delta.code_interpreter.input, end="", flush=True)
-            if delta.code_interpreter.outputs:
-                print(f"\n\noutput >", flush=True)
-            for output in delta.code_interpreter.outputs:
-                if output.type == "logs":
-                    print(f"\n{output.logs}", flush=True)
+    @override
+    def on_event(self, event):
+        if event.event == "thread.run.requires_action":
+            self.handle_requires_action(event.data, event.data.id)
 
+    def handle_requires_action(self, data, run_id):
+        tool_outputs = []
+        for tool in data.required_action.submit_tool_outputs.tool_calls:
+            if tool.function.name == "get_moodle_course_content":
+                content = get_moodle_course_content(courseid="50726")
+                tool_outputs.append({
+                    "tool_call_id": tool.id,
+                    "output": content
+                })
+        self.submit_tool_outputs(tool_outputs, run_id)
+
+    def submit_tool_outputs(self, tool_outputs, run_id):
+        try:
+            new_handler = MyEventHandler(self.thread_id, self.output_queue)
+            with client.beta.threads.runs.submit_tool_outputs_stream(
+                thread_id=self.thread_id,
+                run_id=run_id,
+                tool_outputs=tool_outputs,
+                event_handler=new_handler,
+            ) as stream:
+                for text in stream.text_deltas:
+                    self.output_queue.put(text)
+        except Exception as e:
+            self.output_queue.put(f"Error: Tool processing failed - {str(e)}")
+            
 @app.get("/api/threads/{thread_id}/stream")
 async def send_and_stream(thread_id: str, assistant_id: str, message: str):
-    # Decrypt the thread_id and assistant_id
+    # Decrypt the thread and assistant IDs.
     decrypted_thread_id = decrypt_data(thread_id)
     decrypted_assistant_id = decrypt_data(assistant_id)
 
+    # Anonymize the user message before sending.
+    print("Original user message:", message)
+    anonymized_message = presidio_anonymize(message)
+    print("Anonymized user message:", anonymized_message)
+
+    # Send the anonymized message to the thread.
     client.beta.threads.messages.create(
         thread_id=decrypted_thread_id,
         role="user",
-        content=message
+        content=anonymized_message
     )
 
-    async def event_generator():
-        run_id = None
+    # Create a thread-safe queue to collect text deltas.
+    output_queue = Queue()
+
+    # Create our event handler instance with the shared output queue.
+    handler = MyEventHandler(decrypted_thread_id, output_queue)
+
+    # Define a function to run the synchronous stream in a separate thread.
+    def run_stream():
         with client.beta.threads.runs.stream(
             thread_id=decrypted_thread_id,
             assistant_id=decrypted_assistant_id,
-            event_handler=EventHandler(),
+            event_handler=handler,
         ) as stream:
-            # Iterate over each chunk in the stream
             for chunk in stream:
-                # print(f"chunk: {chunk}\n")
-                # Check if the chunk is of type ThreadRunCreated and ThreadRunQueued
-                if type(chunk).__name__ in ['ThreadRunCreated', 'ThreadRunQueued', 'ThreadRunInProgress']:
-                    if hasattr(chunk, 'data') and hasattr(chunk.data, 'id'):
-                        if run_id is None:
-                            run_id = chunk.data.id
-                            yield f"run_id: {run_id}\n"
-
-                # Check if the chunk is of type ThreadMessageDelta
-                if type(chunk).__name__ in ['ThreadMessageDelta']:
+                # If the chunk is a text delta from the assistant, push it to the queue.
+                if hasattr(chunk, "event") and chunk.event == "thread.message.delta":
                     delta_content = chunk.data.delta.content
                     for block in delta_content:
-                        # Ensure block has a 'text' attribute and print the value
-                        if hasattr(block, 'text') and hasattr(block.text, 'value'):
-                            yield f"{block.text.value}"
+                        if hasattr(block, "text") and hasattr(block.text, "value"):
+                            # De-anonymize the assistant's response.
+                            print("Original assistant response:", block.text.value)
+                            text_val = presidio_deanonymize(block.text.value)
+                            print("De-anonymized assistant response:", text_val)
+                            output_queue.put(text_val)
+            # Signal end-of-stream by pushing a special marker (None).
+            output_queue.put(None)
 
-                await asyncio.sleep(0.1)
+    # Use the threading module to run the blocking stream.
+    stream_thread = threading.Thread(target=run_stream)
+    stream_thread.start()
 
-    # Return the StreamingResponse with the correct SSE format
+    # Define our async event generator that yields text from the output queue.
+    async def event_generator():
+        while True:
+            # Get an item from the queue in a thread-safe way.
+            item = await asyncio.to_thread(output_queue.get)
+            if item is None:
+                break
+            yield item
+            await asyncio.sleep(0)  # Yield control to the event loop.
+
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 @app.post("/api/threads/{thread_id}/runs/{run_id}/cancel")
 async def stop_thread(thread_id: str, run_id: str):
     # Decrypt the thread_id
     decrypted_thread_id = decrypt_data(thread_id)
+
     print(f"Stopping thread: {decrypted_thread_id}")
     # Stop the thread
     client.beta.threads.runs.cancel(run_id=run_id,thread_id=decrypted_thread_id)

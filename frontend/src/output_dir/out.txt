@@ -1,0 +1,108 @@
+Hallo zusammen, wir schauen uns jetzt unser allererstes Java-Programm an, das heißt wir schreiben auch unseren allerersten Code.
+Klassischerweise heißt das dann Hello World oder auf Deutsch Hallo Welt.
+Genau, das heißt wir gucken uns heute unsere allererste Java-Datei an, beziehungsweise die sogenannte Main-Methode, was es damit auf sich hat, sehen wir sofort.
+Und wir werden dabei sehen, was man unter sogenannter Syntax versteht, das haben wir im vorherigen Video schon mal kurz erwähnt.
+Und eben auf der anderen Seite auch, was es mit sogenannten Syntax-Fehlern auf sich hat.
+Okay, ich würde sagen, wir legen direkt los.
+Ich habe hier mal so ein kleines Demo-VPL für mich zum Spielen angelegt und das ist so neu, dass ich noch nicht mal irgendeine Datei erstellt habe.
+Das heißt, das mache ich hier sofort.
+Ich lege hier eine neue Java-Datei an, der schlägt mir schon glorreiche Namen vor, die ich offenbar früher mal verwendet habe.
+Schweinsgerlok.java, super Name, machen wir jetzt nicht.
+Ich würde die Datei einfach mal Start.java nennen, hatte ich auch schon mal gemacht.
+Wichtig ist natürlich dieses Kürzel, dieses Datei-Kürzel, Dateiendung.java.
+Wichtig ist auch, dass ich hier die Datei mit einem großen Buchstaben benenne und das liegt da dran, wir müssen hier so ein bisschen vorgreifen, ohne zu tief reinzugehen, dass ich in Java klassischerweise beginnen muss mit Public Class und dann dem Namen, den ich hier eingegeben habe.
+Auch hier natürlich Groß- und Kleinschreibung beachten, Start.
+Das hat mit diesem Thema Objektorientierung zu tun.
+Wir erinnern uns, Java ist eine objektorientierte Programmiersprache und das ist am Anfang natürlich schwierig, einen Bogen, um Objektorientierung zu machen, wenn man in einer objektorientierten Programmiersprache unterwegs ist.
+Deswegen gehört das so ein bisschen zu dem Teil der Sprache, den wir anfangs erst mal so ein bisschen akzeptieren, aber dann uns nach und nach erschließen im Laufe der kommenden Wochen.
+Okay, nach diesem Public Class, in unserem Fall Start, weil die Datei auch Start.java heißt, setze ich geschweifte Klammern und das VPL ist hier auch schon so nett, so eine schließende geschweifte Klammer anzulegen, beziehungsweise hier auch so ein bisschen einzurücken.
+In diesen geschweiften Klammern steht sozusagen ein Scope, ein Umfang sozusagen, das wäre jetzt hier der Umfang von dieser Public Class Start.
+Wie gesagt, das hinterfragen wir jetzt erst mal gar nicht so sehr und hier können wir jetzt den Startpunkt von unserem Java-Code anlegen oder festlegen und das wäre die sogenannte Main-Methode.
+Hier gibt es, sage ich mal, die klassische veraltete Syntax, wenn man so will oder immer noch gültige Syntax, aber die, die es schon immer gab sozusagen.
+Es gibt inzwischen auch in neueren Java-Versionen eine neue Syntax, um die Main-Methode zu schreiben.
+Das Problem ist nur, dass das im VPL nicht funktioniert, weil man dafür, weil diese neue Syntax so ein experimentelles Release ist oder so ähnlich wird das genannt von Java und das VPL das einfach noch nicht akzeptiert.
+Das heißt, hier zeige ich jetzt einmal die klassische, immer gültige sozusagen Variante, um die Main-Methode zu schreiben, das heißt den Einstieg in unser Java-Programm.
+Hier stoßen wir jetzt auch wieder auf so ein paar Begriffe, die wir erst mal ein bisschen ignorieren und ausklammern und uns dann im Laufe des Semesters erschließen.
+Und zwar sage ich Public Static Void Main. Main ist der Name, also der Name der Methode.
+Die Main-Methode heißt Main. Und dann setze ich runde Klammern und sage String, eckige Klammern, öffnendes und schließende eckige Klammern, Arcs.
+Und auch hier nach diesem langen Satzgefühl, den ich hier hingeschrieben habe, setze ich wieder geschweifte Klammern oder eine geschweifte Klammer und kriege hier so eine schließende geschweifte Klammer direkt erkannt.
+Das ist der Start unserer Java-Anwendung. Wie gesagt, es gibt noch eine neuere Syntax, die akzeptiert das VPL aber nicht, kann ich gerne später nochmal ganz kurz zeigen.
+Jetzt möchte ich aber auch natürlich irgendwas sehen. Ich kann hier die Datei speichern und die Datei ausführen, sehe aber natürlich noch nicht viel.
+Das heißt, was ich hier einmal machen möchte, ist irgendeinen Text auf diesem schwarzen Fenster, was wir gerade gesehen haben, auf der Konsole auszugeben.
+Und dafür schreibe ich System.out.println. Runde Klammern. Nach diesen runden Klammern ein Semikolon.
+Das ist wichtig, in Java ein Statement, also sowas wie eine Anweisung letzten Endes, durch so ein Semikolon abzuschließen.
+Und in die runde Klammern kann ich jetzt den Text mit Anführungszeichen schreiben, den ich gerne auf meiner Konsole sehen würde.
+Und wir hatten ja schon auf der ersten Folie stehen Hallo Welt, also übernehme ich das jetzt einfach mal, speichere die Datei, führe das Ganze aus und sehe jetzt hier Hallo Welt.
+Super.
+Wir haben jetzt hier bei diesem System.out.println stehen.
+Das sorgt dafür, dass wir automatisch, nachdem dieser Text auf der Konsole ausgegeben wird, so einen Zeilenumbruch haben.
+Das heißt, wenn ich mir das jetzt einfach mal kopiere und nochmal aus einfüge und hier dann vielleicht sage Hallo Brock 1 in der zweiten Zeile,
+hier würden die Texte direkt untereinander ausgegeben werden.
+Es gibt auch noch die Möglichkeit, hier dieses ln wegzulassen und dann eben entsprechend keinen Zeilenumbruch zu haben.
+Das heißt, die Texte würden nebeneinander gezeigt werden.
+Okay.
+So viel dazu.
+Wir haben natürlich bis jetzt sinnvollerweise nur gültigen Java-Code geschrieben.
+Das heißt, wir haben der Java-Syntax gefolgt.
+Die Java-Syntax oder die Syntax der Programmiersprache Java legt fest, welchen Aufbau so ein Programm haben soll, was gültige Zeichen sind und so weiter und so fort.
+Das heißt, wenn ich jetzt hier zum Beispiel einmal auf der Tastatur ausrutsche, die Datei speichere und dann versuche auszuführen,
+dann wird es hier heißen, beim Kompilieren ist ein Fehler aufgetreten.
+Dieses fsd, was auch immer ich da gerade reingehauen habe, ist irgendwas, womit Java nichts anfangen kann.
+Und dementsprechend kann der Code nicht kompilieren.
+Das sieht jetzt natürlich relativ logisch aus.
+Wir hatten vorhin gesagt, das ist so ein ganz, ganz klassischer Fall, der einem auch später in der Programmierung immer nochmal passieren kann,
+dass man zum Beispiel so ein Semikolon vergisst, was dann natürlich auch keine gültige Java-Syntax mehr eigentlich ist.
+Also ich muss nicht auf der Tastatur ausrutschen, um sozusagen was zu machen, was nicht von Java kompiliert werden kann.
+Wir probieren es mal aus.
+Ich habe jetzt hier, wie gesagt, so ein Semikolon gelöscht und würde auch hier angezeigt bekommen,
+dass eben eigentlich so ein Semikolon an der Stelle erwartet worden wäre und dass der Code deswegen nicht so, wie wir es vorhin hatten,
+in so diesem schicken schwarzen Fenster gestartet wird.
+Okay.
+Also nehmen wir dieses Semikolon gerne hin.
+Eine Sache, die ich abschließend noch zeigen möchte, ist ein Kommentar in Java.
+Wir haben jetzt einmal schön was auf der Konsole ausgegeben, also in diesem schwarzen Fenster, was erscheint, wird in unserem Fall Hallo Welt angezeigt.
+Ich habe dieses Hallo Probe 1 wieder gelöscht.
+Jetzt kann es natürlich sein, dass ich mir zum Beispiel ranschreiben möchte, was dieser Code hier macht.
+Und da gibt es die Möglichkeit in Java, es gibt verschiedene Möglichkeiten für Kommentare,
+aber ich zeige jetzt erstmal die hier, die ich auch persönlich eigentlich für eine ziemlich einfache halte,
+nehme ich zwei solche Slashes und dann hier hinschreiben, was auch immer dieser Code gibt.
+Hallo Welt auf der Konsole aus.
+Und dieser Kommentar hier, der ist jetzt nur für mich.
+Das heißt, wenn ich jetzt den Code speichere und ausführe, zeigt jetzt hier immer noch so ein rotes X,
+aber es liegt an der VPL, die war ein bisschen langsam.
+Deswegen sehe ich natürlich immer noch Hallo Welt, aber habe mir hier so einen kleinen Kommentar angeschrieben.
+Und der Kommentar ist ein Kommentar.
+Das heißt, hier ist natürlich keine Java-Syntax mehr erfordert, sondern das ist sozusagen eine Information für mich,
+die ich mir reinschreibe, um zum Beispiel meinen Code irgendwie besser nachvollziehen zu können.
+Ich fasse nochmal ganz kurz zusammen.
+Wir haben in Java eine Datei oder wir legen eine Datei an, die hat dann die Endung .java.
+Diese Datei hat einen Namen, der beginnt mit einem großen Buchstaben.
+Was es damit auf sich hat, gucken wir uns in, ich würde sagen, eineinhalb Monaten ungefähr an.
+Das hat mit diesem großen Thema Objektorientierung zu tun.
+Genauso wie hier diese erste Zeile, Public Class Start, weil die Datei Start heißt, gucken wir uns alles an.
+Wichtig ist hier auch natürlich, das genauso zu schreiben wie hier, sprich mit einem Großbuchstaben eingeläutet.
+Und alles andere klären wir dann irgendwann später im Laufe des Semesters.
+Durch diese geschweiften Klammern gebe ich immer einen Scope, also einen Umfang sozusagen an, in dem Fall der Umfang von dieser Public Class Start.
+Und in dieser Public Class Start haben wir hier die Main-Methode deklariert, Public Static Void Main, String Arcs.
+Auch das ist eine relativ sperrige Syntax, die man oder die wir im Laufe des Semesters auch verstehen werden,
+die aber vielleicht anfangs so ein bisschen auswendig gelernt werden muss oder vielleicht noch nicht so ganz trivial erscheint.
+Aber da kommen wir hin.
+Und innerhalb dieser Main-Methode haben wir jetzt angefangen, richtig in Anführungszeichen zu programmieren,
+also unsere ersten Sachen hinzuschreiben, die man auch schon wirklich nachvollziehen konnte,
+sprich einmal auf der Konsole einfach Hallo Welt ausgegeben.
+Wir haben dabei auch kennengelernt, was die Java-Syntax ist, beziehungsweise was eben nicht die Java-Syntax ist,
+also was passieren kann, wenn ich einen sogenannten Syntax-Fehler begehe.
+Und wir haben uns hier auch noch angeguckt, wie wir uns selber zum Beispiel Kommentare setzen können,
+die dann entsprechend auch vom Compiler ignoriert werden.
+Okay, soviel dazu. Bis zum nächsten Mal.
+Doch noch nicht ganz. Ich hatte eine Kleinigkeit versprochen und am Ende des Videos gemerkt,
+dass ich sie nicht gezeigt habe. Und zwar hatte ich gesagt, es gibt eine neue Möglichkeit,
+um diese Main-Methode zu schreiben, die wie gesagt nicht vom VPL unterstützt wird.
+Ich wollte es aber trotzdem einmal zeigen. Und zwar wäre die ganz einfach.
+Wir sparen uns den ganzen Kram, den wir gemacht haben und sagen Void Main, setzen dann runde Klammern und die geschweiften Klammern
+und könnten jetzt hier zum Beispiel System Out Print Line irgendwas hinschreiben mit einem Semikolon am Ende,
+speichern und das Ganze ausführen.
+Das Problem ist nur, dass VPL an der Stelle sagt, dass diese unbenannten Klassen ein Vorschau-Feature sind,
+was standardmäßig deaktiviert ist. Also, dass wir es letzten Endes nicht in VPL nutzen können ohne weiteres
+und dementsprechend, ja, vielleicht später im Laufe des Semesters uns nochmal ansehen können,
+aber hier nicht unbedingt verwenden können.

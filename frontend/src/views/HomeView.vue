@@ -14,7 +14,7 @@
         position: !isSidebarOpen && !isBurgerMenuOpen ? 'fixed' : 'relative',
         left: !isSidebarOpen && !isBurgerMenuOpen ? '50%' : 'auto',
         transform: !isSidebarOpen && !isBurgerMenuOpen ? 'translateX(-50%)' : 'none',
-        transition: isWideScreen ? 'transform 0.7s ease' : 'none',
+        transition: isWideScreen ? 'transform 0.5s ease' : 'none',
       }"
       
     >
@@ -83,6 +83,8 @@ import {
 import { useScreenWidth } from "../utils/useScreenWidth";
 import { setNavbarCourseTitle } from "../services/homeService";
 import { stopTTS } from "../services/ttsService";
+import WebSocketService from "../services/websocketService";
+import websocketService from "../services/websocketService";
 
 const isExpandedInput = ref(false);
 const isBurgerMenuOpen = ref(false);
@@ -160,6 +162,7 @@ const handleBeforeUnload = () => {
 };
 
 onMounted(async () => {
+  websocketService.connectWebSocket();
   clearThread();
   window.addEventListener('beforeunload', handleBeforeUnload);
   setNavbarCourseTitle(getAssistantCourse(), getAssistantMode());

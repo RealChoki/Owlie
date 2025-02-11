@@ -3,6 +3,7 @@ import { getHeartCountLS, setHeartCountLS, getMessageCountLS, setMessageCountLS 
 
 import { getAssistantId, getAssistantThreadId } from '../services/openaiService'
 import axios from 'axios';
+import websocketService from '../services/websocketService'
 
 // Reactive state
 const chatState = reactive({
@@ -80,62 +81,122 @@ function resetCounts() {
 //   chatState.thinking = false;
 // }
 
+
 async function sendToThread(content: string) {
-  const assistant_id = getAssistantId()
-  const threadId = getAssistantThreadId()
+  const assistant_id = getAssistantId();
+  const threadId = getAssistantThreadId();
 
   if (!assistant_id || !threadId) {
-    throw new Error('Assistant ID or Thread ID not found.')
+    throw new Error('Assistant ID or Thread ID not found.');
   }
 
-  chatState.currentThreadId = threadId
-  chatState.thinking = true
+  // Initialize WebSocket connection if not already connected
+  websocketService.connectWebSocket();
 
-  const url = `http://localhost:8000/api/threads/${threadId}/stream?assistant_id=${assistant_id}&message=${content}`
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error('Failed to connect to the backend')
-  }
-
-  if (!response.body) {
-    throw new Error('Response body is null')
-  }
-
-  const reader = response.body.getReader()
-  const decoder = new TextDecoder()
-  let done = false
-
+  // Prepare the initial message for the chat state
   const initialMessage = {
     content: '',
     role: 'assistant',
     index: chatState.messages.length,
-    isComplete: false
-  }
-  chatState.messages.push(initialMessage)
-  const lastMessageIndex = chatState.messages.length - 1
+    isComplete: false,
+  };
+  chatState.messages.push(initialMessage);
+  const lastMessageIndex = chatState.messages.length - 1;
 
-  let runIdReceived = false
-  chatState.thinking = false
+  // Prepare the payload to send over WebSocket
+  const payload = JSON.stringify({
+    thread_id: threadId,
+    assistant_id: assistant_id,
+    message: content,
+  });
 
+  // Send the payload to the WebSocket server
+  websocketService.sendMessage(payload);
 
-  while (!done && initialMessage.isComplete === false) {
-    const { value, done: readerDone } = await reader.read()
-    done = readerDone
-    const chunk = decoder.decode(value, { stream: true })
+  // Subscribe to WebSocket messages
+  websocketService.onMessage((data: string) => {
+    try {
+      // Handle the incoming message
+      if (data.startsWith('Error:')) {
+        // Handle errors from the server
+        console.error(data);
+        chatState.thinking = false;
+        chatState.messages[lastMessageIndex].isComplete = true;
+        return;
+      }
 
-    if (!runIdReceived && chunk.startsWith("run_id: ")) {
-      const runId = chunk.split(": ")[1].trim()
-      console.log(`Received run_id: ${runId}`)
-      runIdReceived = true
-      chatState.currentRunId = runId
-      
-    } else {
-      chatState.messages[lastMessageIndex].content += chunk
+      if (data === "˘DONE˘") {
+        chatState.thinking = false;
+        chatState.messages[lastMessageIndex].isComplete = true;
+        return;
+      }
+
+      // Append the chunk to the last message
+      chatState.messages[lastMessageIndex].content += data;
+    } catch (error) {
+      console.error('Error processing WebSocket message:', error);
+      chatState.thinking = false;
+      chatState.messages[lastMessageIndex].isComplete = true;
     }
-  }
-  chatState.currentRunId = ''
-  chatState.messages[lastMessageIndex].isComplete = true
+  });
 }
+
+// async function sendToThread(content: string) {
+//   const assistant_id = getAssistantId()
+//   const threadId = getAssistantThreadId()
+
+//   if (!assistant_id || !threadId) {
+//     throw new Error('Assistant ID or Thread ID not found.')
+//   }
+
+//   chatState.currentThreadId = threadId
+//   chatState.thinking = true
+
+//   const url = `http://localhost:8000/api/threads/${threadId}/stream?assistant_id=${assistant_id}&message=${content}`
+//   const response = await fetch(url)
+//   if (!response.ok) {
+//     throw new Error('Failed to connect to the backend')
+//   }
+
+//   if (!response.body) {
+//     throw new Error('Response body is null')
+//   }
+
+//   const reader = response.body.getReader()
+//   const decoder = new TextDecoder()
+//   let done = false
+
+//   const initialMessage = {
+//     content: '',
+//     role: 'assistant',
+//     index: chatState.messages.length,
+//     isComplete: false
+//   }
+//   chatState.messages.push(initialMessage)
+//   const lastMessageIndex = chatState.messages.length - 1
+
+//   let runIdReceived = false
+//   chatState.thinking = false
+
+
+//   while (!done && initialMessage.isComplete === false) {
+//     const { value, done: readerDone } = await reader.read()
+//     done = readerDone
+//     const chunk = decoder.decode(value, { stream: true })
+
+//     if (!runIdReceived && chunk.startsWith("run_id: ")) {
+//       const runId = chunk.split(": ")[1].trim()
+//       console.log(`Received run_id: ${runId}`)
+//       runIdReceived = true
+//       chatState.currentRunId = runId
+      
+//     } else {
+//       chatState.messages[lastMessageIndex].content += chunk
+//     }
+//   }
+//   chatState.currentRunId = ''
+//   chatState.messages[lastMessageIndex].isComplete = true
+// }
 
 export async function cancelAssistantResponse() {
   const lastMessageIndex = chatState.messages.length - 1
@@ -184,6 +245,8 @@ function consumeHalfHeart() {
 
 // Exported functions
 export async function sendMessage(content: string) {
+  chatState.thinking = true
+
   console.log(
     `[sendMessage] Attempting to send message. Current heartCount: ${heartCount.value}, messageCount: ${messageCount.value}`
   )
@@ -206,13 +269,10 @@ export async function sendMessage(content: string) {
   }
 
   chatState.currentUserInput = ''
-
   try {
     await sendToThread(content)
   } catch (error) {
     // handleSendMessageError(error)
-  } finally {
-    chatState.thinking = false
   }
 }
 

@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import Login from '../views/Login.vue'
 import QuizProf from '../views/QuizProf.vue'
 import CreateCourseAssistant from '../views/CreateCourseAssistant.vue'
+import AboutUs from '../views/AboutUs.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,7 +27,12 @@ const router = createRouter({
       path: '/create-assistant',
       name: 'CreateCourseAssistant',
       component: CreateCourseAssistant
-    }
+    },
+    {
+      path: '/aboutus',
+      name: 'aboutus',
+      component: AboutUs,
+    },
   ],
 })
 

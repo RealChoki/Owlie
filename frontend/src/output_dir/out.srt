@@ -1,0 +1,432 @@
+1
+00:00:00,000 --> 00:00:07,660
+Hallo zusammen, wir schauen uns jetzt unser allererstes Java-Programm an, das heißt wir schreiben auch unseren allerersten Code.
+
+2
+00:00:08,160 --> 00:00:11,660
+Klassischerweise heißt das dann Hello World oder auf Deutsch Hallo Welt.
+
+3
+00:00:13,420 --> 00:00:21,060
+Genau, das heißt wir gucken uns heute unsere allererste Java-Datei an, beziehungsweise die sogenannte Main-Methode, was es damit auf sich hat, sehen wir sofort.
+
+4
+00:00:21,640 --> 00:00:27,800
+Und wir werden dabei sehen, was man unter sogenannter Syntax versteht, das haben wir im vorherigen Video schon mal kurz erwähnt.
+
+5
+00:00:27,800 --> 00:00:31,660
+Und eben auf der anderen Seite auch, was es mit sogenannten Syntax-Fehlern auf sich hat.
+
+6
+00:00:32,500 --> 00:00:34,220
+Okay, ich würde sagen, wir legen direkt los.
+
+7
+00:00:34,860 --> 00:00:42,080
+Ich habe hier mal so ein kleines Demo-VPL für mich zum Spielen angelegt und das ist so neu, dass ich noch nicht mal irgendeine Datei erstellt habe.
+
+8
+00:00:42,200 --> 00:00:43,280
+Das heißt, das mache ich hier sofort.
+
+9
+00:00:43,720 --> 00:00:50,160
+Ich lege hier eine neue Java-Datei an, der schlägt mir schon glorreiche Namen vor, die ich offenbar früher mal verwendet habe.
+
+10
+00:00:50,260 --> 00:00:53,640
+Schweinsgerlok.java, super Name, machen wir jetzt nicht.
+
+11
+00:00:53,640 --> 00:00:58,300
+Ich würde die Datei einfach mal Start.java nennen, hatte ich auch schon mal gemacht.
+
+12
+00:00:59,220 --> 00:01:03,500
+Wichtig ist natürlich dieses Kürzel, dieses Datei-Kürzel, Dateiendung.java.
+
+13
+00:01:03,500 --> 00:01:23,420
+Wichtig ist auch, dass ich hier die Datei mit einem großen Buchstaben benenne und das liegt da dran, wir müssen hier so ein bisschen vorgreifen, ohne zu tief reinzugehen, dass ich in Java klassischerweise beginnen muss mit Public Class und dann dem Namen, den ich hier eingegeben habe.
+
+14
+00:01:23,420 --> 00:01:26,160
+Auch hier natürlich Groß- und Kleinschreibung beachten, Start.
+
+15
+00:01:26,720 --> 00:01:29,000
+Das hat mit diesem Thema Objektorientierung zu tun.
+
+16
+00:01:29,080 --> 00:01:40,340
+Wir erinnern uns, Java ist eine objektorientierte Programmiersprache und das ist am Anfang natürlich schwierig, einen Bogen, um Objektorientierung zu machen, wenn man in einer objektorientierten Programmiersprache unterwegs ist.
+
+17
+00:01:41,180 --> 00:01:49,780
+Deswegen gehört das so ein bisschen zu dem Teil der Sprache, den wir anfangs erst mal so ein bisschen akzeptieren, aber dann uns nach und nach erschließen im Laufe der kommenden Wochen.
+
+18
+00:01:49,780 --> 00:02:05,500
+Okay, nach diesem Public Class, in unserem Fall Start, weil die Datei auch Start.java heißt, setze ich geschweifte Klammern und das VPL ist hier auch schon so nett, so eine schließende geschweifte Klammer anzulegen, beziehungsweise hier auch so ein bisschen einzurücken.
+
+19
+00:02:06,040 --> 00:02:13,680
+In diesen geschweiften Klammern steht sozusagen ein Scope, ein Umfang sozusagen, das wäre jetzt hier der Umfang von dieser Public Class Start.
+
+20
+00:02:13,680 --> 00:02:26,380
+Wie gesagt, das hinterfragen wir jetzt erst mal gar nicht so sehr und hier können wir jetzt den Startpunkt von unserem Java-Code anlegen oder festlegen und das wäre die sogenannte Main-Methode.
+
+21
+00:02:26,480 --> 00:02:34,180
+Hier gibt es, sage ich mal, die klassische veraltete Syntax, wenn man so will oder immer noch gültige Syntax, aber die, die es schon immer gab sozusagen.
+
+22
+00:02:34,180 --> 00:02:41,360
+Es gibt inzwischen auch in neueren Java-Versionen eine neue Syntax, um die Main-Methode zu schreiben.
+
+23
+00:02:41,720 --> 00:02:55,320
+Das Problem ist nur, dass das im VPL nicht funktioniert, weil man dafür, weil diese neue Syntax so ein experimentelles Release ist oder so ähnlich wird das genannt von Java und das VPL das einfach noch nicht akzeptiert.
+
+24
+00:02:55,320 --> 00:03:04,580
+Das heißt, hier zeige ich jetzt einmal die klassische, immer gültige sozusagen Variante, um die Main-Methode zu schreiben, das heißt den Einstieg in unser Java-Programm.
+
+25
+00:03:05,060 --> 00:03:12,880
+Hier stoßen wir jetzt auch wieder auf so ein paar Begriffe, die wir erst mal ein bisschen ignorieren und ausklammern und uns dann im Laufe des Semesters erschließen.
+
+26
+00:03:13,500 --> 00:03:19,920
+Und zwar sage ich Public Static Void Main. Main ist der Name, also der Name der Methode.
+
+27
+00:03:19,920 --> 00:03:31,560
+Die Main-Methode heißt Main. Und dann setze ich runde Klammern und sage String, eckige Klammern, öffnendes und schließende eckige Klammern, Arcs.
+
+28
+00:03:32,160 --> 00:03:42,800
+Und auch hier nach diesem langen Satzgefühl, den ich hier hingeschrieben habe, setze ich wieder geschweifte Klammern oder eine geschweifte Klammer und kriege hier so eine schließende geschweifte Klammer direkt erkannt.
+
+29
+00:03:42,800 --> 00:03:54,480
+Das ist der Start unserer Java-Anwendung. Wie gesagt, es gibt noch eine neuere Syntax, die akzeptiert das VPL aber nicht, kann ich gerne später nochmal ganz kurz zeigen.
+
+30
+00:03:55,340 --> 00:04:02,520
+Jetzt möchte ich aber auch natürlich irgendwas sehen. Ich kann hier die Datei speichern und die Datei ausführen, sehe aber natürlich noch nicht viel.
+
+31
+00:04:02,520 --> 00:04:09,440
+Das heißt, was ich hier einmal machen möchte, ist irgendeinen Text auf diesem schwarzen Fenster, was wir gerade gesehen haben, auf der Konsole auszugeben.
+
+32
+00:04:09,800 --> 00:04:21,000
+Und dafür schreibe ich System.out.println. Runde Klammern. Nach diesen runden Klammern ein Semikolon.
+
+33
+00:04:21,120 --> 00:04:29,520
+Das ist wichtig, in Java ein Statement, also sowas wie eine Anweisung letzten Endes, durch so ein Semikolon abzuschließen.
+
+34
+00:04:29,520 --> 00:04:36,800
+Und in die runde Klammern kann ich jetzt den Text mit Anführungszeichen schreiben, den ich gerne auf meiner Konsole sehen würde.
+
+35
+00:04:36,900 --> 00:04:46,020
+Und wir hatten ja schon auf der ersten Folie stehen Hallo Welt, also übernehme ich das jetzt einfach mal, speichere die Datei, führe das Ganze aus und sehe jetzt hier Hallo Welt.
+
+36
+00:04:46,500 --> 00:04:46,700
+Super.
+
+37
+00:04:46,700 --> 00:04:52,900
+Wir haben jetzt hier bei diesem System.out.println stehen.
+
+38
+00:04:53,140 --> 00:04:58,760
+Das sorgt dafür, dass wir automatisch, nachdem dieser Text auf der Konsole ausgegeben wird, so einen Zeilenumbruch haben.
+
+39
+00:04:58,860 --> 00:05:08,460
+Das heißt, wenn ich mir das jetzt einfach mal kopiere und nochmal aus einfüge und hier dann vielleicht sage Hallo Brock 1 in der zweiten Zeile,
+
+40
+00:05:08,460 --> 00:05:14,020
+hier würden die Texte direkt untereinander ausgegeben werden.
+
+41
+00:05:14,740 --> 00:05:21,680
+Es gibt auch noch die Möglichkeit, hier dieses ln wegzulassen und dann eben entsprechend keinen Zeilenumbruch zu haben.
+
+42
+00:05:21,780 --> 00:05:23,600
+Das heißt, die Texte würden nebeneinander gezeigt werden.
+
+43
+00:05:24,460 --> 00:05:24,660
+Okay.
+
+44
+00:05:25,200 --> 00:05:25,880
+So viel dazu.
+
+45
+00:05:26,280 --> 00:05:31,340
+Wir haben natürlich bis jetzt sinnvollerweise nur gültigen Java-Code geschrieben.
+
+46
+00:05:31,340 --> 00:05:34,600
+Das heißt, wir haben der Java-Syntax gefolgt.
+
+47
+00:05:34,700 --> 00:05:43,960
+Die Java-Syntax oder die Syntax der Programmiersprache Java legt fest, welchen Aufbau so ein Programm haben soll, was gültige Zeichen sind und so weiter und so fort.
+
+48
+00:05:44,360 --> 00:05:50,040
+Das heißt, wenn ich jetzt hier zum Beispiel einmal auf der Tastatur ausrutsche, die Datei speichere und dann versuche auszuführen,
+
+49
+00:05:50,940 --> 00:05:53,560
+dann wird es hier heißen, beim Kompilieren ist ein Fehler aufgetreten.
+
+50
+00:05:53,720 --> 00:05:59,540
+Dieses fsd, was auch immer ich da gerade reingehauen habe, ist irgendwas, womit Java nichts anfangen kann.
+
+51
+00:05:59,540 --> 00:06:02,160
+Und dementsprechend kann der Code nicht kompilieren.
+
+52
+00:06:02,920 --> 00:06:04,700
+Das sieht jetzt natürlich relativ logisch aus.
+
+53
+00:06:04,880 --> 00:06:11,120
+Wir hatten vorhin gesagt, das ist so ein ganz, ganz klassischer Fall, der einem auch später in der Programmierung immer nochmal passieren kann,
+
+54
+00:06:11,200 --> 00:06:16,980
+dass man zum Beispiel so ein Semikolon vergisst, was dann natürlich auch keine gültige Java-Syntax mehr eigentlich ist.
+
+55
+00:06:17,060 --> 00:06:22,900
+Also ich muss nicht auf der Tastatur ausrutschen, um sozusagen was zu machen, was nicht von Java kompiliert werden kann.
+
+56
+00:06:23,480 --> 00:06:24,260
+Wir probieren es mal aus.
+
+57
+00:06:24,260 --> 00:06:30,220
+Ich habe jetzt hier, wie gesagt, so ein Semikolon gelöscht und würde auch hier angezeigt bekommen,
+
+58
+00:06:30,340 --> 00:06:36,300
+dass eben eigentlich so ein Semikolon an der Stelle erwartet worden wäre und dass der Code deswegen nicht so, wie wir es vorhin hatten,
+
+59
+00:06:36,400 --> 00:06:38,400
+in so diesem schicken schwarzen Fenster gestartet wird.
+
+60
+00:06:39,280 --> 00:06:39,500
+Okay.
+
+61
+00:06:40,280 --> 00:06:41,980
+Also nehmen wir dieses Semikolon gerne hin.
+
+62
+00:06:42,520 --> 00:06:48,560
+Eine Sache, die ich abschließend noch zeigen möchte, ist ein Kommentar in Java.
+
+63
+00:06:48,560 --> 00:06:55,300
+Wir haben jetzt einmal schön was auf der Konsole ausgegeben, also in diesem schwarzen Fenster, was erscheint, wird in unserem Fall Hallo Welt angezeigt.
+
+64
+00:06:55,400 --> 00:06:56,920
+Ich habe dieses Hallo Probe 1 wieder gelöscht.
+
+65
+00:06:58,000 --> 00:07:03,060
+Jetzt kann es natürlich sein, dass ich mir zum Beispiel ranschreiben möchte, was dieser Code hier macht.
+
+66
+00:07:04,080 --> 00:07:08,660
+Und da gibt es die Möglichkeit in Java, es gibt verschiedene Möglichkeiten für Kommentare,
+
+67
+00:07:08,800 --> 00:07:13,120
+aber ich zeige jetzt erstmal die hier, die ich auch persönlich eigentlich für eine ziemlich einfache halte,
+
+68
+00:07:13,120 --> 00:07:20,600
+nehme ich zwei solche Slashes und dann hier hinschreiben, was auch immer dieser Code gibt.
+
+69
+00:07:22,120 --> 00:07:27,280
+Hallo Welt auf der Konsole aus.
+
+70
+00:07:27,940 --> 00:07:30,420
+Und dieser Kommentar hier, der ist jetzt nur für mich.
+
+71
+00:07:30,660 --> 00:07:36,320
+Das heißt, wenn ich jetzt den Code speichere und ausführe, zeigt jetzt hier immer noch so ein rotes X,
+
+72
+00:07:36,540 --> 00:07:38,980
+aber es liegt an der VPL, die war ein bisschen langsam.
+
+73
+00:07:38,980 --> 00:07:45,600
+Deswegen sehe ich natürlich immer noch Hallo Welt, aber habe mir hier so einen kleinen Kommentar angeschrieben.
+
+74
+00:07:45,760 --> 00:07:49,020
+Und der Kommentar ist ein Kommentar.
+
+75
+00:07:49,240 --> 00:07:54,320
+Das heißt, hier ist natürlich keine Java-Syntax mehr erfordert, sondern das ist sozusagen eine Information für mich,
+
+76
+00:07:54,400 --> 00:07:57,860
+die ich mir reinschreibe, um zum Beispiel meinen Code irgendwie besser nachvollziehen zu können.
+
+77
+00:07:58,600 --> 00:08:00,020
+Ich fasse nochmal ganz kurz zusammen.
+
+78
+00:08:00,020 --> 00:08:08,720
+Wir haben in Java eine Datei oder wir legen eine Datei an, die hat dann die Endung .java.
+
+79
+00:08:09,540 --> 00:08:13,620
+Diese Datei hat einen Namen, der beginnt mit einem großen Buchstaben.
+
+80
+00:08:14,080 --> 00:08:19,200
+Was es damit auf sich hat, gucken wir uns in, ich würde sagen, eineinhalb Monaten ungefähr an.
+
+81
+00:08:19,280 --> 00:08:21,520
+Das hat mit diesem großen Thema Objektorientierung zu tun.
+
+82
+00:08:21,520 --> 00:08:29,920
+Genauso wie hier diese erste Zeile, Public Class Start, weil die Datei Start heißt, gucken wir uns alles an.
+
+83
+00:08:30,120 --> 00:08:34,860
+Wichtig ist hier auch natürlich, das genauso zu schreiben wie hier, sprich mit einem Großbuchstaben eingeläutet.
+
+84
+00:08:36,060 --> 00:08:40,800
+Und alles andere klären wir dann irgendwann später im Laufe des Semesters.
+
+85
+00:08:40,800 --> 00:08:48,760
+Durch diese geschweiften Klammern gebe ich immer einen Scope, also einen Umfang sozusagen an, in dem Fall der Umfang von dieser Public Class Start.
+
+86
+00:08:49,260 --> 00:08:55,560
+Und in dieser Public Class Start haben wir hier die Main-Methode deklariert, Public Static Void Main, String Arcs.
+
+87
+00:08:55,640 --> 00:09:01,380
+Auch das ist eine relativ sperrige Syntax, die man oder die wir im Laufe des Semesters auch verstehen werden,
+
+88
+00:09:01,480 --> 00:09:08,160
+die aber vielleicht anfangs so ein bisschen auswendig gelernt werden muss oder vielleicht noch nicht so ganz trivial erscheint.
+
+89
+00:09:08,920 --> 00:09:09,720
+Aber da kommen wir hin.
+
+90
+00:09:09,720 --> 00:09:15,680
+Und innerhalb dieser Main-Methode haben wir jetzt angefangen, richtig in Anführungszeichen zu programmieren,
+
+91
+00:09:15,800 --> 00:09:19,780
+also unsere ersten Sachen hinzuschreiben, die man auch schon wirklich nachvollziehen konnte,
+
+92
+00:09:20,060 --> 00:09:23,040
+sprich einmal auf der Konsole einfach Hallo Welt ausgegeben.
+
+93
+00:09:23,560 --> 00:09:29,280
+Wir haben dabei auch kennengelernt, was die Java-Syntax ist, beziehungsweise was eben nicht die Java-Syntax ist,
+
+94
+00:09:29,280 --> 00:09:32,540
+also was passieren kann, wenn ich einen sogenannten Syntax-Fehler begehe.
+
+95
+00:09:32,820 --> 00:09:38,000
+Und wir haben uns hier auch noch angeguckt, wie wir uns selber zum Beispiel Kommentare setzen können,
+
+96
+00:09:38,000 --> 00:09:41,200
+die dann entsprechend auch vom Compiler ignoriert werden.
+
+97
+00:09:41,860 --> 00:09:44,600
+Okay, soviel dazu. Bis zum nächsten Mal.
+
+98
+00:09:44,600 --> 00:09:50,880
+Doch noch nicht ganz. Ich hatte eine Kleinigkeit versprochen und am Ende des Videos gemerkt,
+
+99
+00:09:50,980 --> 00:09:54,160
+dass ich sie nicht gezeigt habe. Und zwar hatte ich gesagt, es gibt eine neue Möglichkeit,
+
+100
+00:09:54,400 --> 00:09:58,040
+um diese Main-Methode zu schreiben, die wie gesagt nicht vom VPL unterstützt wird.
+
+101
+00:09:58,380 --> 00:10:01,500
+Ich wollte es aber trotzdem einmal zeigen. Und zwar wäre die ganz einfach.
+
+102
+00:10:01,500 --> 00:10:09,800
+Wir sparen uns den ganzen Kram, den wir gemacht haben und sagen Void Main, setzen dann runde Klammern und die geschweiften Klammern
+
+103
+00:10:09,800 --> 00:10:17,800
+und könnten jetzt hier zum Beispiel System Out Print Line irgendwas hinschreiben mit einem Semikolon am Ende,
+
+104
+00:10:18,280 --> 00:10:19,820
+speichern und das Ganze ausführen.
+
+105
+00:10:20,280 --> 00:10:26,960
+Das Problem ist nur, dass VPL an der Stelle sagt, dass diese unbenannten Klassen ein Vorschau-Feature sind,
+
+106
+00:10:26,960 --> 00:10:31,680
+was standardmäßig deaktiviert ist. Also, dass wir es letzten Endes nicht in VPL nutzen können ohne weiteres
+
+107
+00:10:31,680 --> 00:10:36,920
+und dementsprechend, ja, vielleicht später im Laufe des Semesters uns nochmal ansehen können,
+
+108
+00:10:37,020 --> 00:10:38,820
+aber hier nicht unbedingt verwenden können.
+
