@@ -13,6 +13,7 @@
       <a
         href="#"
         class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+        @click="navigateToProfile"
       >
         <font-awesome-icon :icon="['fas', 'user-circle']" /> Profile
       </a>
@@ -98,6 +99,10 @@ function logout() {
 
 function navigateToAboutUs() {
   router.push("/aboutus");
+} 
+
+function navigateToProfile() {
+  router.push("/profile");
 }
 
 // ResizeObserver handler

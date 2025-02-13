@@ -92,6 +92,7 @@ async function sendToThread(content: string) {
 
   // Initialize WebSocket connection if not already connected
   websocketService.connectWebSocket();
+  chatState.thinking = true;
 
   // Prepare the initial message for the chat state
   const initialMessage = {
@@ -116,6 +117,9 @@ async function sendToThread(content: string) {
   // Subscribe to WebSocket messages
   websocketService.onMessage((data: string) => {
     try {
+      if (data) {
+        chatState.thinking = false;
+      }
       // Handle the incoming message
       if (data.startsWith('Error:')) {
         // Handle errors from the server
@@ -126,7 +130,6 @@ async function sendToThread(content: string) {
       }
 
       if (data === "˘DONE˘") {
-        chatState.thinking = false;
         chatState.messages[lastMessageIndex].isComplete = true;
         return;
       }
@@ -245,7 +248,6 @@ function consumeHalfHeart() {
 
 // Exported functions
 export async function sendMessage(content: string) {
-  chatState.thinking = true
 
   console.log(
     `[sendMessage] Attempting to send message. Current heartCount: ${heartCount.value}, messageCount: ${messageCount.value}`

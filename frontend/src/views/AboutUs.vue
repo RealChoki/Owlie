@@ -22,7 +22,7 @@
                 Instead of simply providing answers, Owlie offers hints, guidance, and personalized feedback to help students develop problem-solving skills  
                 while maintaining academic integrity.
             </p>
-            <img class="w-25 mt-4" src="../assets/icons/OwlLogo.png" alt="Owl Logo">
+            <img class="owl-logo w-25 mt-4" src="../assets/icons/OwlLogo.png" alt="Owl Logo">
         </div>
     </div>
 </template>
@@ -47,5 +47,15 @@
     .paragraph-mobile {
         display: block;
     }
+}
+
+.owl-logo{  
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+
 }
 </style>

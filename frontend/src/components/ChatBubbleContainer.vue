@@ -22,6 +22,7 @@
         class="position-relative"
       >
         <img
+          v-if="!thinking || message.isComplete"
           src="../assets/icons/OwlLogo.png"
           class="assistant-pfp p-1 pt-0"
           :style="isWideScreen ? 'position: absolute; left: 5px; top: 5px' : ''"
@@ -31,25 +32,37 @@
           :style="isWideScreen ? 'margin-left: 50px' : ''"
         ></div>
         <div
-        v-if="message.isComplete"
-        class="position-absolute d-flex assistant-response-actions" 
-        :style="isWideScreen ? 'bottom: -2.1em; left: 3.07em' : 'bottom: -2.1em; left: 0em'">
-          <font-awesome-icon
-            :icon="ttsPlayingIndex === index ? ['fas', 'volume-xmark'] : ['fas', 'volume-high']"
-            class="cursor-pointer response-action-icon"
+          v-if="message.isComplete"
+          class="position-absolute d-flex assistant-response-actions"
+          :style="
+            isWideScreen
+              ? 'bottom: -2.1em; left: 3.07em'
+              : 'bottom: -2.1em; left: 0em'
+          "
+        >
+          <div
+            class="response-action-icon cursor-pointer"
             @click="handleToggleTTS(message.content, index)"
-            style="width: 0.85em"
-          />
-          <font-awesome-icon
-            :icon="['fas', copiedIndex === index ? 'check' : 'copy']"
-            class="cursor-pointer response-action-icon"
-            @click="handleCopy(index)"
-          />
-          <font-awesome-icon
-            :icon="['fas', 'arrow-rotate-right']"
-            class="cursor-pointer response-action-icon"
-            @click="resendMessage(index)"
-          />
+          >
+            <font-awesome-icon
+              :icon="
+                ttsPlayingIndex === index
+                  ? ['fas', 'volume-xmark']
+                  : ['fas', 'volume-high']
+              "
+              style="width: 0.85em"
+            />
+          </div>
+          <div class="response-action-icon cursor-pointer" @click="handleCopy(index)">
+            <font-awesome-icon
+              :icon="['fas', copiedIndex === index ? 'check' : 'copy']"
+            />
+          </div>
+          <div class="response-action-icon cursor-pointer" @click="resendMessage(index)">
+            <font-awesome-icon
+              :icon="['fas', 'arrow-rotate-right']"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -74,11 +87,7 @@ import {
   getThinking,
   resendMessage,
 } from "../services/chatService";
-import { 
-  loadVoices, 
-  stopTTS, 
-  toggleTTS 
-} from "../services/ttsService";
+import { loadVoices, stopTTS, toggleTTS } from "../services/ttsService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -86,19 +95,13 @@ import {
   faCopy,
   faCheck,
   faArrowRotateRight,
-  faVolumeHigh, 
-  faVolumeXmark 
+  faVolumeHigh,
+  faVolumeXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
 
-library.add(
-  faCopy,
-  faCheck,
-  faArrowRotateRight,
-  faVolumeHigh,
-  faVolumeXmark
-);
+library.add(faCopy, faCheck, faArrowRotateRight, faVolumeHigh, faVolumeXmark);
 
 const messages = getMessages();
 const chatContainer = ref<HTMLDivElement | null>(null);
@@ -152,19 +155,19 @@ function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
 }
 
-const ttsPlayingIndex = ref<number | null>(null)
+const ttsPlayingIndex = ref<number | null>(null);
 
 // Handle the tts
 function handleToggleTTS(content: string, index: number) {
   if (ttsPlayingIndex.value === index) {
-    stopTTS()
-    ttsPlayingIndex.value = null
+    stopTTS();
+    ttsPlayingIndex.value = null;
   } else {
-    stopTTS()
+    stopTTS();
     toggleTTS(content, () => {
-      ttsPlayingIndex.value = null
-    })
-    ttsPlayingIndex.value = index
+      ttsPlayingIndex.value = null;
+    });
+    ttsPlayingIndex.value = index;
   }
 }
 
@@ -189,7 +192,7 @@ watch(
         chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
       }
     }
-    stopTTS()
+    stopTTS();
   },
   { deep: true }
 );
@@ -223,7 +226,7 @@ watch(
 .response-action-icon {
   color: var(--color-gray-lighter);
   font-size: 1em;
-  padding: 0.4em 0.5em;
+  padding: 0.1em 0.4em;
   border-radius: 8px;
   bottom: -2.1em;
   left: 3.1em;

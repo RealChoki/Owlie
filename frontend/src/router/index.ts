@@ -4,6 +4,7 @@ import Login from '../views/Login.vue'
 import QuizProf from '../views/QuizProf.vue'
 import CreateCourseAssistant from '../views/CreateCourseAssistant.vue'
 import AboutUs from '../views/AboutUs.vue'
+import Profile from '../views/Profile.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
       path: '/aboutus',
       name: 'aboutus',
       component: AboutUs,
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: Profile,
     },
   ],
 })
