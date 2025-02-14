@@ -5,7 +5,9 @@
   >
     <!-- Navbar -->
     <div class="container-fluid navbar-container">
-      <nav class="py-2 px-3 d-flex align-items-center justify-content-between">
+      <nav
+        class="py-2 px-3 d-flex align-items-center justify-content-between mt-1"
+      >
         <!-- Home Icon -->
         <button
           class="btn btn-link p-0 d-flex align-items-center"
@@ -15,7 +17,7 @@
           <font-awesome-icon
             class="icon-click-effect nav-icon-holder"
             :icon="['fas', 'home']"
-            style="color: var(--color-gray-shadow)"
+            style="color: var(--color-white)"
           />
         </button>
         <div class="nav-icon-holder">
@@ -53,12 +55,32 @@
           max-height: calc(100vh - 60px);
         "
       >
-        <h3 class="text-center mb-5 mt-4">Courses</h3>
-        <div class="courses-grid mt-5">
+        <h3 class="text-center mb-3 mt-4">Courses</h3>
+        <div class="d-flex justify-content-end">
+          <div class="search-container">
+            <input
+              ref="searchInput"
+              type="text"
+              v-model="searchQuery"
+              class="search-bar"
+              placeholder="Search courses..."
+              @focus="isSearchFocused = true"
+              @blur="isSearchFocused = false"
+              :class="{ 'input-focused': isSearchFocused }"
+            />
+            <font-awesome-icon
+              :icon="['fas', 'magnifying-glass']"
+              class="magnifying-glass cursor-pointer"
+              :class="{ 'text-white': isSearchFocused }"
+              @click="focusInput"
+            />
+          </div>
+        </div>
+        <div class="courses-grid mt-4">
           <div class="row">
             <div
               class="col-12 col-md-4 mb-4"
-              v-for="course in courses"
+              v-for="course in filteredCourses"
               :key="course.courseId"
             >
               <div
@@ -68,6 +90,7 @@
                   border: 1px solid var(--color-gray-shadow);
                   border-radius: 6px;
                 "
+                @click="goToCourseDashboard(course)"
               >
                 <!-- Course Title & ID -->
                 <h5>{{ course.courseName }}</h5>
@@ -114,7 +137,7 @@
                 <font-awesome-icon
                   class="delete-icon"
                   :icon="['fas', 'trash']"
-                  @click="confirmDelete(course)"
+                  @click.stop="confirmDelete(course)"
                 />
               </div>
             </div>
@@ -131,7 +154,7 @@
     <!-- Modal for Delete Confirmation -->
     <div v-if="isDeletePopupVisible" class="modal-overlay">
       <div class="modal-content">
-        <h3 class="text-center mb-4 text-white">Delete Course</h3>
+        <h3 class="text-center mb-4 text-white"><u>Delete Course</u></h3>
         <p class="text-white">
           <strong><span class="text-red">Warning:</span></strong> Deleting
           <strong>{{ courseToDelete.courseName }}</strong> (Course ID:
@@ -168,13 +191,13 @@
     <!-- Modal for Course Form -->
     <div v-if="isCourseFormVisible" class="modal-overlay">
       <div class="modal-content">
-        <h3 class="text-center mb-4 text-white">Create a Course</h3>
+        <h3 class="text-center mb-4 text-white"><u>Create a Course</u></h3>
         <form @submit.prevent="addCourse">
           <div class="mb-3">
             <label for="subjectSelectModal" class="form-label">Subject</label>
             <input
               id="subjectSelectModal"
-              v-model="searchQuery"
+              v-model="subjectQuery"
               type="text"
               class="login-input w-100"
               placeholder="Type to search..."
@@ -184,10 +207,10 @@
             />
             <!-- Options dropdown -->
             <ul
-              v-if="isFocused && searchQuery && filteredOptions.length > 0"
+              v-if="isFocused && subjectQuery && filteredOptions.length > 0"
               class="dropdown-menu w-100"
               :class="{
-                show: isFocused && searchQuery && filteredOptions.length > 0,
+                show: isFocused && subjectQuery && filteredOptions.length > 0,
               }"
             >
               <li
@@ -226,7 +249,9 @@
               required
             />
           </div>
-          <button type="submit" class="btn btn-action w-100">Submit</button>
+          <button type="submit" class="btn btn-action w-100">
+            Create course
+          </button>
           <button
             type="button"
             class="btn btn-secondary w-100 mt-2"
@@ -242,13 +267,30 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { ref, computed } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faHome, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHome,
+  faPlus,
+  faTrash,
+  faCogs,
+  faQuestionCircle,
+  faFileAlt,
+  faMagnifyingGlass,
+} from "@fortawesome/free-solid-svg-icons";
+import Profilemenu from "../widgets/ProfileMenu.vue"; // or correct path
 
-library.add(faHome, faPlus, faTrash);
+library.add(
+  faHome,
+  faPlus,
+  faTrash,
+  faCogs,
+  faQuestionCircle,
+  faFileAlt,
+  faMagnifyingGlass
+);
 
 const isProfileMenuVisible = ref(false);
 const router = useRouter();
@@ -288,18 +330,32 @@ const courses = ref<
   },
 ]);
 
-const options = ref(["Wirtschaftsinformatik", "Medieninformatik"]);
+const isSearchFocused = ref(false);
 const searchQuery = ref("");
+const filteredCourses = computed(() => {
+  return courses.value.filter(course => 
+    course.courseName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    course.courseId.includes(searchQuery.value)
+  );
+});
+
+const searchInput = ref<HTMLInputElement | null>(null);
+function focusInput() {
+  searchInput.value?.focus();
+}
+
+const options = ref(["Wirtschaftsinformatik", "Medieninformatik"]);
+const subjectQuery = ref("");
 const subject = ref("");
 const filteredOptions = computed(() => {
   return options.value.filter((option) =>
-    option.toLowerCase().includes(searchQuery.value.toLowerCase())
+    option.toLowerCase().includes(subjectQuery.value.toLowerCase())
   );
 });
 
 const selectOption = (option: string) => {
   subject.value = option;
-  searchQuery.value = option;
+  subjectQuery.value = option;
 };
 
 // Controls the visibility of the modal form
@@ -332,6 +388,7 @@ const addCourse = () => {
 
   // Hide the modal
   isCourseFormVisible.value = false;
+  console.log(courses.value); // WTF??? press on profile pic
 };
 
 const handleHomeClick = () => {
@@ -351,7 +408,7 @@ const resetCourseModal = () => {
   courseName.value = "";
   courseId.value = "";
   subject.value = "";
-  searchQuery.value = "";
+  subjectQuery.value = "";
 };
 
 const confirmDelete = (course: {
@@ -392,6 +449,19 @@ const getStatusClass = (status: string) => {
       return "badge-secondary"; // Default gray
   }
 };
+
+const goToCourseDashboard = (course: {
+  subject: string;
+  courseName: string;
+  courseId: string;
+  assistantStatus: "Active" | "Inactive" | "Activating";
+  assistantTypes: Array<"General" | "Quiz" | "Exam">;
+}) => {
+  router.push({
+    name: "courseDashboard",
+    params: { courseId: course.courseId },
+  });
+};
 </script>
 
 <style scoped>
@@ -408,23 +478,23 @@ const getStatusClass = (status: string) => {
 }
 
 .btn-action {
-  background-color: var(--color-white);
-  color: var(--color-black);
+  background-color: green;
+  color: var(--color-white);
   border-color: var(--color-gray-light);
 }
 .btn-action:hover {
-  background-color: #e0e0e0;
-  color: var(--color-black);
+  background-color: darkgreen; /* Darker green on hover */
+  color: var(--color-white);
   border-color: var(--color-gray-light);
 }
 .btn-action:focus {
-  background-color: #e0e0e0;
-  color: var(--color-black);
+  background-color: darkgreen; /* Darker green on focus */
+  color: var(--color-white);
   border-color: var(--color-gray-light);
 }
 .btn-action:active {
-  background-color: #d1d1d1;
-  color: var(--color-black);
+  background-color: #004d00; /* Even darker green on active */
+  color: var(--color-white);
   border-color: var(--color-gray-light);
 }
 .btn-action:disabled {
@@ -467,8 +537,8 @@ const getStatusClass = (status: string) => {
   justify-content: center;
   border: 2px dashed var(--color-gray-light);
   border-radius: 50%;
-  height: 150px;
-  width: 150px;
+  height: 100px;
+  width: 100px;
   margin: auto;
   transition: transform 0.2s ease;
   cursor: pointer;
@@ -595,5 +665,42 @@ input[type="number"] {
 .dropdown-item:hover {
   background-color: var(--color-gray-medium);
   color: white;
+}
+
+.search-bar {
+  background-color: var(--color-gray-medium);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem;
+  padding-left: 2.6rem;
+  width: 100%;
+}
+
+.search-bar:focus {
+  outline: none;
+}
+
+.search-bar::placeholder {
+  transition: color 0.2s ease;
+}
+
+.input-focused::placeholder {
+  color: white !important;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-bottom: 0.75em;
+}
+
+.magnifying-glass {
+  position: absolute;
+  font-size: 1.2rem;
+  left: 15px;
+  color: var(--color-gray-shadow);
+  transition: color 0.2s ease;
 }
 </style>

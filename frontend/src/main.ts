@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import { createVuetify } from 'vuetify';
 import App from './App.vue'
-import posthogPlugin from "../plugins/posthog"; //import the plugin. 
+//import posthogPlugin from "../plugins/posthog"; //import the plugin. 
 import router from './router'
 
 // Import Vuetify styles and other dependencies
@@ -26,7 +26,7 @@ const app = createApp(App);
 // Use Vuetify, router, and mount the app
 app.use(vuetify);
 app.use(router);
-app.use(posthogPlugin); //install the plugin
+//app.use(posthogPlugin); //install the plugin
 
 // Mount the app to the DOM
 app.mount('#app');

@@ -2,9 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import Login from '../views/Login.vue'
 import QuizProf from '../views/QuizProf.vue'
-import CreateCourseAssistant from '../views/CreateCourseAssistant.vue'
+import CreateCourse from '../views/CreateCourse.vue'
 import AboutUs from '../views/AboutUs.vue'
 import Profile from '../views/Profile.vue'
+import courseDashboard from '../views/courseDashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,13 +26,19 @@ const router = createRouter({
       component: () => QuizProf,
     },
     {
-      path: '/create-assistant',
-      name: 'CreateCourseAssistant',
-      component: CreateCourseAssistant
+      path: '/courses',
+      name: 'CreateCourse',
+      component: CreateCourse
     },
     {
-      path: '/aboutus',
-      name: 'aboutus',
+      path: '/courses/:courseId',
+      name: 'courseDashboard',
+      component: courseDashboard,
+      props: true, // Pass courseId as a prop
+    },
+    {
+      path: '/about',
+      name: 'about',
       component: AboutUs,
     },
     {

@@ -98,7 +98,7 @@ function logout() {
 }
 
 function navigateToAboutUs() {
-  router.push("/aboutus");
+  router.push("/about");
 } 
 
 function navigateToProfile() {
