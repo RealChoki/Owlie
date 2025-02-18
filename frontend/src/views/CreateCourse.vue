@@ -1,10 +1,19 @@
 <template>
-  <div class="d-flex flex-column vh-100" style="background-color: var(--color-black)">
+  <div
+    class="d-flex flex-column vh-100"
+    style="background-color: var(--color-black)"
+  >
     <!-- Navbar -->
     <div class="container-fluid navbar-container">
-      <nav class="py-2 px-3 d-flex align-items-center justify-content-between mt-1">
+      <nav
+        class="py-2 px-3 d-flex align-items-center justify-content-between mt-1"
+      >
         <!-- Home Icon -->
-        <button class="btn btn-link p-0 d-flex align-items-center" @click="handleHomeClick" aria-label="Home">
+        <button
+          class="btn btn-link p-0 d-flex align-items-center"
+          @click="handleHomeClick"
+          aria-label="Home"
+        >
           <font-awesome-icon
             class="icon-click-effect nav-icon-holder"
             :icon="['fas', 'home']"
@@ -23,14 +32,21 @@
             />
           </div>
         </div>
-        <Profilemenu v-if="isProfileMenuVisible" :origin="'Nav-EditQuiz'" @toggleProfileMenu="toggleProfileMenu" />
+        <Profilemenu
+          v-if="isProfileMenuVisible"
+          :origin="'Nav-EditQuiz'"
+          @toggleProfileMenu="toggleProfileMenu"
+        />
       </nav>
     </div>
 
     <!-- Content Container -->
-    <div class="d-flex flex-grow-1 p-1" style="background-color: var(--color-black)">
+    <div
+      class="d-flex flex-grow-1 p-1"
+      style="background-color: var(--color-black)"
+    >
       <div
-        class="w-100 rounded text-white p-4 bruh"
+        class="w-100 rounded text-white p-4 bruh container-fluid"
         style="
           background-color: var(--color-background-dark);
           border: 1px solid var(--color-gray-shadow);
@@ -39,7 +55,7 @@
           max-height: calc(100vh - 60px);
         "
       >
-        <h3 class="text-center mb-3 mt-4">Courses</h3>
+        <h3 class="text-center my-3"><strong>Courses</strong></h3>
         <div class="d-flex justify-content-end">
           <div class="search-container">
             <input
@@ -62,9 +78,13 @@
         </div>
         <div class="courses-grid mt-4">
           <div class="row">
-            <div class="col-12 col-md-4 mb-4" v-for="course in filteredCourses" :key="course.courseId">
+            <div
+              class="col-12 col-md-4 mb-4"
+              v-for="course in filteredCourses"
+              :key="course.courseId"
+            >
               <div
-                class="course-card p-3 position-relative d-flex justify-content-between"
+                class="course-card p-3 position-relative d-flex justify-content-between cursor-pointer"
                 style="
                   background-color: var(--color-background-dark);
                   border: 1px solid var(--color-gray-shadow);
@@ -81,28 +101,38 @@
                   </div>
                   <div class="modes-container">
                     <div
-                      v-for="mode in ['General','Exam','Quiz']"
+                      v-for="mode in ['General', 'Exam', 'Quiz']"
                       :key="mode"
                       class="d-flex align-items-end"
                     >
                       <span
-                        :class="['mode-badge', getModeColorClass(mode, course.assistantStatuses)]"
+                        :class="[
+                          'mode-badge',
+                          getModeColorClass(mode, course.assistantStatuses),
+                        ]"
                       >
                         {{ mode }}
                         <span class="mode-tooltip">
-                          {{ getModeStatusText(mode, course.assistantStatuses) }}
+                          {{
+                            getModeStatusText(mode, course.assistantStatuses)
+                          }}
                         </span>
                       </span>
                     </div>
                   </div>
                 </div>
 
-
                 <!-- Delete Button -->
-                <font-awesome-icon class="delete-icon" :icon="['fas', 'trash']" @click.stop="confirmDelete(course)" />
+                <font-awesome-icon
+                  class="delete-icon"
+                  :icon="['fas', 'trash']"
+                  @click.stop="confirmDelete(course)"
+                />
               </div>
             </div>
-            <div class="col-12 col-md-4 mb-4">
+            <div
+              class="col-12 col-md-4 d-flex align-items-center justify-content-center mb-4"
+            >
               <div class="add-course-card" @click="toggleCourseModal">
                 <font-awesome-icon :icon="['fas', 'plus']" size="2x" />
               </div>
@@ -115,23 +145,41 @@
     <!-- Modal for Delete Confirmation -->
     <div v-if="isDeletePopupVisible" class="modal-overlay">
       <div class="modal-content">
-        <h3 class="text-center mb-4 text-white"><u>Delete Course</u></h3>
+        <h3 class="text-center mb-4 text-white"><u>Delete a Course</u></h3>
         <p class="text-white">
           <strong><span class="text-red">Warning:</span></strong> Deleting
-          <strong>{{ courseToDelete.courseName }}</strong> (Course ID: <strong>{{ courseToDelete.courseId }}</strong
-          >) will permanently remove the course and all its associated assistants. This action cannot be undone. To
-          proceed, please enter the course name and ID below:
+          <strong>{{ courseToDelete.courseName }}</strong> (Course ID:
+          <strong>{{ courseToDelete.courseId }}</strong
+          >) will permanently remove the course and all its associated
+          assistants. This action cannot be undone. To proceed, please enter the
+          course name and ID below:
         </p>
-        <input v-model="confirmCourseName" class="login-input w-100 mb-2" placeholder="Confrim course name" required />
+        <input
+          v-model="confirmCourseName"
+          class="login-input w-100 mb-2"
+          placeholder="Confirm course name"
+          required
+        />
         <input
           v-model="confirmCourseId"
           class="login-input w-100 mb-2"
-          placeholder="Confrim course ID"
+          placeholder="Confirm course ID"
           type="number"
           required
         />
-        <button class="btn btn-danger w-100" @click="deleteCourse">Confirm Deletion</button>
-        <button class="btn btn-secondary w-100 mt-2" @click="isDeletePopupVisible = false">Cancel</button>
+        <button
+          class="btn btn-danger w-100"
+          @click="deleteCourse"
+          :disabled="!canDelete"
+        >
+          Delete Course
+        </button>
+        <button
+          class="btn btn-secondary w-100 mt-2"
+          @click="isDeletePopupVisible = false"
+        >
+          Cancel
+        </button>
       </div>
     </div>
 
@@ -157,16 +205,23 @@
               v-if="isFocused && subjectQuery && filteredOptions.length > 0"
               class="dropdown-menu w-100"
               :class="{
-                show: isFocused && subjectQuery && filteredOptions.length > 0
+                show: isFocused && subjectQuery && filteredOptions.length > 0,
               }"
             >
-              <li v-for="option in filteredOptions" :key="option" class="dropdown-item" @click="selectOption(option)">
+              <li
+                v-for="option in filteredOptions"
+                :key="option"
+                class="dropdown-item"
+                @click="selectOption(option)"
+              >
                 {{ option }}
               </li>
             </ul>
           </div>
           <div class="mb-3">
-            <label for="courseNameInputModal" class="form-label">Course Name</label>
+            <label for="courseNameInputModal" class="form-label"
+              >Course Name</label
+            >
             <input
               type="text"
               id="courseNameInputModal"
@@ -189,8 +244,16 @@
               required
             />
           </div>
-          <button type="submit" class="btn btn-action w-100">Create course</button>
-          <button type="button" class="btn btn-secondary w-100 mt-2" @click="toggleCourseModal">Cancel</button>
+          <button type="submit" class="btn btn-action w-100">
+            Create course
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary w-100 mt-2"
+            @click="toggleCourseModal"
+          >
+            Cancel
+          </button>
         </form>
       </div>
     </div>
@@ -199,10 +262,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
-import { ref, computed } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
+import { useRouter } from "vue-router";
+import { ref, computed } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faHome,
   faPlus,
@@ -210,151 +273,171 @@ import {
   faCogs,
   faQuestionCircle,
   faFileAlt,
+  faMagnifyingGlass,
+} from "@fortawesome/free-solid-svg-icons";
+import Profilemenu from "../widgets/ProfileMenu.vue"; // or correct path
+
+library.add(
+  faHome,
+  faPlus,
+  faTrash,
+  faCogs,
+  faQuestionCircle,
+  faFileAlt,
   faMagnifyingGlass
-} from '@fortawesome/free-solid-svg-icons'
-import Profilemenu from '../widgets/ProfileMenu.vue' // or correct path
+);
 
-library.add(faHome, faPlus, faTrash, faCogs, faQuestionCircle, faFileAlt, faMagnifyingGlass)
+const isProfileMenuVisible = ref(false);
+const router = useRouter();
 
-const isProfileMenuVisible = ref(false)
-const router = useRouter()
-
-const courseName = ref('')
-const courseId = ref('')
+const courseName = ref("");
+const courseId = ref("");
 
 const courses = ref([
   {
-    courseId: '12345',
-    courseName: 'Data Science',
-    subject: 'Wirtschaftsinformatik',
+    courseId: "12345",
+    courseName: "Data Science",
+    subject: "Wirtschaftsinformatik",
     assistantStatuses: {
-      Active: ['General', 'Exam', 'Quiz'],
+      Active: ["General", "Exam", "Quiz"],
       Inactive: [],
-      Activating: []
-    }
+      Activating: [],
+    },
   },
   {
-    courseId: '67890',
-    courseName: 'Integrierte Informations- und Kommunikationssysteme',
-    subject: 'Medieninformatik',
+    courseId: "67890",
+    courseName: "Integrierte Informations- und Kommunikationssysteme",
+    subject: "Medieninformatik",
     assistantStatuses: {
       Active: [],
-      Inactive: ['General'],
-      Activating: ['Exam', 'Quiz']
-    }
+      Inactive: ["General"],
+      Activating: ["Exam", "Quiz"],
+    },
   },
   {
-    courseId: '23890',
-    courseName: 'Web security',
-    subject: 'Medieninformatik',
+    courseId: "23890",
+    courseName: "Web security",
+    subject: "Medieninformatik",
     assistantStatuses: {
-      Active: ['General'],
-      Inactive: ['Quiz'],
-      Activating: ['Exam']
-    }
-  }
-])
+      Active: ["General"],
+      Inactive: ["Quiz"],
+      Activating: ["Exam"],
+    },
+  },
+]);
 
-const isSearchFocused = ref(false)
-const searchQuery = ref('')
+const isSearchFocused = ref(false);
+const searchQuery = ref("");
 const filteredCourses = computed(() => {
+  console.log("Filtering courses...");
+  console.log(courses.value);
   return courses.value.filter(
     (course) =>
-      course.courseName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      course.courseName
+        .toLowerCase()
+        .includes(searchQuery.value.toLowerCase()) ||
       course.courseId.includes(searchQuery.value)
-  )
-})
+  );
+});
 
-const searchInput = ref<HTMLInputElement | null>(null)
+const searchInput = ref<HTMLInputElement | null>(null);
 function focusInput() {
-  searchInput.value?.focus()
+  searchInput.value?.focus();
 }
 
 function getModeColorClass(mode: string, statuses: any) {
-  if (statuses.Active.includes(mode)) return 'active'
-  if (statuses.Activating.includes(mode)) return 'activating'
-  return 'inactive'
+  if (statuses.Active.includes(mode)) return "active";
+  if (statuses.Activating.includes(mode)) return "activating";
+  return "inactive";
 }
 
 function getModeStatusText(mode: string, statuses: any) {
-  if (statuses.Active.includes(mode)) return 'Active'
-  if (statuses.Activating.includes(mode)) return 'Activating'
-  return 'Inactive'
+  if (statuses.Active.includes(mode)) return "Active";
+  if (statuses.Activating.includes(mode)) return "Activating";
+  return "Inactive";
 }
 
-const options = ref(['Wirtschaftsinformatik', 'Medieninformatik'])
-const subjectQuery = ref('')
-const subject = ref('')
+const options = ref(["Wirtschaftsinformatik", "Medieninformatik"]);
+const subjectQuery = ref("");
+const subject = ref("");
 const filteredOptions = computed(() => {
-  return options.value.filter((option) => option.toLowerCase().includes(subjectQuery.value.toLowerCase()))
-})
+  return options.value.filter((option) =>
+    option.toLowerCase().includes(subjectQuery.value.toLowerCase())
+  );
+});
 
 const selectOption = (option: string) => {
-  subject.value = option
-  subjectQuery.value = option
-}
+  subject.value = option;
+  subjectQuery.value = option;
+};
 
 // Controls the visibility of the modal form
-const isCourseFormVisible = ref(false)
+const isCourseFormVisible = ref(false);
 
-const isDeletePopupVisible = ref(false)
+const isDeletePopupVisible = ref(false);
 const courseToDelete = ref<{
-  subject: string
-  courseName: string
-  courseId: string
-} | null>(null)
-const confirmCourseName = ref('')
-const confirmCourseId = ref('')
+  subject: string;
+  courseName: string;
+  courseId: string;
+} | null>(null);
+const confirmCourseName = ref("");
+const confirmCourseId = ref("");
 
 const addCourse = () => {
   const newCourse = {
-    subject: subject.value,
+    courseId: courseId.value as string,
     courseName: courseName.value,
-    courseId: courseId.value,
-    assistantStatus: 'Inactive' as 'Inactive', // Ensure the correct type
-    assistantTypes: [] as Array<'General' | 'Quiz' | 'Exam'> // Enforce type for assistantTypes
-  }
-
-  courses.value.push(newCourse)
-  console.log('Form submitted with data:', newCourse)
+    subject: subject.value,
+    assistantStatuses: {
+      Active: [],
+      Inactive: ["General", "Quiz", "Exam"], // Defaulting all to Inactive
+      Activating: [],
+    },
+  };
+  courses.value.push(newCourse);
+  console.log("Form submitted with data:", newCourse);
 
   // Clear the input fields after submission
-  courseName.value = ''
-  courseId.value = ''
+  courseName.value = "";
+  courseId.value = "";
 
   // Hide the modal
-  isCourseFormVisible.value = false
-  console.log(courses.value) // WTF??? press on profile pic
-}
+  isCourseFormVisible.value = false;
+  console.log(courses.value); // WTF??? press on profile pic
+};
 
 const handleHomeClick = () => {
-  router.push('/')
-}
+  router.push("/");
+};
 
 const toggleProfileMenu = () => {
-  isProfileMenuVisible.value = !isProfileMenuVisible.value
-}
+  isProfileMenuVisible.value = !isProfileMenuVisible.value;
+};
 
 const toggleCourseModal = () => {
-  isCourseFormVisible.value = !isCourseFormVisible.value
-  resetCourseModal()
-}
+  isCourseFormVisible.value = !isCourseFormVisible.value;
+  resetCourseModal();
+};
 
 const resetCourseModal = () => {
-  courseName.value = ''
-  courseId.value = ''
-  subject.value = ''
-  subjectQuery.value = ''
-}
+  courseName.value = "";
+  courseId.value = "";
+  subject.value = "";
+  subjectQuery.value = "";
+};
 
-const confirmDelete = (course: { subject: string; courseName: string; courseId: string }) => {
-  courseToDelete.value = course
-  confirmCourseName.value = ''
-  confirmCourseId.value = ''
-  isDeletePopupVisible.value = true
+const confirmDelete = (course: {
+  subject: string;
+  courseName: string;
+  courseId: string;
+}) => {
+  courseToDelete.value = course;
+  confirmCourseName.value = "";
+  confirmCourseId.value = "";
+  isDeletePopupVisible.value = true;
 
-  console.log(courses.value)
-}
+  console.log(courses.value);
+};
 
 const deleteCourse = () => {
   if (
@@ -362,41 +445,52 @@ const deleteCourse = () => {
     confirmCourseName.value === courseToDelete.value.courseName &&
     confirmCourseId.value === courseToDelete.value.courseId
   ) {
-    courses.value = courses.value.filter((course) => course.courseId !== courseToDelete.value.courseId)
-    isDeletePopupVisible.value = false
+    courses.value = courses.value.filter(
+      (course) => course.courseId !== courseToDelete.value.courseId
+    );
+    isDeletePopupVisible.value = false;
   }
-}
+};
 
 const getStatusClass = (status: string) => {
   switch (status) {
-    case 'Active':
-      return 'badge-success' // Green
-    case 'Activating':
-      return 'badge-info' // Blue
-    case 'Inactive':
-      return 'badge-danger' // Red
+    case "Active":
+      return "badge-success"; // Green
+    case "Activating":
+      return "badge-info"; // Blue
+    case "Inactive":
+      return "badge-danger"; // Red
     default:
-      return 'badge-secondary' // Default gray
+      return "badge-secondary"; // Default gray
   }
-}
+};
+
+const canDelete = computed(() => {
+  return (
+    courseToDelete.value &&
+    confirmCourseName.value === courseToDelete.value.courseName &&
+    confirmCourseId.value === courseToDelete.value.courseId
+  );
+});
 
 const goToCourseDashboard = (course: {
-  subject: string
-  courseName: string
-  courseId: string
-  assistantStatus: 'Active' | 'Inactive' | 'Activating'
-  assistantTypes: Array<'General' | 'Quiz' | 'Exam'>
+  subject: string;
+  courseName: string;
+  courseId: string;
+  assistantStatus: "Active" | "Inactive" | "Activating";
+  assistantTypes: Array<"General" | "Quiz" | "Exam">;
 }) => {
   router.push({
-    name: 'courseDashboard',
-    params: { courseId: course.courseId }
-  })
-}
+    name: "courseDashboard",
+    params: { courseId: course.courseId },
+  });
+};
 </script>
 
 <style scoped>
 .form-label {
   color: var(--color-white);
+  margin-bottom: 0.1em;
 }
 
 .navbar-container {
@@ -406,6 +500,7 @@ const goToCourseDashboard = (course: {
 .bruh {
   scrollbar-width: none;
   padding-bottom: 1em !important;
+  min-width: 305px;
 }
 
 .btn-action {
@@ -433,6 +528,11 @@ const goToCourseDashboard = (course: {
   border-color: var(--color-disabled);
 }
 
+.btn-danger:disabled {
+  pointer-events: all !important; /* override Bootstrap */
+  cursor: not-allowed !important;
+}
+
 .login-input {
   background-color: var(--color-gray-medium);
   color: var(--color-white);
@@ -453,12 +553,23 @@ const goToCourseDashboard = (course: {
 .courses-grid h4 {
   text-align: center;
 }
-.course-card {
-  cursor: pointer;
-  transition: transform 0.2s ease;
+
+.courses-grid .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch; /* ensures all items stretch to match the tallest one */
 }
+
+.course-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%; /* match the tallest card's height */
+  transition: transform 0.15s ease;
+}
+
 .course-card:hover {
-  transform: scale(1.02);
+  transform: scale(1.01);
 }
 
 .assistant-status {
@@ -515,13 +626,13 @@ const goToCourseDashboard = (course: {
 }
 
 /* Hide the default arrows in number input */
-input[type='number']::-webkit-outer-spin-button,
-input[type='number']::-webkit-inner-spin-button {
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type='number'] {
+input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
@@ -572,7 +683,7 @@ input[type='number'] {
 
 .course-card .delete-icon {
   opacity: 0;
-  transition: opacity 0.1s ease-in-out;
+  transition: opacity 0.2s ease-in-out;
 }
 
 .course-card:hover .delete-icon {
@@ -606,6 +717,21 @@ input[type='number'] {
   color: white;
 }
 
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-bottom: 0.75em;
+}
+
+.magnifying-glass {
+  position: absolute;
+  font-size: 1.2rem;
+  left: 15px;
+  color: var(--color-gray-shadow);
+  transition: color 0.2s ease;
+}
+
 .search-bar {
   background-color: var(--color-gray-medium);
   border: 1px solid transparent;
@@ -627,21 +753,6 @@ input[type='number'] {
 
 .input-focused::placeholder {
   color: white !important;
-}
-
-.search-container {
-  display: flex;
-  align-items: center;
-  position: relative;
-  padding-bottom: 0.75em;
-}
-
-.magnifying-glass {
-  position: absolute;
-  font-size: 1.2rem;
-  left: 15px;
-  color: var(--color-gray-shadow);
-  transition: color 0.2s ease;
 }
 
 .mode-badge {
@@ -666,7 +777,6 @@ input[type='number'] {
   background-color: #039cbe; /* Blue */
 }
 
-
 /* Tooltip style */
 .mode-tooltip {
   display: none;
@@ -685,14 +795,14 @@ input[type='number'] {
 }
 
 .mode-tooltip::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -11px; /* Move the arrow beneath the tooltip */
   left: 50%;
   transform: translateX(-50%);
   border-width: 6px;
   border-style: solid;
-  border-color: var(--color-gray-light) transparent transparent  transparent; /* Adjust the arrow color */
+  border-color: var(--color-gray-light) transparent transparent transparent; /* Adjust the arrow color */
 }
 
 .mode-badge:hover .mode-tooltip {
@@ -709,36 +819,56 @@ input[type='number'] {
   }
 }
 
-.card-container{
+.card-container {
   display: flex;
   justify-content: space-between;
   width: 100%;
+  height: 100%;
 }
 
-.modes-container{
- display: flex;
- justify-content: end;
+.card-container h5 {
+  word-wrap: break-word; /* Ensures long words break */
+  word-break: break-word; /* Breaks long words */
+  overflow-wrap: break-word; /* Alternative for better browser support */
 }
 
+.modes-container {
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  .search-bar {
+    width: 30vw;
+    min-width: 200px;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 767px){
+  .search-container {
+    width: 100%;
+  }
+}
 @media (min-width: 768px) and (max-width: 1535px) {
-  .card-container{
+  .card-container {
     flex-direction: column;
   }
-
-  .modes-container{
+  
+  .modes-container {
     margin-top: 0.8em;
     justify-content: start;
   }
 }
 
 @media (max-width: 650px) {
-  .card-container{
+  .card-container {
     flex-direction: column;
   }
 
-  .modes-container{
+  .modes-container {
     margin-top: 0.8em;
     justify-content: start;
   }
+
 }
 </style>
