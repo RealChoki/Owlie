@@ -5,6 +5,7 @@ import os
 import shutil
 import tempfile
 import time
+from fastapi import Body
 from typing import List, Optional
 from queue import Queue
 import threading
@@ -24,6 +25,7 @@ from typing_extensions import override
 from langchain_experimental.data_anonymizer import PresidioReversibleAnonymizer
 from tools.fernet import decrypt_data, encrypt_data
 from tools.function_calling import get_moodle_course_content
+from tools.transcriber import transcribe_lecture
 
 # Configure logging d
 logging.basicConfig(level=logging.ERROR)
@@ -917,6 +919,15 @@ async def delete_temp_assistant(request: Request):
 
     return {"message": f"Switched from thread {old_thread_id}"}
 
+@app.post("/api/transcribe_lecture")
+async def transcribe_lecture_endpoint(
+    lecture_url: str = Body(..., embed=True),
+):
+    try:
+        text = transcribe_lecture(url_or_file=lecture_url)
+        return {"transcribed_text": text}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # validating	the input file is being validated before the batch can begin
 # failed	the input file has failed the validation process

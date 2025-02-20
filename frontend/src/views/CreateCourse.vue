@@ -85,11 +85,7 @@
             >
               <div
                 class="course-card p-3 position-relative d-flex justify-content-between cursor-pointer"
-                style="
-                  background-color: var(--color-background-dark);
-                  border: 1px solid var(--color-gray-shadow);
-                  border-radius: 6px;
-                "
+                style=""
                 @click="goToCourseDashboard(course)"
               >
                 <!-- Course Title & ID -->
@@ -130,10 +126,11 @@
                 />
               </div>
             </div>
-            <div
-              class="col-12 col-md-4 d-flex align-items-center justify-content-center mb-4"
-            >
-              <div class="add-course-card" @click="toggleCourseModal">
+            <div class="col-12 col-md-4 mb-4">
+              <div
+                class="add-course-card p-3 d-flex align-items-center justify-content-center cursor-pointer"
+                @click="toggleCourseModal"
+              >
                 <font-awesome-icon :icon="['fas', 'plus']" size="2x" />
               </div>
             </div>
@@ -564,12 +561,16 @@ const goToCourseDashboard = (course: {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  background-color: var(--color-background-dark);
+  border: 1px solid var(--color-gray-shadow);
+  border-radius: 6px;
   height: 100%; /* match the tallest card's height */
   transition: transform 0.15s ease;
 }
 
 .course-card:hover {
   transform: scale(1.01);
+  border-color: var(--color-primary); /* Optional hover color */
 }
 
 .assistant-status {
@@ -581,19 +582,16 @@ const goToCourseDashboard = (course: {
 }
 /* Add New Course Card Styling */
 .add-course-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border: 2px dashed var(--color-gray-light);
-  border-radius: 50%;
-  height: 100px;
-  width: 100px;
-  margin: auto;
+  border-radius: 6px; /* Match course card radius */
+  height: 100%; /* Fill column height */
+  min-height: 200px; /* Optional: Match card min-height if needed */
   transition: transform 0.2s ease;
-  cursor: pointer;
 }
+
 .add-course-card:hover {
-  transform: scale(1.05);
+  transform: scale(1.01); /* Match course card hover effect */
+  border-color: var(--color-primary); /* Optional hover color */
 }
 
 /* Modal Styling */
@@ -844,16 +842,21 @@ input[type="number"] {
   }
 }
 
-@media (max-width: 767px){
+@media (max-width: 767px) {
   .search-container {
     width: 100%;
   }
+
+  .add-course-card {
+    min-height: 130px;
+  }
 }
+
 @media (min-width: 768px) and (max-width: 1535px) {
   .card-container {
     flex-direction: column;
   }
-  
+
   .modes-container {
     margin-top: 0.8em;
     justify-content: start;
@@ -870,5 +873,8 @@ input[type="number"] {
     justify-content: start;
   }
 
+  .add-course-card {
+    min-height: 170px;
+  }
 }
 </style>
