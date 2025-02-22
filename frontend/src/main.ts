@@ -13,12 +13,18 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import "@/assets/styles/colorVariables.css";
 import "@/assets/styles/globalClasses.css";
 
+// Import Vuetify components and directives
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+
 // Create Vuetify instance
 const vuetify = createVuetify({
+  components,
+  directives,
   theme: {
     defaultTheme: 'dark',
   },
-});
+})
 
 // Create Vue app instance
 const app = createApp(App);
