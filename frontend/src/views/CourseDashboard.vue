@@ -62,7 +62,7 @@
       </div>
 
       <!-- Right Content -->
-      <div class="right-side w-100 rounded pt-3 px-3">
+      <div class="right-side w-100 rounded px-3">
         <!-- Assistants Tab -->
         <AssistantDashboard v-if="activeTab === 'assistants'" />
       </div>
@@ -166,8 +166,7 @@ function handleHomeClick() {
   background-color: var(--color-background-dark);
   border: 1px solid var(--color-gray-shadow);
   margin: 5px;
-  padding: 1rem;
   height: calc(100vh - 60px);
-  overflow: auto; /* Prevent entire right-side from scrolling */
+  overflow: auto; /* Make the container scrollable */
 }
 </style>

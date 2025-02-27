@@ -1,7 +1,7 @@
 <template>
-  <div class="non-scrollable-header w-100">
-    <div class="assistants-tab w-100">
-      <div class="mb-3">
+  <div class="w-100 px-1">
+    <div class="w-100 test-container">
+      <div class="non-scrollable-header pt-3">
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <h3 class="text-white mb-0">Data Science</h3>
@@ -44,11 +44,10 @@
             </ul>
           </div>
         </div>
-        <hr class="text-white" />
       </div>
     </div>
     <!-- Configuration Panel for the Selected Assistant Mode -->
-    <div class="scrollable-content">
+    <div class="content-below-header mb-4">
       <div v-if="activeModeIndex !== -1" class="p-3 rounded">
         <div class="d-flex align-items-center justify-content-between mb-2 text-white">
           <h5>{{ assistantModes[activeModeIndex].name }} Assistant</h5>
@@ -405,6 +404,22 @@ async function transcribeAllLectures() {
 function shortenLink(link: string, maxLength = 50) {
   return link.length > maxLength ? link.slice(0, maxLength) + '...' : link
 }
+
+// Function to set the width of the fixed header
+function setHeaderWidth() {
+  const header = document.querySelector('.non-scrollable-header') as HTMLElement;
+  const parent = document.querySelector('.test-container') as HTMLElement;
+
+  if (header && parent) {
+    const parentWidth = parent.offsetWidth; // Get the width of the parent
+    header.style.width = `${parentWidth}px`; // Set the width of the header
+  }
+}
+
+// Call the function on page load and window resize
+window.addEventListener('load', setHeaderWidth);
+window.addEventListener('resize', setHeaderWidth);
+onMounted(setHeaderWidth);
 </script>
 
 <style scoped>
@@ -454,12 +469,18 @@ function shortenLink(link: string, maxLength = 50) {
   border-radius: 0 10px 10px 0;
 }
 
+/* Fixed header */
 .non-scrollable-header {
+  position: fixed;
+  background-color: var(--color-background-dark);
+  z-index: 1;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #333;
 }
 
-.scrollable-content {
-  overflow-y: auto;
-  padding-bottom: 1rem; /* Add spacing at bottom */
+/* Add padding to content to prevent overlap */
+.content-below-header {
+  padding-top: 90px; /* Adjust based on header height */
 }
 
 .btn-action {
