@@ -70,6 +70,11 @@
           >
             Enable Moodle Tool
           </label>
+          <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            class="circle-info cursor-pointer text-light ms-1 small"
+            @click="toggleInfo"
+          />
         </div>
         <!-- File Upload -->
         <div class="mb-2 cursor-pointer">
@@ -207,10 +212,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPenToSquare, faSquareXmark } from '@fortawesome/free-solid-svg-icons'
+import { faPenToSquare, faSquareXmark, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 
-library.add(faPenToSquare, faSquareXmark)
+library.add(faPenToSquare, faSquareXmark, faCircleInfo)
 
 // Assistant Modes Configuration
 // ---------------------------------
