@@ -137,7 +137,7 @@
       <div class="nav-icon-holder mt-3">
         <div
           v-if="isWideScreen && isSidebarOpen"
-          class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect cursor-pointer pfp-container"
+          class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect pfp-container"
         >
           <img
             alt="User"
