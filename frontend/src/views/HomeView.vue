@@ -65,13 +65,13 @@
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import type { ComponentPublicInstance } from "vue";
 
-import Navbar from "../components/Navbar.vue";
-import FooterInput from "../components/FooterInput.vue";
-import ExpandedInput from "../components/ExpandedInput.vue";
-import BurgerMenu from "../components/BurgerMenu.vue";
-import Sidebar from "../components/Sidebar.vue";
-import ChatBubbleContainer from "../components/ChatBubbleContainer.vue";
-import OwlLogo from "../components/Owlie.vue"; 
+import Navbar from "../home-components/Navbar.vue";
+import FooterInput from "../home-components/FooterInput.vue";
+import ExpandedInput from "../home-components/ExpandedInput.vue";
+import BurgerMenu from "../home-components/BurgerMenu.vue";
+import Sidebar from "../home-components/Sidebar.vue";
+import ChatBubbleContainer from "../home-components/ChatBubbleContainer.vue";
+import OwlLogo from "../home-components/Owlie.vue"; 
 import type { RunStatus } from "../api/restService";
 import chatService from "../services/chatService";
 import { useThread } from "../hooks/useThread";
