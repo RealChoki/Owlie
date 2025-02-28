@@ -206,10 +206,30 @@
       <button class="btn btn-action w-100 mt-3" @click="saveAssistants">Save Assistants</button>
     </div>
   </div>
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="infoModalLabel">Information</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Modal content goes here -->
+        This is the information modal.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+  
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import * as bootstrap from 'bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPenToSquare, faSquareXmark, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
@@ -410,7 +430,17 @@ function shortenLink(link: string, maxLength = 50) {
   return link.length > maxLength ? link.slice(0, maxLength) + '...' : link
 }
 
-// Function to set the width of the fixed header
+// ---------------------------------
+// 5. Info Modal
+// ---------------------------------
+function toggleInfo() {
+  const infoModal = new bootstrap.Modal(document.getElementById('infoModal'))
+  infoModal.show()
+}
+
+// ---------------------------------
+// 6. Fixed Header Width
+// ---------------------------------
 function setHeaderWidth() {
   const header = document.querySelector('.non-scrollable-header') as HTMLElement;
   const parent = document.querySelector('.test-container') as HTMLElement;
@@ -653,5 +683,28 @@ textarea::placeholder {
   100% {
     opacity: 1;
   }
+}
+
+/* Modal Styling */
+.modal-content {
+  background-color: var(--color-gray-light); /* Light background color */
+  border: 1px solid var(--color-gray-shadow);
+  border-radius: 8px;
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--color-gray-shadow);
+}
+
+.modal-title {
+  color: var(--color-white);
+}
+
+.modal-body {
+  color: var(--color-white);
+}
+
+.modal-footer {
+  border-top: 1px solid var(--color-gray-shadow);
 }
 </style>
