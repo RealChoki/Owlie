@@ -206,29 +206,50 @@
       <button class="btn btn-action w-100 mt-3" @click="saveAssistants">Save Assistants</button>
     </div>
   </div>
-<!-- Bootstrap Modal -->
-<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="infoModalLabel">Information</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Modal content goes here -->
-        This is the information modal.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+  <!-- Bootstrap Modal -->
+  <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="infoModalLabel">Moodle Tool Information</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h5>1. Lectures:</h5>
+          <div @click="openOverlay('/assets/moodleSS/1.png')" class="zoomable-container">
+            <img src="/assets/moodleSS/1.png" alt="Lecture Information" class="img-fluid rounded mb-1 zoomable" />
+          </div>
+          <p class="small fst-italic">
+            Access lecture-related materials, including video links and important resources.
+          </p>
+          <br />
+
+          <h5>2. Appointments:</h5>
+          <div @click="openOverlay('/assets/moodleSS/3.png')" class="zoomable-container">
+            <img src="/assets/moodleSS/3.png" alt="Lecture Information" class="img-fluid rounded mb-1 zoomable" />
+          </div>
+          <p class="small fst-italic">View scheduled appointments with specific time and date details.</p>
+          <br />
+
+          <h5>3. Homework:</h5>
+          <div @click="openOverlay('/assets/moodleSS/4.png')" class="zoomable-container">
+            <img src="/assets/moodleSS/4.png" alt="Lecture Information" class="img-fluid rounded mb-1 zoomable" />
+          </div>
+          <p class="small fst-italic">Find upcoming homework assignments with due dates and direct links to Moodle.</p>
+          <br />
+        </div>
+
+        <!-- Overlay for Enlarged Image -->
+        <div v-if="overlayImage" class="overlay" @click="closeOverlay">
+          <img :src="overlayImage" alt="Enlarged" class="enlarged-img" />
+        </div>
       </div>
     </div>
   </div>
-</div>
-  
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import * as bootstrap from 'bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -438,23 +459,42 @@ function toggleInfo() {
   infoModal.show()
 }
 
+const overlayImage = ref<string | null>(null)
+
+const openOverlay = (imageSrc: string) => {
+  overlayImage.value = imageSrc
+}
+
+const closeOverlay = () => {
+  overlayImage.value = null
+}
+
+// bug happens when overlay is open and modal is closed via Escape => overlay is not closed
+const handleKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    closeOverlay()
+  }
+}
+onMounted(() => window.addEventListener('keydown', handleKeydown))
+onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
+
 // ---------------------------------
 // 6. Fixed Header Width
 // ---------------------------------
 function setHeaderWidth() {
-  const header = document.querySelector('.non-scrollable-header') as HTMLElement;
-  const parent = document.querySelector('.test-container') as HTMLElement;
+  const header = document.querySelector('.non-scrollable-header') as HTMLElement
+  const parent = document.querySelector('.test-container') as HTMLElement
 
   if (header && parent) {
-    const parentWidth = parent.offsetWidth; // Get the width of the parent
-    header.style.width = `${parentWidth}px`; // Set the width of the header
+    const parentWidth = parent.offsetWidth // Get the width of the parent
+    header.style.width = `${parentWidth}px` // Set the width of the header
   }
 }
 
 // Call the function on page load and window resize
-window.addEventListener('load', setHeaderWidth);
-window.addEventListener('resize', setHeaderWidth);
-onMounted(setHeaderWidth);
+window.addEventListener('load', setHeaderWidth)
+window.addEventListener('resize', setHeaderWidth)
+onMounted(setHeaderWidth)
 </script>
 
 <style scoped>
@@ -466,6 +506,12 @@ onMounted(setHeaderWidth);
 .form-check-input:checked::before {
   background-color: black;
   border-color: black;
+}
+
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(167, 167, 167, 0.5);
+  color: white;
+  border-color: white;
 }
 
 /* Assistant Mode Sub-tabs */
@@ -687,7 +733,7 @@ textarea::placeholder {
 
 /* Modal Styling */
 .modal-content {
-  background-color: var(--color-gray-light); /* Light background color */
+  background-color: var(--color-gray-medium); /* Light background color */
   border: 1px solid var(--color-gray-shadow);
   border-radius: 8px;
 }
@@ -706,5 +752,39 @@ textarea::placeholder {
 
 .modal-footer {
   border-top: 1px solid var(--color-gray-shadow);
+}
+
+.btn-close {
+  background-color: var(--color-white);
+}
+
+.zoomable {
+  cursor: zoom-in;
+  transition: transform 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+.zoomable-container {
+  cursor: zoom-in;
+}
+
+/* Overlay styles */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050; /* Bootstrap modal has z-index 1040 */
+}
+
+.enlarged-img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
 }
 </style>
