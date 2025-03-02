@@ -82,7 +82,7 @@
           <label for="file" class="text-white mb-1">Upload Files:</label>
           <label
             for="file"
-            class="custome-file-upload"
+            class="custom-file-upload"
             @dragover.prevent="handleDragOver"
             @dragleave="handleDragLeave"
             @drop.prevent="handleFileDrop"
@@ -152,7 +152,13 @@
         <div class="mb-2">
           <label for="lecture-links" class="text-white mb-1">Lecture Links:</label>
           <div class="d-flex">
-            <input id="lecture-links" type="text" v-model="newLectureLink" placeholder="Enter lecture link" class="w-100" />
+            <input
+              id="lecture-links"
+              type="text"
+              v-model="newLectureLink"
+              placeholder="Enter lecture link"
+              class="w-100"
+            />
             <button class="btn btn-primary ms-2" @click="addLectureLink">Add</button>
           </div>
           <div class="mt-2">
@@ -193,7 +199,7 @@
         <div class="mb-2">
           <label for="instructions" class="text-white mb-1">Instructions:</label>
           <textarea
-          id="instructions"
+            id="instructions"
             v-model="assistantModes[activeModeIndex].instructions"
             placeholder="Enter instructions for this assistant"
             class="w-100"
@@ -212,14 +218,23 @@
   <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="infoModalLabel">Moodle Tool Information</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-header d-flex justify-content-between align-items-center">
+          <h5 class="modal-title" id="infoModalLabel"><b>Moodle Tool examples</b></h5>
+          <font-awesome-icon
+            class="fa-2x cursor-pointer text-white"
+            :icon="['fas', 'xmark']"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          />
         </div>
         <div class="modal-body">
           <h5>1. Lectures:</h5>
           <div @click="openOverlay('/assets/moodleSS/1.png')" class="zoomable-container">
-            <img src="/assets/moodleSS/1.png" alt="Lecture Information" class="img-fluid rounded mb-1 zoomable" />
+            <img
+              src="/assets/moodleSS/1.png"
+              alt="Lecture Information"
+              class="img-fluid rounded mb-1 zoomable custom-adjust-img"
+            />
           </div>
           <p class="small fst-italic">
             Access lecture-related materials, including video links and important resources.
@@ -228,14 +243,22 @@
 
           <h5>2. Appointments:</h5>
           <div @click="openOverlay('/assets/moodleSS/3.png')" class="zoomable-container">
-            <img src="/assets/moodleSS/3.png" alt="Lecture Information" class="img-fluid rounded mb-1 zoomable" />
+            <img
+              src="/assets/moodleSS/3.png"
+              alt="Lecture Information"
+              class="img-fluid rounded mb-1 zoomable custom-adjust-img"
+            />
           </div>
           <p class="small fst-italic">View scheduled appointments with specific time and date details.</p>
           <br />
 
           <h5>3. Homework:</h5>
           <div @click="openOverlay('/assets/moodleSS/4.png')" class="zoomable-container">
-            <img src="/assets/moodleSS/4.png" alt="Lecture Information" class="img-fluid rounded mb-1 zoomable" />
+            <img
+              src="/assets/moodleSS/4.png"
+              alt="Lecture Information"
+              class="img-fluid rounded mb-1 zoomable custom-adjust-img"
+            />
           </div>
           <p class="small fst-italic">Find upcoming homework assignments with due dates and direct links to Moodle.</p>
           <br />
@@ -243,7 +266,7 @@
 
         <!-- Overlay for Enlarged Image -->
         <div v-if="overlayImage" class="overlay" @click="closeOverlay">
-          <img :src="overlayImage" alt="Enlarged" class="enlarged-img" />
+          <img :src="overlayImage" alt="Enlarged" class="enlarged-img custom-adjust-img py-2" />
         </div>
       </div>
     </div>
@@ -255,10 +278,10 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import * as bootstrap from 'bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPenToSquare, faSquareXmark, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
+import { faPenToSquare, faSquareXmark, faXmark, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 
-library.add(faPenToSquare, faSquareXmark, faCircleInfo)
+library.add(faPenToSquare, faSquareXmark, faXmark, faCircleInfo)
 
 // Assistant Modes Configuration
 // ---------------------------------
@@ -630,7 +653,7 @@ textarea::placeholder {
 }
 
 /* From Uiverse.io by csemszepp */
-.custome-file-upload {
+.custom-file-upload {
   height: 120px;
   width: 100%;
   display: flex;
@@ -646,33 +669,33 @@ textarea::placeholder {
   border-radius: 10px;
 }
 
-.custome-file-upload:hover,
-.custome-file-upload.drag-over {
+.custom-file-upload:hover,
+.custom-file-upload.drag-over {
   border-color: var(--color-gray-shadow);
 }
 
-.custome-file-upload .icon {
+.custom-file-upload .icon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.custome-file-upload .icon svg {
+.custom-file-upload .icon svg {
   height: 50px;
 }
 
-.custome-file-upload .text {
+.custom-file-upload .text {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.custome-file-upload .text span {
+.custom-file-upload .text span {
   font-weight: 400;
   color: #e8e8e8;
 }
 
-.custome-file-upload input {
+.custom-file-upload input {
   display: none;
 }
 
@@ -750,6 +773,11 @@ textarea::placeholder {
 
 .modal-body {
   color: var(--color-white);
+  padding-bottom: 0;
+}
+
+.modal-body p {
+  margin-bottom: 0;
 }
 
 .modal-footer {
@@ -788,5 +816,10 @@ textarea::placeholder {
   max-width: 90%;
   max-height: 90%;
   border-radius: 10px;
+}
+
+.custom-adjust-img {
+  padding: 0.2em;
+  background-color: #131213;
 }
 </style>
