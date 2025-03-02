@@ -79,7 +79,7 @@
         </div>
         <!-- File Upload -->
         <div class="mb-2 cursor-pointer">
-          <label class="text-white mb-1">Upload Files:</label>
+          <label for="file" class="text-white mb-1">Upload Files:</label>
           <label
             for="file"
             class="custome-file-upload"
@@ -150,9 +150,9 @@
         </ul>
         <!-- Lecture Links -->
         <div class="mb-2">
-          <label class="text-white mb-1">Lecture Links:</label>
+          <label for="lecture-links" class="text-white mb-1">Lecture Links:</label>
           <div class="d-flex">
-            <input type="text" v-model="newLectureLink" placeholder="Enter lecture link" class="w-100" />
+            <input id="lecture-links" type="text" v-model="newLectureLink" placeholder="Enter lecture link" class="w-100" />
             <button class="btn btn-primary ms-2" @click="addLectureLink">Add</button>
           </div>
           <div class="mt-2">
@@ -191,8 +191,9 @@
         </div>
         <!-- Instructions Field -->
         <div class="mb-2">
-          <label class="text-white mb-1">Instructions:</label>
+          <label for="instructions" class="text-white mb-1">Instructions:</label>
           <textarea
+          id="instructions"
             v-model="assistantModes[activeModeIndex].instructions"
             placeholder="Enter instructions for this assistant"
             class="w-100"
