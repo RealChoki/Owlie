@@ -66,6 +66,7 @@
           />
           <label
             class="form-check-label text-white cursor-pointer"
+            style="user-select: none"
             :for="assistantModes[activeModeIndex].name + '-moodleSwitch'"
           >
             Enable Moodle Tool
