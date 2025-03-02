@@ -74,12 +74,17 @@
           <font-awesome-icon
             :icon="['fas', 'circle-info']"
             class="circle-info cursor-pointer text-light ms-1 small"
-            @click="toggleInfo"
+            @click="toggleInfoMoodle"
           />
         </div>
         <!-- File Upload -->
         <div class="mb-2 cursor-pointer">
           <label for="file" class="text-white mb-1">Upload Files:</label>
+          <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            class="circle-info cursor-pointer text-light ms-1 small"
+            @click="toggleInfoFiles"
+          />
           <label
             for="file"
             class="custom-file-upload"
@@ -138,14 +143,14 @@
           <li
             v-for="(file, fileIndex) in assistantModes[activeModeIndex].files"
             :key="file.name"
-            class="d-flex justify-content-between pt-1 pb-1 align-items-center"
+            class="d-flex ps-2 pt-1 pb-1 align-items-center file-hover"
           >
-            <span>{{ file.name }} ({{ formatFileSize(file.size) }})</span>
             <font-awesome-icon
-              class="text-danger fa-lg cursor-pointer"
+              class="text-danger fa-lg cursor-pointer pe-3"
               :icon="['fas', 'square-xmark']"
               @click="removeFile(activeModeIndex, fileIndex)"
             />
+            <span>{{ file.name }} ({{ formatFileSize(file.size) }})</span>
           </li>
         </ul>
         <!-- Lecture Links -->
@@ -215,11 +220,11 @@
     </div>
   </div>
   <!-- Bootstrap Modal -->
-  <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal fade" id="infoMoodleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header d-flex justify-content-between align-items-center">
-          <h5 class="modal-title" id="infoModalLabel"><b>Moodle Tool examples</b></h5>
+          <h5 class="modal-title"><b>Moodle Tool examples</b></h5>
           <font-awesome-icon
             class="fa-2x cursor-pointer text-white"
             :icon="['fas', 'xmark']"
@@ -262,6 +267,43 @@
           </div>
           <p class="small fst-italic">Find upcoming homework assignments with due dates and direct links to Moodle.</p>
           <br />
+        </div>
+
+        <!-- Overlay for Enlarged Image -->
+        <div v-if="overlayImage" class="overlay" @click="closeOverlay">
+          <img :src="overlayImage" alt="Enlarged" class="enlarged-img custom-adjust-img py-2" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="infoFilesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header d-flex justify-content-between align-items-center">
+          <h5 class="modal-title"><b>Accepted Formats</b></h5>
+          <font-awesome-icon
+            class="fa-2x cursor-pointer text-white"
+            :icon="['fas', 'xmark']"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          />
+        </div>
+        <div class="modal-body pb-3 pt-2">
+          <table class="table-sm text-white">
+            <thead>
+              <tr>
+                <th>Extension</th>
+                <th>Mime Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in combinedData" :key="index">
+                <td>{{ item.extension }}</td>
+                <td>{{ item.mime }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <!-- Overlay for Enlarged Image -->
@@ -347,8 +389,55 @@ const isDropped = ref(false)
 const isDragValid = ref(false)
 const isFileInvalid = ref(false)
 
-const acceptedExtensions = ['.c', '.cpp', '.cs', '.css', '.docx', '.pdf', '.py', '.ts', '.txt']
-const acceptedMimeTypes = ['application/pdf', 'text/plain', 'text/css']
+const acceptedExtensions = [
+  '.c',
+  '.cpp',
+  '.cs',
+  '.css',
+  '.doc',
+  '.docx',
+  '.go',
+  '.html',
+  '.java',
+  '.js',
+  '.json',
+  '.md',
+  '.pdf',
+  '.php',
+  '.pptx',
+  '.py',
+  '.py',
+  '.rb',
+  '.sh',
+  '.tex',
+  '.ts',
+  '.txt'
+]
+
+const acceptedMimeTypes = [
+  'text/x-c',
+  'text/x-c++',
+  'text/x-csharp',
+  'text/css',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/x-golang',
+  'text/html',
+  'text/x-java',
+  'text/javascript',
+  'application/json',
+  'text/markdown',
+  'application/pdf',
+  'text/x-php',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/x-python',
+  'text/x-script.python',
+  'text/x-ruby',
+  'application/x-sh',
+  'text/x-tex',
+  'application/typescript',
+  'text/plain'
+]
 
 const computedAccept = computed(() => [...acceptedExtensions, ...acceptedMimeTypes].join(', '))
 
@@ -479,9 +568,19 @@ function shortenLink(link: string, maxLength = 50) {
 // ---------------------------------
 // 5. Info Modal
 // ---------------------------------
-function toggleInfo() {
-  const infoModal = new bootstrap.Modal(document.getElementById('infoModal'))
-  infoModal.show()
+function toggleInfoMoodle() {
+  const infoModalElement = document.getElementById('infoMoodleModal')
+  if (infoModalElement) {
+    const infoModal = new bootstrap.Modal(infoModalElement)
+    infoModalElement.addEventListener('shown.bs.modal', () => {
+      window.addEventListener('keydown', handleKeydown)
+    })
+
+    infoModalElement.addEventListener('hidden.bs.modal', () => {
+      window.removeEventListener('keydown', handleKeydown)
+    })
+    infoModal.show()
+  }
 }
 
 const overlayImage = ref<string | null>(null)
@@ -500,8 +599,23 @@ const handleKeydown = (event: KeyboardEvent) => {
     closeOverlay()
   }
 }
-onMounted(() => window.addEventListener('keydown', handleKeydown))
-onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
+
+function toggleInfoFiles() {
+  const infoModal = new bootstrap.Modal(document.getElementById('infoFilesModal'))
+  infoModal.show()
+}
+
+const combinedData = computed(() => {
+  const maxLen = Math.max(acceptedExtensions.length, acceptedMimeTypes.length)
+  const result = []
+  for (let i = 0; i < maxLen; i++) {
+    result.push({
+      extension: acceptedExtensions[i] || '',
+      mime: acceptedMimeTypes[i] || ''
+    })
+  }
+  return result
+})
 
 // ---------------------------------
 // 6. Fixed Header Width
@@ -604,12 +718,18 @@ onMounted(setHeaderWidth)
 .file {
   list-style-type: disc !important;
   list-style-position: inside;
-  padding-left: 20px;
+  padding-left: 0; /* Remove padding */
 }
 
 .file li {
   list-style-type: disc !important;
   list-style-position: inside;
+}
+
+.file-hover:hover {
+  background-color: var(--color-gray-dark);
+  border-radius: 6px;
+  cursor: default;
 }
 
 .progress {
@@ -821,5 +941,33 @@ textarea::placeholder {
 .custom-adjust-img {
   padding: 0.2em;
   background-color: #131213;
+}
+
+/* Table styles  */
+table {
+  border-collapse: collapse; /* Ensures grid lines align cleanly */
+  background-color: var(--color-gray-medium);
+  width: 100%; /* Optional: to make the table take up the full width */
+}
+
+table thead th,
+table tbody td {
+  border-left: 1px solid #333;  /* Border only between columns */
+  border-top: 1px solid #333;   /* Border only between rows */
+  color: var(--color-white);
+}
+
+table tbody td:first-child,
+table thead th:first-child {
+  border-left: none; /* Remove left border for the first column */
+}
+
+table tbody tr:first-child td {
+  border-top: none; /* Remove top border for the first row */
+}
+
+table thead th {
+  border-top: none;
+  border-bottom: 1px solid #333; /* Add bottom border to the header */
 }
 </style>
