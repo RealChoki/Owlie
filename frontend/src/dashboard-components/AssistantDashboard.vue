@@ -194,7 +194,7 @@
               />
               <div class="d-flex align-items-center">
                 <font-awesome-icon
-                  v-if="lectureLinks.state == 'completed'"
+                  v-if="link.status == 'completed'"
                   class="fa-lg"
                   :icon="['fas', 'pen-to-square']"
                 />
@@ -316,6 +316,27 @@
         <div v-if="overlayImage" class="overlay" @click="closeOverlay">
           <img :src="overlayImage" alt="Enlarged" class="enlarged-img custom-adjust-img py-2" />
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="transcribeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header d-flex justify-content-between align-items-center">
+          <h5 class="modal-title"><b>Edit Transcriptions</b></h5>
+          <font-awesome-icon
+            class="fa-2x cursor-pointer text-white"
+            :icon="['fas', 'xmark']"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          />
+        </div>
+        <div class="modal-body pb-3 pt-2">
+
+
+        </div>
+
       </div>
     </div>
   </div>
@@ -568,7 +589,7 @@ async function transcribeAllLectures() {
     link.progress = 0
 
     try {
-      const response = await axios.post('http://localhost:8000/api/transcribe_lecture', { lecture_url: link.url })
+      const response = await axios.post('http://localhost:8000/api/transcribe_lecture', { lecture_url: link.url, university: 'Harvard', course_id: '66666', mode: 'general' })
       link.transcribedText = response.data.transcribed_text
       link.status = 'completed'
     } catch (error) {
