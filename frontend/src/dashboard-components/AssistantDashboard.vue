@@ -179,7 +179,7 @@
                 {{ shortenLink(link.url) }}
                 <span class="mode-tooltip">
                   <a :href="link.url" target="_blank" rel="noopener noreferrer">
-                    {{ shortenLink(link.url, 60) }}
+                    {{ shortenLink(link.url, 75) }}
                   </a>
                 </span>
               </span>
@@ -193,12 +193,18 @@
                 style="width: 200px"
               />
               <div class="d-flex align-items-center">
-                <font-awesome-icon class="fa-lg" :icon="['fas', 'pen-to-square']" />
+                <font-awesome-icon
+                  v-if="lectureLinks.state == 'completed'"
+                  class="fa-lg"
+                  :icon="['fas', 'pen-to-square']"
+                />
                 <button class="btn btn-danger btn-sm ms-2" @click="removeLectureLink(index)">Remove</button>
               </div>
             </div>
           </div>
-          <button class="btn btn-action mt-3" @click="transcribeAllLectures">Transcribe Lectures</button>
+          <button v-if="lectureLinks.length" class="btn btn-action mb-2" @click="transcribeAllLectures">
+            Transcribe Lectures
+          </button>
         </div>
         <!-- Instructions Field -->
         <div class="mb-2">
@@ -206,7 +212,7 @@
           <textarea
             id="instructions"
             v-model="assistantModes[activeModeIndex].instructions"
-            placeholder="Enter instructions for this assistant"
+            placeholder="Assistant instructions"
             class="w-100"
           ></textarea>
         </div>
@@ -215,8 +221,8 @@
           <h5>Transcribed Lecture:</h5>
           <p>{{ transcribedText }}</p>
         </div>
+        <button class="btn btn-action save-assistant-btn" @click="saveAssistant">Save Assistant</button>
       </div>
-      <button class="btn btn-action w-100 mt-3" @click="saveAssistants">Save Assistants</button>
     </div>
   </div>
   <!-- Bootstrap Modal -->
@@ -376,9 +382,22 @@ function getAssistantStatusClass(status: AssistantStatus) {
   }
 }
 
-function saveAssistants() {
-  console.log('Assistant Modes Configuration:', assistantModes.value)
-  alert('Assistants configuration saved!')
+const saveAssistant = async () => {
+  const index = activeModeIndex.value
+  const payload = {
+    assistant_mode: activeAssistantMode.value,
+    instructions: assistantModes.value[index].instructions,
+    transcribed_text: transcribedText.value,
+    files: assistantModes.value[index].files.map((file) => file.name)
+  }
+  try {
+    const response = await axios.post('http://localhost:8000/api/assistants/create', payload)
+    console.log('Assistant created:', response.data)
+    alert('Assistant created successfully!')
+  } catch (error) {
+    console.error('Failed to save assistant', error)
+    alert('Failed to create assistant')
+  }
 }
 
 // ---------------------------------
@@ -835,8 +854,8 @@ textarea::placeholder {
   display: none;
   position: absolute;
   bottom: calc(100%);
-  left: 100%;
-  transform: translateX(-55%);
+  left: 80%;
+  transform: translateX(-50%);
   background-color: var(--color-gray-light);
   color: #fff;
   padding: 0.4em 0.6em;
@@ -874,6 +893,12 @@ textarea::placeholder {
   100% {
     opacity: 1;
   }
+}
+
+.save-assistant-btn {
+  width: 30%;
+  min-width: 150px;
+  max-width: 200px;
 }
 
 /* Modal Styling */
@@ -952,8 +977,8 @@ table {
 
 table thead th,
 table tbody td {
-  border-left: 1px solid #333;  /* Border only between columns */
-  border-top: 1px solid #333;   /* Border only between rows */
+  border-left: 1px solid #333; /* Border only between columns */
+  border-top: 1px solid #333; /* Border only between rows */
   color: var(--color-white);
 }
 
