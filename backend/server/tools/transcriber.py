@@ -1,6 +1,6 @@
 import os
-import time
 from transcribe_anything.api import transcribe
+from tools.name_sanitizer import sanitize_filename
 
 def transcribe_lecture(url_or_file: str, output_dir: str) -> str:
     # Run the transcription
@@ -40,7 +40,8 @@ def transcribe_lecture(url_or_file: str, output_dir: str) -> str:
     old_txt_file_path = txt_files[0]  # The existing transcription file (e.g., "out.txt")
 
     # Generate a new filename with timestamp
-    new_file_name = f"lecture_{int(time.time())}.txt"
+    sanitized_url = sanitize_filename(url_or_file)
+    new_file_name = f"{sanitized_url}.txt"
     new_txt_file_path = os.path.join(directory, new_file_name)
 
     # Rename the .txt file

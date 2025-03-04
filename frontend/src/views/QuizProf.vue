@@ -378,14 +378,6 @@ const adjustHeight = () => {
 
 
 
-
-.file-container2 {
-  border-bottom: 1px solid var(--color-gray-shadow);
-  max-width: 800px;
-  margin-bottom: 2em;
-  padding-bottom: 2em ;
-}
-
 .textarea-container {
   max-width: 800px;
 }

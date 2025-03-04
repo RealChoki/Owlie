@@ -478,9 +478,11 @@ const goToCourseDashboard = (course: {
   assistantTypes: Array<"General" | "Quiz" | "Exam">;
 }) => {
   router.push({
-    name: "courseDashboard",
-    params: { courseId: course.courseId },
-  });
+    name: 'courseDashboard',
+    params: {
+      courseId: course.courseId,
+    }
+  })
 };
 </script>
 

@@ -4,8 +4,8 @@
       <div class="non-scrollable-header pt-3">
         <div class="d-flex justify-content-between align-items-center">
           <div>
-            <h3 class="text-white mb-0">Data Science</h3>
-            <span class="text-white small">(ID: 67437)</span>
+            <h3 class="text-white mb-0">DataScience</h3>
+            <span class="text-white small">(ID: 696969)</span>
           </div>
 
           <!-- Sub-tabs for Assistant Modes -->
@@ -194,8 +194,8 @@
               />
               <div class="d-flex align-items-center">
                 <font-awesome-icon
-                  v-if="link.status == 'completed'"
-                  class="fa-lg"
+                  @click="toggleEditTranscript(link)"
+                  class="fa-lg cursor-pointer"
                   :icon="['fas', 'pen-to-square']"
                 />
                 <button class="btn btn-danger btn-sm ms-2" @click="removeLectureLink(index)">Remove</button>
@@ -333,17 +333,44 @@
           />
         </div>
         <div class="modal-body pb-3 pt-2">
+          <div class="textarea-container position-relative w-100 flex-grow-1">
+            <h6 class="text-white mt-2 mb-3">
+              <a :href="transcribeFileURL" style="color: white" target="_blank">
+                {{ transcribeFileURL }}
+              </a>
+            </h6>
 
+            <textarea
+              v-model="file.content"
+              class="w-100 p-3 rounded file-textarea"
+              ref="textareaRef"
+              :readonly="!file.isEditMode"
+              @input="adjustHeight"
+            ></textarea>
 
+            <button
+              class="btn btn-edit bg-white position-absolute bottom-0 end-0 mx-3 my-3 icon-click-effect"
+              @click="toggleEdit"
+            >
+              <span v-if="file.isEditMode"> Save </span>
+              <span v-else>
+                Edit
+                <font-awesome-icon
+                  :icon="['fas', 'pen-to-square']"
+                  class="cursor-pointer"
+                  style="color: var(--color-gray-shadow)"
+                />
+              </span>
+            </button>
+          </div>
         </div>
-
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import * as bootstrap from 'bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -589,7 +616,12 @@ async function transcribeAllLectures() {
     link.progress = 0
 
     try {
-      const response = await axios.post('http://localhost:8000/api/transcribe_lecture', { lecture_url: link.url, university: 'Harvard', course_id: '66666', mode: 'general' })
+      const response = await axios.post('http://localhost:8000/api/transcribe_lecture', {
+        lecture_url: link.url,
+        university: 'Harvard',
+        course_id: '66666',
+        mode: 'general'
+      })
       link.transcribedText = response.data.transcribed_text
       link.status = 'completed'
     } catch (error) {
@@ -643,6 +675,72 @@ const handleKeydown = (event: KeyboardEvent) => {
 function toggleInfoFiles() {
   const infoModal = new bootstrap.Modal(document.getElementById('infoFilesModal'))
   infoModal.show()
+}
+
+let transcribeFileURL = ''
+
+function toggleEditTranscript(link: LectureLinkItem) {
+  fetchTranscription(link.url)
+  transcribeFileURL = link.url
+  const infoModal = new bootstrap.Modal(document.getElementById('transcribeModal'))
+  infoModal.show()
+}
+
+function sanitizeFilename(url: string) {
+  // Remove the protocol part (http:// or https://)
+  url = url.replace(/^https?:\/\//, '')
+  // Replace any character that is not alphanumeric or an underscore with an underscore
+  return url.replace(/[^a-zA-Z0-9_]/g, '_')
+}
+
+async function fetchTranscription(linkUrl: string) {
+  try {
+    const response = await axios.get(`http://localhost:8000/api/assistants/file/${sanitizeFilename(linkUrl)}`)
+    console.log(response)
+    file.value.title = response.data.title
+    file.value.content = response.data.content
+  } catch (error) {
+    console.error('Failed to fetch transcription', error)
+  } finally {
+    setTimeout(() => {
+      adjustHeight()
+    }, 200)
+  }
+}
+
+const file = ref<{ title: string; content: string; isEditMode: boolean }>({
+  title: '',
+  content: '',
+  isEditMode: false
+})
+
+const textareaRef = ref(null)
+
+const adjustHeight = () => {
+  if (textareaRef.value) {
+    textareaRef.value.style.height = 'auto'
+    textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`
+    if (parseInt(textareaRef.value.style.height) < 150) {
+      textareaRef.value.style.height = '150px'
+    }
+  }
+}
+
+const toggleEdit = () => {
+  if (!file) return
+
+  file.value.isEditMode = !file.value.isEditMode
+  adjustHeight()
+  if (file.value.isEditMode) {
+    textareaRef.value?.focus()
+  } else {
+    updateTranscribedFile(file.value.title, file.value.content)
+    adjustHeight()
+  }
+}
+
+async function updateTranscribedFile(fileName: string, content: string) {
+  return axios.put(`http://localhost:8000/api/assistants/file/${fileName}`, content)
 }
 
 const combinedData = computed(() => {
@@ -1015,5 +1113,27 @@ table tbody tr:first-child td {
 table thead th {
   border-top: none;
   border-bottom: 1px solid #333; /* Add bottom border to the header */
+}
+
+/* edit transcription modal */
+
+.textarea-container {
+  max-width: 800px;
+}
+
+.file-textarea {
+  background-color: var(--color-gray-dark);
+  max-width: 1000px;
+  max-height: 80vh;
+  min-height: 150px;
+  border: none;
+  outline: none;
+  resize: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.btn-edit:hover {
+  opacity: 0.2;
 }
 </style>
