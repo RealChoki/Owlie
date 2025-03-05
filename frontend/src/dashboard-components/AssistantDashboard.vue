@@ -335,7 +335,7 @@
         <div class="modal-body pb-3 pt-2">
           <div class="textarea-container position-relative w-100 flex-grow-1">
             <h6 class="text-white mt-2 mb-3">
-              <a :href="transcribeFileURL" style="color: white" target="_blank">
+              <a :href="transcribeFileURL" class="text-white cursor-pointer" target="_blank">
                 {{ transcribeFileURL }}
               </a>
             </h6>
@@ -677,11 +677,12 @@ function toggleInfoFiles() {
   infoModal.show()
 }
 
-let transcribeFileURL = ''
+const transcribeFileURL = ref('')
 
 function toggleEditTranscript(link: LectureLinkItem) {
+  transcribeFileURL.value = link.url
+  console.log('Transcribe file:', link.url)
   fetchTranscription(link.url)
-  transcribeFileURL = link.url
   const infoModal = new bootstrap.Modal(document.getElementById('transcribeModal'))
   infoModal.show()
 }
