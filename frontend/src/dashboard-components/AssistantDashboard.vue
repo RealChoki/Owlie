@@ -168,7 +168,11 @@
             <button class="btn btn-primary ms-2" @click="addLectureLink">Add</button>
           </div>
           <div class="mt-2">
-            <div v-for="(link, index) in lectureLinks" :key="index" class="lecture-link d-flex align-items-center">
+            <div
+              v-for="(link, index) in assistantModes[activeModeIndex].links"
+              :key="index"
+              class="lecture-link d-flex align-items-center"
+            >
               <span
                 class="mode-badge shortened-link"
                 :class="{
@@ -203,7 +207,11 @@
               </div>
             </div>
           </div>
-          <button v-if="lectureLinks.length" class="btn btn-action mb-2" @click="transcribeAllLectures">
+          <button
+            v-if="assistantModes[activeModeIndex].links.length"
+            class="btn btn-action mb-2"
+            @click="transcribeAllLectures"
+          >
             Transcribe Lectures
           </button>
         </div>
@@ -391,7 +399,7 @@ interface AssistantMode {
   status: AssistantStatus
   moodleEnabled: boolean
   files: File[]
-  links: string
+  links: LectureLinkItem[]
   instructions: string
 }
 
@@ -407,9 +415,9 @@ interface LectureLinkItem {
 // 2. Assistant Modes Management
 // ---------------------------------
 const assistantModes = ref<AssistantMode[]>([
-  { name: 'General', status: 'Active', moodleEnabled: true, files: [], links: '', instructions: '' },
-  { name: 'Quiz', status: 'Inactive', moodleEnabled: false, files: [], links: '', instructions: '' },
-  { name: 'Exam', status: 'Activating', moodleEnabled: false, files: [], links: '', instructions: '' }
+  { name: 'General', status: 'Active', moodleEnabled: true, files: [], links: [], instructions: '' },
+  { name: 'Quiz', status: 'Inactive', moodleEnabled: false, files: [], links: [], instructions: '' },
+  { name: 'Exam', status: 'Activating', moodleEnabled: false, files: [], links: [], instructions: '' }
 ])
 
 const activeAssistantMode = ref<'General' | 'Quiz' | 'Exam'>('General')
@@ -584,32 +592,43 @@ const transcribing = ref(false)
 const transcribeProgress = ref(0)
 const transcribedText = ref('')
 const newLectureLink = ref('')
-const lectureLinks = ref<LectureLinkItem[]>([])
 
 const urlPattern = new RegExp('^(https?:\\/\\/)', 'i')
 
 function addLectureLink() {
-  if (!urlPattern.test(newLectureLink.value)) return alert('Invalid URL format.')
-  if (lectureLinks.value.some((link) => link.url === newLectureLink.value)) return alert('Link already added.')
+  if (!urlPattern.test(newLectureLink.value)) {
+    return alert('Invalid URL format.')
+  }
 
-  lectureLinks.value.push({
+  const activeMode = assistantModes.value[activeModeIndex.value]
+
+  if (activeMode.links.some((link) => link.url === newLectureLink.value)) {
+    return alert('Link already added.')
+  }
+
+  activeMode.links.push({
     url: newLectureLink.value,
     progress: 0,
     transcribing: false,
     transcribedText: '',
     status: 'pending'
   })
+
   newLectureLink.value = ''
 }
 
 function removeLectureLink(index: number) {
-  lectureLinks.value.splice(index, 1)
+  assistantModes.value[activeModeIndex.value].links.splice(index, 1)
 }
 
 async function transcribeAllLectures() {
-  if (lectureLinks.value.length === 0) return alert('Add at least one lecture link.')
+  const activeMode = assistantModes.value[activeModeIndex.value]
 
-  for (const link of lectureLinks.value) {
+  if (activeMode.links.length === 0) {
+    return alert('Add at least one lecture link.')
+  }
+
+  for (const link of activeMode.links) {
     if (link.status === 'completed') continue
 
     link.transcribing = true
@@ -621,8 +640,9 @@ async function transcribeAllLectures() {
         lecture_url: link.url,
         university: 'Harvard',
         course_id: '66666',
-        mode: 'general'
+        mode: activeMode.name.toLowerCase() // Use mode dynamically
       })
+
       link.transcribedText = response.data.transcribed_text
       link.status = 'completed'
     } catch (error) {
