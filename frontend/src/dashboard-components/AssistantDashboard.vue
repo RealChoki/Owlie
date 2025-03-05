@@ -163,6 +163,7 @@
               v-model="newLectureLink"
               placeholder="Enter lecture link"
               class="w-100"
+              @keyup.enter="addLectureLink"
             />
             <button class="btn btn-primary ms-2" @click="addLectureLink">Add</button>
           </div>
