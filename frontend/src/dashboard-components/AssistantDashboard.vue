@@ -209,7 +209,7 @@
           </div>
           <button
             v-if="assistantModes[activeModeIndex].links.length"
-            class="btn btn-action mb-2"
+            class="btn-action mb-2"
             @click="transcribeAllLectures"
           >
             Transcribe Lectures
@@ -230,7 +230,7 @@
           <h5>Transcribed Lecture:</h5>
           <p>{{ transcribedText }}</p>
         </div>
-        <button class="btn btn-action save-assistant-btn" @click="saveAssistant">Save Assistant</button>
+        <button class="btn-action save-assistant-btn" @click="saveAssistant">Save Assistant</button>
       </div>
     </div>
   </div>
@@ -871,7 +871,9 @@ onMounted(setHeaderWidth)
   border-radius: 6px;
   cursor: pointer;
 }
+
 .btn-action:hover {
+  color: var(--color-white);
   background-color: darkgreen;
 }
 
