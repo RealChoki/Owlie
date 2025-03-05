@@ -321,7 +321,7 @@
   </div>
 
   <div class="modal fade" id="transcribeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog custom-modal">
       <div class="modal-content">
         <div class="modal-header d-flex justify-content-between align-items-center">
           <h5 class="modal-title"><b>Edit Transcriptions</b></h5>
@@ -1124,7 +1124,7 @@ table thead th {
 
 .file-textarea {
   background-color: var(--color-gray-dark);
-  max-width: 1000px;
+  max-width: 100%;
   max-height: 80vh;
   min-height: 150px;
   border: none;
@@ -1136,5 +1136,11 @@ table thead th {
 
 .btn-edit:hover {
   opacity: 0.2;
+}
+
+.custom-modal {
+  min-width: 500px;
+  width: 50%;
+  max-width: unset !important; /* Override Bootstrap's max-width */
 }
 </style>
