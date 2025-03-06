@@ -342,40 +342,9 @@
       </div>
     </div>
   </div>
-  
 
-<InfoMoodleModal />
-  <div class="modal fade" id="infoFilesModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header d-flex justify-content-between align-items-center">
-          <h5 class="modal-title"><b>Accepted Formats</b></h5>
-          <font-awesome-icon
-            class="fa-2x cursor-pointer text-white"
-            :icon="['fas', 'xmark']"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          />
-        </div>
-        <div class="modal-body pb-3 pt-2">
-          <table class="table-sm text-white">
-            <thead>
-              <tr>
-                <th>Extension</th>
-                <th>Mime Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in combinedData" :key="index">
-                <td>{{ item.extension }}</td>
-                <td>{{ item.mime }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+  <InfoMoodleModal />
+  <InfoFilesModal :acceptedExtensions="acceptedExtensions" :acceptedMimeTypes="acceptedMimeTypes" />
 
   <div class="modal fade" id="transcribeModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog custom-modal">
@@ -433,7 +402,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPenToSquare, faSquareXmark, faXmark, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
-import InfoMoodleModal from './assistant-dashboard-components/InfoMoodleModal.vue';
+import InfoMoodleModal from './assistant-dashboard-components/InfoMoodleModal.vue'
+import InfoFilesModal from './assistant-dashboard-components/InfoFilesModal.vue'
 
 library.add(faPenToSquare, faSquareXmark, faXmark, faCircleInfo)
 
@@ -1132,34 +1102,6 @@ textarea::placeholder {
 
 .btn-close {
   background-color: var(--color-white);
-}
-
-/* Table styles  */
-table {
-  border-collapse: collapse; /* Ensures grid lines align cleanly */
-  background-color: var(--color-gray-medium);
-  width: 100%; /* Optional: to make the table take up the full width */
-}
-
-table thead th,
-table tbody td {
-  border-left: 1px solid #333; /* Border only between columns */
-  border-top: 1px solid #333; /* Border only between rows */
-  color: var(--color-white);
-}
-
-table tbody td:first-child,
-table thead th:first-child {
-  border-left: none; /* Remove left border for the first column */
-}
-
-table tbody tr:first-child td {
-  border-top: none; /* Remove top border for the first row */
-}
-
-table thead th {
-  border-top: none;
-  border-bottom: 1px solid #333; /* Add bottom border to the header */
 }
 
 /* edit transcription modal */

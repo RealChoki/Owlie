@@ -104,7 +104,6 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 }
 
-
 const openOverlay = (imageSrc: string) => {
   overlayImage.value = imageSrc
 }
