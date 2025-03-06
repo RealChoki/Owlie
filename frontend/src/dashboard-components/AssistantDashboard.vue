@@ -345,9 +345,7 @@
 
   <InfoMoodleModal />
   <InfoFilesModal :acceptedExtensions="acceptedExtensions" :acceptedMimeTypes="acceptedMimeTypes" />
-
-<TranscriptionModal :link="selectedLink" />
-  
+  <TranscriptionModal :link="selectedLink" />
 </template>
 
 <script setup lang="ts">
@@ -678,7 +676,6 @@ const toggleTranscriptionModal = (link: { url: string }) => {
   selectedLink.value = link
   toggleModal('transcriptionModal') // Use the generic modal function
 }
-
 
 // ---------------------------------
 // 6. Fixed Header Width

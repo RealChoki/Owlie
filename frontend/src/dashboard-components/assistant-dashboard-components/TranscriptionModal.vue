@@ -65,7 +65,6 @@ const props = defineProps({
   }
 })
 
-// Reactive state for transcribed file data
 const transcribeFileURL = ref('')
 const file = ref<{ title: string; content: string; isEditMode: boolean }>({
   title: '',
@@ -98,13 +97,11 @@ const toggleEdit = () => {
   }
 }
 
-// Sanitize the file name URL
 const sanitizeFilename = (url: string) => {
-  url = url.replace(/^https?:\/\//, '')  // Remove the protocol part (http:// or https://)
-  return url.replace(/[^a-zA-Z0-9_]/g, '_')  // Replace non-alphanumeric characters with '_'
+  url = url.replace(/^https?:\/\//, '') // Remove the protocol part (http:// or https://)
+  return url.replace(/[^a-zA-Z0-9_]/g, '_') // Replace non-alphanumeric characters with '_'
 }
 
-// Fetch the transcription data from the server
 const fetchTranscription = async (linkUrl: string) => {
   try {
     const response = await axios.get(`http://localhost:8000/api/assistants/file/${sanitizeFilename(linkUrl)}`)
@@ -119,15 +116,17 @@ const fetchTranscription = async (linkUrl: string) => {
   }
 }
 
-// Watch the link prop for changes and fetch transcription
-watch(() => props.link, (newLink) => {
-  if (newLink && newLink.url) {
-    transcribeFileURL.value = newLink.url
-    fetchTranscription(newLink.url)
-  }
-}, { immediate: true }) // Trigger fetch when component mounts or link changes
+watch(
+  () => props.link,
+  (newLink) => {
+    if (newLink && newLink.url) {
+      transcribeFileURL.value = newLink.url
+      fetchTranscription(newLink.url)
+    }
+  },
+  { immediate: true }
+)
 
-// Update the transcription file after edit
 const updateTranscribedFile = async (fileName: string, content: string) => {
   return axios.put(`http://localhost:8000/api/assistants/file/${fileName}`, content)
 }

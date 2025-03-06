@@ -97,10 +97,9 @@ const toggleInfoMoodle = () => {
   }
 }
 
-// Function to handle the 'keydown' event inside the modal
 const handleKeydown = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
-    closeOverlay() // Close overlay if the Escape key is pressed
+    closeOverlay()
   }
 }
 
@@ -112,20 +111,18 @@ const closeOverlay = () => {
   overlayImage.value = null
 }
 
-// Lifecycle hooks to ensure event listeners are cleaned up
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
 })
 
 onBeforeUnmount(() => {
-  // Clean up any event listeners or state before the component is destroyed
   window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
 <style scoped>
 .modal-content {
-  background-color: var(--color-gray-medium); /* Light background color */
+  background-color: var(--color-gray-medium);
   border: 1px solid var(--color-gray-shadow);
   border-radius: 8px;
 }

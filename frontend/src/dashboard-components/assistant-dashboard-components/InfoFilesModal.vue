@@ -52,7 +52,6 @@ const props = defineProps({
   }
 })
 
-// Compute combinedData inside the modal component
 const combinedData = computed(() => {
   const maxLen = Math.max(props.acceptedExtensions.length, props.acceptedMimeTypes.length)
   const result = []
@@ -68,7 +67,7 @@ const combinedData = computed(() => {
 
 <style scoped>
 .modal-content {
-  background-color: var(--color-gray-medium); /* Light background color */
+  background-color: var(--color-gray-medium);
   border: 1px solid var(--color-gray-shadow);
   border-radius: 8px;
 }
@@ -92,9 +91,9 @@ const combinedData = computed(() => {
 
 /* Table styles  */
 table {
-  border-collapse: collapse; /* Ensures grid lines align cleanly */
+  border-collapse: collapse;
   background-color: var(--color-gray-medium);
-  width: 100%; /* Optional: to make the table take up the full width */
+  width: 100%;
 }
 
 table thead th,
