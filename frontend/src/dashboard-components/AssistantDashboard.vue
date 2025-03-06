@@ -414,9 +414,12 @@ interface LectureLinkItem {
 // ---------------------------------
 // 2. Assistant Modes Management
 // ---------------------------------
+const sharedAssistantFiles = ref<any[]>([])
+const sharedAssistantLinks = ref<any[]>([])
+
 const assistantModes = ref<AssistantMode[]>([
-  { name: 'General', status: 'Active', moodleEnabled: true, files: [], links: [], instructions: '' },
-  { name: 'Quiz', status: 'Inactive', moodleEnabled: false, files: [], links: [], instructions: '' },
+  { name: 'General', status: 'Active', moodleEnabled: true, files: sharedAssistantFiles.value, links: sharedAssistantLinks.value, instructions: '' },
+  { name: 'Quiz', status: 'Inactive', moodleEnabled: false, files: sharedAssistantFiles.value, links: sharedAssistantLinks.value, instructions: '' },
   { name: 'Exam', status: 'Activating', moodleEnabled: false, files: [], links: [], instructions: '' }
 ])
 
