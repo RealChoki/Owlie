@@ -76,7 +76,7 @@
             <font-awesome-icon
               :icon="['fas', 'circle-info']"
               class="circle-info cursor-pointer text-light ms-1 small"
-              @click="toggleInfoMoodle"
+              @click="toggleModal('infoMoodleModal')"
             />
           </div>
           <!-- File Upload -->
@@ -85,7 +85,7 @@
             <font-awesome-icon
               :icon="['fas', 'circle-info']"
               class="circle-info cursor-pointer text-light ms-1 small"
-              @click="toggleInfoFiles"
+              @click="toggleModal('infoFilesModal')"
             />
             <label
               for="file"
@@ -201,7 +201,7 @@
                 />
                 <div class="d-flex align-items-center">
                   <font-awesome-icon
-                    @click="toggleEditTranscript(link)"
+                    @click="toggleTranscriptionModal(link)"
                     class="fa-lg cursor-pointer"
                     :icon="['fas', 'pen-to-square']"
                   />
@@ -346,53 +346,8 @@
   <InfoMoodleModal />
   <InfoFilesModal :acceptedExtensions="acceptedExtensions" :acceptedMimeTypes="acceptedMimeTypes" />
 
-  <div class="modal fade" id="transcribeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog custom-modal">
-      <div class="modal-content">
-        <div class="modal-header d-flex justify-content-between align-items-center">
-          <h5 class="modal-title"><b>Edit Transcriptions</b></h5>
-          <font-awesome-icon
-            class="fa-2x cursor-pointer text-white"
-            :icon="['fas', 'xmark']"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          />
-        </div>
-        <div class="modal-body pb-3 pt-2">
-          <div class="textarea-container position-relative w-100 flex-grow-1">
-            <h6 class="text-white mt-2 mb-3">
-              <a :href="transcribeFileURL" class="text-white cursor-pointer" target="_blank">
-                {{ transcribeFileURL }}
-              </a>
-            </h6>
-
-            <textarea
-              v-model="file.content"
-              class="w-100 p-3 rounded file-textarea"
-              ref="textareaRef"
-              :readonly="!file.isEditMode"
-              @input="adjustHeight"
-            ></textarea>
-
-            <button
-              class="btn btn-edit bg-white position-absolute bottom-0 end-0 mx-3 my-3 icon-click-effect"
-              @click="toggleEdit"
-            >
-              <span v-if="file.isEditMode"> Save </span>
-              <span v-else>
-                Edit
-                <font-awesome-icon
-                  :icon="['fas', 'pen-to-square']"
-                  class="cursor-pointer"
-                  style="color: var(--color-gray-shadow)"
-                />
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<TranscriptionModal :link="selectedLink" />
+  
 </template>
 
 <script setup lang="ts">
@@ -404,6 +359,7 @@ import { faPenToSquare, faSquareXmark, faXmark, faCircleInfo } from '@fortawesom
 import axios from 'axios'
 import InfoMoodleModal from './assistant-dashboard-components/InfoMoodleModal.vue'
 import InfoFilesModal from './assistant-dashboard-components/InfoFilesModal.vue'
+import TranscriptionModal from './assistant-dashboard-components/TranscriptionModal.vue'
 
 library.add(faPenToSquare, faSquareXmark, faXmark, faCircleInfo)
 
@@ -708,94 +664,21 @@ function shortenLink(link: string, maxLength = 50) {
 // ---------------------------------
 // 5. Info Modal
 // ---------------------------------
-function toggleInfoMoodle() {
-  const infoModal = new bootstrap.Modal(document.getElementById('infoMoodleModal'))
-  infoModal.show()
-}
-
-function toggleInfoFiles() {
-  const infoModal = new bootstrap.Modal(document.getElementById('infoFilesModal'))
-  infoModal.show()
-}
-
-const transcribeFileURL = ref('')
-
-function toggleEditTranscript(link: LectureLinkItem) {
-  transcribeFileURL.value = link.url
-  console.log('Transcribe file:', link.url)
-  fetchTranscription(link.url)
-  const infoModal = new bootstrap.Modal(document.getElementById('transcribeModal'))
-  infoModal.show()
-}
-
-function sanitizeFilename(url: string) {
-  // Remove the protocol part (http:// or https://)
-  url = url.replace(/^https?:\/\//, '')
-  // Replace any character that is not alphanumeric or an underscore with an underscore
-  return url.replace(/[^a-zA-Z0-9_]/g, '_')
-}
-
-async function fetchTranscription(linkUrl: string) {
-  try {
-    const response = await axios.get(`http://localhost:8000/api/assistants/file/${sanitizeFilename(linkUrl)}`)
-    console.log(response)
-    file.value.title = response.data.title
-    file.value.content = response.data.content
-  } catch (error) {
-    console.error('Failed to fetch transcription', error)
-  } finally {
-    setTimeout(() => {
-      adjustHeight()
-    }, 200)
+function toggleModal(modalId: string) {
+  const modalElement = document.getElementById(modalId)
+  if (modalElement) {
+    const modal = new bootstrap.Modal(modalElement)
+    modal.show()
   }
 }
 
-const file = ref<{ title: string; content: string; isEditMode: boolean }>({
-  title: '',
-  content: '',
-  isEditMode: false
-})
+const selectedLink = ref<{ url: string } | null>({ url: '' })
 
-const textareaRef = ref(null)
-
-const adjustHeight = () => {
-  if (textareaRef.value) {
-    textareaRef.value.style.height = 'auto'
-    textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`
-    if (parseInt(textareaRef.value.style.height) < 150) {
-      textareaRef.value.style.height = '150px'
-    }
-  }
+const toggleTranscriptionModal = (link: { url: string }) => {
+  selectedLink.value = link
+  toggleModal('transcriptionModal') // Use the generic modal function
 }
 
-const toggleEdit = () => {
-  if (!file) return
-
-  file.value.isEditMode = !file.value.isEditMode
-  adjustHeight()
-  if (file.value.isEditMode) {
-    textareaRef.value?.focus()
-  } else {
-    updateTranscribedFile(file.value.title, file.value.content)
-    adjustHeight()
-  }
-}
-
-async function updateTranscribedFile(fileName: string, content: string) {
-  return axios.put(`http://localhost:8000/api/assistants/file/${fileName}`, content)
-}
-
-const combinedData = computed(() => {
-  const maxLen = Math.max(acceptedExtensions.length, acceptedMimeTypes.length)
-  const result = []
-  for (let i = 0; i < maxLen; i++) {
-    result.push({
-      extension: acceptedExtensions[i] || '',
-      mime: acceptedMimeTypes[i] || ''
-    })
-  }
-  return result
-})
 
 // ---------------------------------
 // 6. Fixed Header Width
@@ -1070,65 +953,5 @@ textarea::placeholder {
   width: 30%;
   min-width: 150px;
   max-width: 200px;
-}
-
-/* Modal Styling */
-.modal-content {
-  background-color: var(--color-gray-medium); /* Light background color */
-  border: 1px solid var(--color-gray-shadow);
-  border-radius: 8px;
-}
-
-.modal-header {
-  border-bottom: 1px solid var(--color-gray-shadow);
-}
-
-.modal-title {
-  color: var(--color-white);
-}
-
-.modal-body {
-  color: var(--color-white);
-  padding-bottom: 0;
-}
-
-.modal-body p {
-  margin-bottom: 0;
-}
-
-.modal-footer {
-  border-top: 1px solid var(--color-gray-shadow);
-}
-
-.btn-close {
-  background-color: var(--color-white);
-}
-
-/* edit transcription modal */
-
-.textarea-container {
-  max-width: 800px;
-}
-
-.file-textarea {
-  background-color: var(--color-gray-dark);
-  max-width: 100%;
-  max-height: 80vh;
-  min-height: 150px;
-  border: none;
-  outline: none;
-  resize: none;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.btn-edit:hover {
-  opacity: 0.2;
-}
-
-.custom-modal {
-  min-width: 500px;
-  width: 50%;
-  max-width: unset !important; /* Override Bootstrap's max-width */
 }
 </style>
