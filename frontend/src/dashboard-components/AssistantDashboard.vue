@@ -56,181 +56,290 @@
             {{ assistantModes[activeModeIndex].status }}
           </span>
         </div>
-        <!-- Moodle Toggle -->
-        <div class="form-check form-switch mb-2">
-          <input
-            class="form-check-input cursor-pointer"
-            type="checkbox"
-            v-model="assistantModes[activeModeIndex].moodleEnabled"
-            :id="assistantModes[activeModeIndex].name + '-moodleSwitch'"
-          />
-          <label
-            class="form-check-label text-white cursor-pointer"
-            style="user-select: none"
-            :for="assistantModes[activeModeIndex].name + '-moodleSwitch'"
-          >
-            Enable Moodle Tool
-          </label>
-          <font-awesome-icon
-            :icon="['fas', 'circle-info']"
-            class="circle-info cursor-pointer text-light ms-1 small"
-            @click="toggleInfoMoodle"
-          />
-        </div>
-        <!-- File Upload -->
-        <div class="mb-2 cursor-pointer">
-          <label for="file" class="text-white mb-1">Upload Files:</label>
-          <font-awesome-icon
-            :icon="['fas', 'circle-info']"
-            class="circle-info cursor-pointer text-light ms-1 small"
-            @click="toggleInfoFiles"
-          />
-          <label
-            for="file"
-            class="custom-file-upload"
-            @dragover.prevent="handleDragOver"
-            @dragleave="handleDragLeave"
-            @drop.prevent="handleFileDrop"
-            :class="{ 'drag-over': isDragging }"
-          >
-            <div class="icon">
-              <!-- Default state: No dragging -->
-              <template v-if="!isDropped">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#4e4e4e">
-                  <path
-                    d="M13 3H8.2C7.0799 3 6.51984 3 6.09202 3.21799C5.71569 3.40973 5.40973 3.71569 5.21799 4.09202C5 4.51984 5 5.0799 5 6.2V17.8C5 18.9201 5 19.4802 5.21799 19.908C5.40973 20.2843 5.71569 20.5903 6.09202 20.782C6.51984 21 7.0799 21 8.2 21H12M13 3L19 9M13 3V7.4C13 7.96005 13 8.24008 13.109 8.45399C13.2049 8.64215 13.3578 8.79513 13.546 8.89101C13.7599 9 14.0399 9 14.6 9H19M19 9V12M17 19H21M19 17V21"
-                    stroke="#4e4e4e"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>
-                </svg>
-              </template>
 
-              <!-- Dragging with valid file format -->
-              <template v-else-if="isDragValid">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#4caf50">
-                  <path
-                    d="M15 19L17 21L21 17M13 3H8.2C7.0799 3 6.51984 3 6.09202 3.21799C5.71569 3.40973 5.40973 3.71569 5.21799 4.09202C5 4.51984 5 5.0799 5 6.2V17.8C5 18.9201 5 19.4802 5.21799 19.908C5.40973 20.2843 5.71569 20.5903 6.09202 20.782C6.51984 21 7.0799 21 8.2 21H12M13 3L19 9M13 3V7.4C13 7.96005 13 8.24008 13.109 8.45399C13.2049 8.64215 13.3578 8.79513 13.546 8.89101C13.7599 9 14.0399 9 14.6 9H19M19 9V13.5"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>
-                </svg>
-              </template>
-
-              <!-- Dragging with invalid file format -->
-              <template v-else>
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#aa1b25">
-                  <path
-                    d="M17 17L21 21M21 17L17 21M13 3H8.2C7.0799 3 6.51984 3 6.09202 3.21799C5.71569 3.40973 5.40973 3.71569 5.21799 4.09202C5 4.51984 5 5.0799 5 6.2V17.8C5 18.9201 5 19.4802 5.21799 19.908C5.40973 20.2843 5.71569 20.5903 6.09202 20.782C6.51984 21 7.0799 21 8.2 21H13M13 3L19 9M13 3V7.4C13 7.96005 13 8.24008 13.109 8.45399C13.2049 8.64215 13.3578 8.79513 13.546 8.89101C13.7599 9 14.0399 9 14.6 9H19M19 9V14"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>
-                </svg>
-              </template>
-            </div>
-
-            <div class="text">
-              <span>{{ dragText }}</span>
-            </div>
-            <input id="file" type="file" multiple :accept="computedAccept" @change="onFilesSelected" />
-          </label>
-        </div>
-
-        <ul class="file mt-2 text-white">
-          <li
-            v-for="(file, fileIndex) in assistantModes[activeModeIndex].files"
-            :key="file.name"
-            class="d-flex ps-2 pt-1 pb-1 align-items-center file-hover"
-          >
-            <font-awesome-icon
-              class="text-danger fa-lg cursor-pointer pe-3"
-              :icon="['fas', 'square-xmark']"
-              @click="removeFile(activeModeIndex, fileIndex)"
-            />
-            <span>{{ file.name }} ({{ formatFileSize(file.size) }})</span>
-          </li>
-        </ul>
-        <!-- Lecture Links -->
-        <div class="mb-2">
-          <label for="lecture-links" class="text-white mb-1">Lecture Links:</label>
-          <div class="d-flex">
+        <div v-if="activeAssistantMode === 'General' || activeAssistantMode === 'Quiz'">
+          <!-- Moodle Toggle -->
+          <div class="form-check form-switch mb-2">
             <input
-              id="lecture-links"
-              type="text"
-              v-model="newLectureLink"
-              placeholder="Enter lecture link"
-              class="w-100"
-              @keyup.enter="addLectureLink"
+              class="form-check-input cursor-pointer"
+              type="checkbox"
+              v-model="assistantModes[activeModeIndex].moodleEnabled"
+              :id="assistantModes[activeModeIndex].name + '-moodleSwitch'"
             />
-            <button class="btn btn-primary ms-2" @click="addLectureLink">Add</button>
-          </div>
-          <div class="mt-2">
-            <div
-              v-for="(link, index) in assistantModes[activeModeIndex].links"
-              :key="index"
-              class="lecture-link d-flex align-items-center"
+            <label
+              class="form-check-label text-white cursor-pointer"
+              style="user-select: none"
+              :for="assistantModes[activeModeIndex].name + '-moodleSwitch'"
             >
-              <span
-                class="mode-badge shortened-link"
-                :class="{
-                  'text-info': link.status === 'transcribing',
-                  'text-success': link.status === 'completed',
-                  'text-danger': link.status === 'failed'
-                }"
-              >
-                {{ shortenLink(link.url) }}
-                <span class="mode-tooltip">
-                  <a :href="link.url" target="_blank" rel="noopener noreferrer">
-                    {{ shortenLink(link.url, 75) }}
-                  </a>
-                </span>
-              </span>
-              <v-progress-linear
-                v-if="link.transcribing"
-                :model-value="link.progress"
-                color="light-green-darken-4"
-                height="10"
-                striped
-                class="ms-2"
-                style="width: 200px"
+              Enable Moodle Tool
+            </label>
+            <font-awesome-icon
+              :icon="['fas', 'circle-info']"
+              class="circle-info cursor-pointer text-light ms-1 small"
+              @click="toggleInfoMoodle"
+            />
+          </div>
+          <!-- File Upload -->
+          <div class="mb-2 cursor-pointer">
+            <label for="file" class="text-white mb-1">Upload Files:</label>
+            <font-awesome-icon
+              :icon="['fas', 'circle-info']"
+              class="circle-info cursor-pointer text-light ms-1 small"
+              @click="toggleInfoFiles"
+            />
+            <label
+              for="file"
+              class="custom-file-upload"
+              @dragover.prevent="handleDragOver"
+              @dragleave="handleDragLeave"
+              @drop.prevent="handleFileDrop"
+              :class="{ 'drag-over': isDragging }"
+            >
+              <div class="icon">
+                <!-- Default state: No dragging -->
+                <template v-if="!isDropped">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#4e4e4e">
+                    <path
+                      d="M13 3H8.2C7.0799 3 6.51984 3 6.09202 3.21799C5.71569 3.40973 5.40973 3.71569 5.21799 4.09202C5 4.51984 5 5.0799 5 6.2V17.8C5 18.9201 5 19.4802 5.21799 19.908C5.40973 20.2843 5.71569 20.5903 6.09202 20.782C6.51984 21 7.0799 21 8.2 21H12M13 3L19 9M13 3V7.4C13 7.96005 13 8.24008 13.109 8.45399C13.2049 8.64215 13.3578 8.79513 13.546 8.89101C13.7599 9 14.0399 9 14.6 9H19M19 9V12M17 19H21M19 17V21"
+                      stroke="#4e4e4e"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </svg>
+                </template>
+
+                <!-- Dragging with valid file format -->
+                <template v-else-if="isDragValid">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#4caf50">
+                    <path
+                      d="M15 19L17 21L21 17M13 3H8.2C7.0799 3 6.51984 3 6.09202 3.21799C5.71569 3.40973 5.40973 3.71569 5.21799 4.09202C5 4.51984 5 5.0799 5 6.2V17.8C5 18.9201 5 19.4802 5.21799 19.908C5.40973 20.2843 5.71569 20.5903 6.09202 20.782C6.51984 21 7.0799 21 8.2 21H12M13 3L19 9M13 3V7.4C13 7.96005 13 8.24008 13.109 8.45399C13.2049 8.64215 13.3578 8.79513 13.546 8.89101C13.7599 9 14.0399 9 14.6 9H19M19 9V13.5"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </svg>
+                </template>
+
+                <!-- Dragging with invalid file format -->
+                <template v-else>
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#aa1b25">
+                    <path
+                      d="M17 17L21 21M21 17L17 21M13 3H8.2C7.0799 3 6.51984 3 6.09202 3.21799C5.71569 3.40973 5.40973 3.71569 5.21799 4.09202C5 4.51984 5 5.0799 5 6.2V17.8C5 18.9201 5 19.4802 5.21799 19.908C5.40973 20.2843 5.71569 20.5903 6.09202 20.782C6.51984 21 7.0799 21 8.2 21H13M13 3L19 9M13 3V7.4C13 7.96005 13 8.24008 13.109 8.45399C13.2049 8.64215 13.3578 8.79513 13.546 8.89101C13.7599 9 14.0399 9 14.6 9H19M19 9V14"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </svg>
+                </template>
+              </div>
+
+              <div class="text">
+                <span>{{ dragText }}</span>
+              </div>
+              <input id="file" type="file" multiple :accept="computedAccept" @change="onFilesSelected" />
+            </label>
+          </div>
+
+          <ul class="file mt-2 text-white">
+            <li
+              v-for="(file, fileIndex) in assistantModes[activeModeIndex].files"
+              :key="file.name"
+              class="d-flex ps-2 pt-1 pb-1 align-items-center file-hover"
+            >
+              <font-awesome-icon
+                class="text-danger fa-lg cursor-pointer pe-3"
+                :icon="['fas', 'square-xmark']"
+                @click="removeFile(activeModeIndex, fileIndex)"
               />
-              <div class="d-flex align-items-center">
-                <font-awesome-icon
-                  @click="toggleEditTranscript(link)"
-                  class="fa-lg cursor-pointer"
-                  :icon="['fas', 'pen-to-square']"
+              <span>{{ file.name }} ({{ formatFileSize(file.size) }})</span>
+            </li>
+          </ul>
+          <!-- Lecture Links -->
+          <div class="mb-2">
+            <label for="lecture-links" class="text-white mb-1">Lecture Links:</label>
+            <div class="d-flex">
+              <input
+                id="lecture-links"
+                type="text"
+                v-model="newLectureLink"
+                placeholder="Enter lecture link"
+                class="w-100"
+                @keyup.enter="addLectureLink"
+              />
+              <button class="btn btn-primary ms-2" @click="addLectureLink">Add</button>
+            </div>
+            <div class="mt-2">
+              <div
+                v-for="(link, index) in assistantModes[activeModeIndex].links"
+                :key="index"
+                class="lecture-link d-flex align-items-center"
+              >
+                <span
+                  class="mode-badge shortened-link"
+                  :class="{
+                    'text-info': link.status === 'transcribing',
+                    'text-success': link.status === 'completed',
+                    'text-danger': link.status === 'failed'
+                  }"
+                >
+                  {{ shortenLink(link.url) }}
+                  <span class="mode-tooltip">
+                    <a :href="link.url" target="_blank" rel="noopener noreferrer">
+                      {{ shortenLink(link.url, 75) }}
+                    </a>
+                  </span>
+                </span>
+                <v-progress-linear
+                  v-if="link.transcribing"
+                  :model-value="link.progress"
+                  color="light-green-darken-4"
+                  height="10"
+                  striped
+                  class="ms-2"
+                  style="width: 200px"
                 />
-                <button class="btn btn-danger btn-sm ms-2" @click="removeLectureLink(index)">Remove</button>
+                <div class="d-flex align-items-center">
+                  <font-awesome-icon
+                    @click="toggleEditTranscript(link)"
+                    class="fa-lg cursor-pointer"
+                    :icon="['fas', 'pen-to-square']"
+                  />
+                  <button class="btn btn-danger btn-sm ms-2" @click="removeLectureLink(index)">Remove</button>
+                </div>
               </div>
             </div>
+            <button
+              v-if="assistantModes[activeModeIndex].links.length"
+              class="btn-action mb-2"
+              @click="transcribeAllLectures"
+            >
+              Transcribe Lectures
+            </button>
           </div>
+          <!-- Instructions Field -->
+          <div class="mb-2">
+            <label for="instructions" class="text-white mb-1">Instructions:</label>
+            <textarea
+              id="instructions"
+              v-model="assistantModes[activeModeIndex].instructions"
+              placeholder="Assistant instructions"
+              class="w-100"
+            ></textarea>
+          </div>
+          <!-- Display transcribed text -->
+          <div v-if="transcribedText" class="mt-3 text-white">
+            <h5>Transcribed Lecture:</h5>
+            <p>{{ transcribedText }}</p>
+          </div>
+        </div>
+
+        <div v-else>
+          <div class="mb-2 cursor-pointer">
+            <label for="file" class="text-white mb-1">Upload Mock Exam:</label>
+            <font-awesome-icon
+              :icon="['fas', 'circle-info']"
+              class="circle-info cursor-pointer text-light ms-1 small"
+              @click="toggleInfoFiles"
+            />
+            <label
+              for="file"
+              class="custom-file-upload"
+              style="min-height: 20vh"
+              @dragover.prevent="handleDragOver"
+              @dragleave="handleDragLeave"
+              @drop.prevent="handleFileDrop"
+              :class="{ 'drag-over': isDragging }"
+            >
+              <div class="icon">
+                <!-- Default state: No dragging -->
+                <template v-if="!isDropped">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#4e4e4e">
+                    <path
+                      d="M13 3H8.2C7.0799 3 6.51984 3 6.09202 3.21799C5.71569 3.40973 5.40973 3.71569 5.21799 4.09202C5 4.51984 5 5.0799 5 6.2V17.8C5 18.9201 5 19.4802 5.21799 19.908C5.40973 20.2843 5.71569 20.5903 6.09202 20.782C6.51984 21 7.0799 21 8.2 21H12M13 3L19 9M13 3V7.4C13 7.96005 13 8.24008 13.109 8.45399C13.2049 8.64215 13.3578 8.79513 13.546 8.89101C13.7599 9 14.0399 9 14.6 9H19M19 9V12M17 19H21M19 17V21"
+                      stroke="#4e4e4e"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </svg>
+                </template>
+
+                <!-- Dragging with valid file format -->
+                <template v-else-if="isDragValid">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#4caf50">
+                    <path
+                      d="M15 19L17 21L21 17M13 3H8.2C7.0799 3 6.51984 3 6.09202 3.21799C5.71569 3.40973 5.40973 3.71569 5.21799 4.09202C5 4.51984 5 5.0799 5 6.2V17.8C5 18.9201 5 19.4802 5.21799 19.908C5.40973 20.2843 5.71569 20.5903 6.09202 20.782C6.51984 21 7.0799 21 8.2 21H12M13 3L19 9M13 3V7.4C13 7.96005 13 8.24008 13.109 8.45399C13.2049 8.64215 13.3578 8.79513 13.546 8.89101C13.7599 9 14.0399 9 14.6 9H19M19 9V13.5"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </svg>
+                </template>
+
+                <!-- Dragging with invalid file format -->
+                <template v-else>
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#aa1b25">
+                    <path
+                      d="M17 17L21 21M21 17L17 21M13 3H8.2C7.0799 3 6.51984 3 6.09202 3.21799C5.71569 3.40973 5.40973 3.71569 5.21799 4.09202C5 4.51984 5 5.0799 5 6.2V17.8C5 18.9201 5 19.4802 5.21799 19.908C5.40973 20.2843 5.71569 20.5903 6.09202 20.782C6.51984 21 7.0799 21 8.2 21H13M13 3L19 9M13 3V7.4C13 7.96005 13 8.24008 13.109 8.45399C13.2049 8.64215 13.3578 8.79513 13.546 8.89101C13.7599 9 14.0399 9 14.6 9H19M19 9V14"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </svg>
+                </template>
+              </div>
+
+              <div class="text">
+                <span>{{ dragText }}</span>
+              </div>
+              <input id="file" type="file" multiple :accept="computedAccept" @change="onFilesSelected" />
+            </label>
+          </div>
+
+          <ul class="file mt-2 text-white">
+            <li
+              v-for="(file, fileIndex) in assistantModes[activeModeIndex].files"
+              :key="file.name"
+              class="d-flex ps-2 pt-1 pb-1 align-items-center file-hover"
+            >
+              <font-awesome-icon
+                class="text-danger fa-lg cursor-pointer pe-3"
+                :icon="['fas', 'square-xmark']"
+                @click="removeFile(activeModeIndex, fileIndex)"
+              />
+              <span>{{ file.name }} ({{ formatFileSize(file.size) }})</span>
+            </li>
+          </ul>
+          <div class="mb-2">
+            <label for="instructions" class="text-white mb-1">Instructions:</label>
+            <textarea
+              id="instructions"
+              v-model="assistantModes[activeModeIndex].instructions"
+              placeholder="Assistant instructions"
+              class="w-100"
+            ></textarea>
+          </div>
+        </div>
+        <div class="d-flex save-btns">
           <button
-            v-if="assistantModes[activeModeIndex].links.length"
-            class="btn-action mb-2"
-            @click="transcribeAllLectures"
-          >
-            Transcribe Lectures
-          </button>
+  v-if="assistantModes[activeModeIndex].status !== 'Activating'"
+  @click="toggleAssistantModeStatus"
+  :class="[
+    'btn',
+    'cursor-pointer',
+    'me-2',
+    'text-white',
+    assistantModes[activeModeIndex].status === 'Active' ? 'border-danger' : 'border-success',
+    assistantModes[activeModeIndex].status === 'Active' ? 'hover:bg-danger' : 'hover:bg-success'
+  ]"
+>
+  {{ assistantModes[activeModeIndex].status === 'Active' ? 'Deactivate' : 'Activate' }}
+</button>
+
+
+          <button class="btn-action save-assistant-btn" @click="saveAssistant">Save Assistant</button>
         </div>
-        <!-- Instructions Field -->
-        <div class="mb-2">
-          <label for="instructions" class="text-white mb-1">Instructions:</label>
-          <textarea
-            id="instructions"
-            v-model="assistantModes[activeModeIndex].instructions"
-            placeholder="Assistant instructions"
-            class="w-100"
-          ></textarea>
-        </div>
-        <!-- Display transcribed text -->
-        <div v-if="transcribedText" class="mt-3 text-white">
-          <h5>Transcribed Lecture:</h5>
-          <p>{{ transcribedText }}</p>
-        </div>
-        <button class="btn-action save-assistant-btn" @click="saveAssistant">Save Assistant</button>
       </div>
     </div>
   </div>
@@ -418,8 +527,22 @@ const sharedAssistantFiles = ref<any[]>([])
 const sharedAssistantLinks = ref<any[]>([])
 
 const assistantModes = ref<AssistantMode[]>([
-  { name: 'General', status: 'Active', moodleEnabled: true, files: sharedAssistantFiles.value, links: sharedAssistantLinks.value, instructions: '' },
-  { name: 'Quiz', status: 'Inactive', moodleEnabled: false, files: sharedAssistantFiles.value, links: sharedAssistantLinks.value, instructions: '' },
+  {
+    name: 'General',
+    status: 'Active',
+    moodleEnabled: true,
+    files: sharedAssistantFiles.value,
+    links: sharedAssistantLinks.value,
+    instructions: ''
+  },
+  {
+    name: 'Quiz',
+    status: 'Inactive',
+    moodleEnabled: false,
+    files: sharedAssistantFiles.value,
+    links: sharedAssistantLinks.value,
+    instructions: ''
+  },
   { name: 'Exam', status: 'Activating', moodleEnabled: false, files: [], links: [], instructions: '' }
 ])
 
@@ -439,6 +562,17 @@ function getAssistantStatusClass(status: AssistantStatus) {
       return 'text-danger'
     default:
       return 'text-muted'
+  }
+}
+
+function toggleAssistantModeStatus() {
+  const currentMode = assistantModes.value[activeModeIndex.value]
+
+  // Toggle the status between 'Active' and 'Inactive'
+  if (currentMode.status === 'Active') {
+    currentMode.status = 'Inactive'
+  } else {
+    currentMode.status = 'Active'
   }
 }
 
@@ -878,6 +1012,14 @@ onMounted(setHeaderWidth)
 .btn-action:hover {
   color: var(--color-white);
   background-color: darkgreen;
+}
+
+.hover\:bg-danger:hover {
+  background-color: red !important;
+}
+
+.hover\:bg-success:hover {
+  background-color: green !important;
 }
 
 .file {
