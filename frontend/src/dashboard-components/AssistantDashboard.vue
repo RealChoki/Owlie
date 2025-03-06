@@ -323,84 +323,28 @@
         </div>
         <div class="d-flex save-btns">
           <button
-  v-if="assistantModes[activeModeIndex].status !== 'Activating'"
-  @click="toggleAssistantModeStatus"
-  :class="[
-    'btn',
-    'cursor-pointer',
-    'me-2',
-    'text-white',
-    assistantModes[activeModeIndex].status === 'Active' ? 'border-danger' : 'border-success',
-    assistantModes[activeModeIndex].status === 'Active' ? 'hover:bg-danger' : 'hover:bg-success'
-  ]"
->
-  {{ assistantModes[activeModeIndex].status === 'Active' ? 'Deactivate' : 'Activate' }}
-</button>
-
+            v-if="assistantModes[activeModeIndex].status !== 'Activating'"
+            @click="toggleAssistantModeStatus"
+            :class="[
+              'btn',
+              'cursor-pointer',
+              'me-2',
+              'text-white',
+              assistantModes[activeModeIndex].status === 'Active' ? 'border-danger' : 'border-success',
+              assistantModes[activeModeIndex].status === 'Active' ? 'hover:bg-danger' : 'hover:bg-success'
+            ]"
+          >
+            {{ assistantModes[activeModeIndex].status === 'Active' ? 'Deactivate' : 'Activate' }}
+          </button>
 
           <button class="btn-action save-assistant-btn" @click="saveAssistant">Save Assistant</button>
         </div>
       </div>
     </div>
   </div>
-  <!-- Bootstrap Modal -->
-  <div class="modal fade" id="infoMoodleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header d-flex justify-content-between align-items-center">
-          <h5 class="modal-title"><b>Moodle Tool examples</b></h5>
-          <font-awesome-icon
-            class="fa-2x cursor-pointer text-white"
-            :icon="['fas', 'xmark']"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          />
-        </div>
-        <div class="modal-body">
-          <h5>1. Lectures:</h5>
-          <div @click="openOverlay('/assets/moodleSS/1.png')" class="zoomable-container">
-            <img
-              src="/assets/moodleSS/1.png"
-              alt="Lecture Information"
-              class="img-fluid rounded mb-1 zoomable custom-adjust-img"
-            />
-          </div>
-          <p class="small fst-italic">
-            Access lecture-related materials, including video links and important resources.
-          </p>
-          <br />
+  
 
-          <h5>2. Appointments:</h5>
-          <div @click="openOverlay('/assets/moodleSS/3.png')" class="zoomable-container">
-            <img
-              src="/assets/moodleSS/3.png"
-              alt="Lecture Information"
-              class="img-fluid rounded mb-1 zoomable custom-adjust-img"
-            />
-          </div>
-          <p class="small fst-italic">View scheduled appointments with specific time and date details.</p>
-          <br />
-
-          <h5>3. Homework:</h5>
-          <div @click="openOverlay('/assets/moodleSS/4.png')" class="zoomable-container">
-            <img
-              src="/assets/moodleSS/4.png"
-              alt="Lecture Information"
-              class="img-fluid rounded mb-1 zoomable custom-adjust-img"
-            />
-          </div>
-          <p class="small fst-italic">Find upcoming homework assignments with due dates and direct links to Moodle.</p>
-          <br />
-        </div>
-
-        <!-- Overlay for Enlarged Image -->
-        <div v-if="overlayImage" class="overlay" @click="closeOverlay">
-          <img :src="overlayImage" alt="Enlarged" class="enlarged-img custom-adjust-img py-2" />
-        </div>
-      </div>
-    </div>
-  </div>
-
+<InfoMoodleModal />
   <div class="modal fade" id="infoFilesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -428,11 +372,6 @@
               </tr>
             </tbody>
           </table>
-        </div>
-
-        <!-- Overlay for Enlarged Image -->
-        <div v-if="overlayImage" class="overlay" @click="closeOverlay">
-          <img :src="overlayImage" alt="Enlarged" class="enlarged-img custom-adjust-img py-2" />
         </div>
       </div>
     </div>
@@ -494,6 +433,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPenToSquare, faSquareXmark, faXmark, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
+import InfoMoodleModal from './assistant-dashboard-components/InfoMoodleModal.vue';
 
 library.add(faPenToSquare, faSquareXmark, faXmark, faCircleInfo)
 
@@ -799,35 +739,8 @@ function shortenLink(link: string, maxLength = 50) {
 // 5. Info Modal
 // ---------------------------------
 function toggleInfoMoodle() {
-  const infoModalElement = document.getElementById('infoMoodleModal')
-  if (infoModalElement) {
-    const infoModal = new bootstrap.Modal(infoModalElement)
-    infoModalElement.addEventListener('shown.bs.modal', () => {
-      window.addEventListener('keydown', handleKeydown)
-    })
-
-    infoModalElement.addEventListener('hidden.bs.modal', () => {
-      window.removeEventListener('keydown', handleKeydown)
-    })
-    infoModal.show()
-  }
-}
-
-const overlayImage = ref<string | null>(null)
-
-const openOverlay = (imageSrc: string) => {
-  overlayImage.value = imageSrc
-}
-
-const closeOverlay = () => {
-  overlayImage.value = null
-}
-
-// bug happens when overlay is open and modal is closed via Escape => overlay is not closed
-const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape') {
-    closeOverlay()
-  }
+  const infoModal = new bootstrap.Modal(document.getElementById('infoMoodleModal'))
+  infoModal.show()
 }
 
 function toggleInfoFiles() {
@@ -1219,41 +1132,6 @@ textarea::placeholder {
 
 .btn-close {
   background-color: var(--color-white);
-}
-
-.zoomable {
-  cursor: zoom-in;
-  transition: transform 0.2s ease-in-out;
-  pointer-events: none;
-}
-
-.zoomable-container {
-  cursor: zoom-in;
-}
-
-/* Overlay styles */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1050; /* Bootstrap modal has z-index 1040 */
-}
-
-.enlarged-img {
-  max-width: 90%;
-  max-height: 90%;
-  border-radius: 10px;
-}
-
-.custom-adjust-img {
-  padding: 0.2em;
-  background-color: #131213;
 }
 
 /* Table styles  */
