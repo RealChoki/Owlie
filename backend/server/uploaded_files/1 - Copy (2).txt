@@ -1,0 +1,87 @@
+package de.berlin.htw.entity.dto;
+
+import jakarta.persistence.*;
+import java.util.Date;
+import java.util.List;
+
+@Entity
+@Table(name = "ORDER")
+public class OrderEntity extends AbstractEntity { // Extending AbstractEntity
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private UserEntity user;
+
+    @Column(name = "TOTAL_AMOUNT", nullable = false)
+    private Float totalAmount;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItemEntity> orderItems;
+
+    @Column(name = "CREATED_AT", nullable = false, updatable = false)
+    private Date createdAt;
+
+    @Version
+    @Column(name = "MODIFIED_AT", nullable = false)
+    private Date modifiedAt;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
+    public List<OrderItemEntity> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItemEntity> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public Float getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Float totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        OrderEntity that = (OrderEntity) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+}

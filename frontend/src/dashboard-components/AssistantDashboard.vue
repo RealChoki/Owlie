@@ -9,40 +9,16 @@
           </div>
 
           <!-- Sub-tabs for Assistant Modes -->
-          <div class="rounded">
-            <ul class="tabs-list list-unstyled text-white d-flex flex-row m-0">
-              <li
-                :class="{
-                  'tab-item-active': activeAssistantMode === 'General',
-                  'tab-item-inactive': activeAssistantMode !== 'General'
-                }"
-                class="tab-item cursor-pointer tab-left-rounded px-4 py-2"
-                @click="activeAssistantMode = 'General'"
-              >
-                General
-              </li>
-              <li
-                :class="{
-                  'tab-item-active': activeAssistantMode === 'Quiz',
-                  'tab-item-inactive': activeAssistantMode !== 'Quiz'
-                }"
-                class="tab-item cursor-pointer tab-middle px-4 py-2"
-                @click="activeAssistantMode = 'Quiz'"
-              >
-                Quiz
-              </li>
-              <li
-                :class="{
-                  'tab-item-active': activeAssistantMode === 'Exam',
-                  'tab-item-inactive': activeAssistantMode !== 'Exam'
-                }"
-                class="tab-item cursor-pointer tab-right-rounded px-4 py-2"
-                @click="activeAssistantMode = 'Exam'"
-              >
-                Exam
-              </li>
-            </ul>
-          </div>
+          <v-btn-toggle
+            v-model="activeAssistantMode"
+            mandatory
+            base-color="var(--color-gray-medium)"
+            class="equal-width-toggle"
+          >
+            <v-btn value="General" class="equal-width-btn">General</v-btn>
+            <v-btn value="Quiz" class="equal-width-btn">Quiz</v-btn>
+            <v-btn value="Exam" class="equal-width-btn">Exam</v-btn>
+          </v-btn-toggle>
         </div>
       </div>
     </div>
@@ -465,14 +441,28 @@ function toggleAssistantModeStatus() {
 
 const saveAssistant = async () => {
   const index = activeModeIndex.value
-  const payload = {
-    assistant_mode: activeAssistantMode.value,
+  const modeName = activeAssistantMode.value + (assistantModes.value[index].moodleEnabled ? " Moodle" : "")
+  const formData = new FormData()
+
+  formData.append('assistant_mode', modeName)
+  formData.append('instructions', assistantModes.value[index].instructions)
+  formData.append('transcribed_text', transcribedText.value)
+
+  assistantModes.value[index].files.forEach((file) => {
+    formData.append('files', file)
+  })
+
+  console.log('FormData:', {
+    assistant_mode: modeName,
     instructions: assistantModes.value[index].instructions,
     transcribed_text: transcribedText.value,
-    files: assistantModes.value[index].files.map((file) => file.name)
-  }
+    files: assistantModes.value[index].files.map(file => file.name)
+  })
+
   try {
-    const response = await axios.post('http://localhost:8000/api/assistants/create', payload)
+    const response = await axios.post('http://localhost:8000/api/assistants/create', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
     console.log('Assistant created:', response.data)
     alert('Assistant created successfully!')
   } catch (error) {
@@ -687,6 +677,7 @@ async function transcribeAllLectures() {
       })
 
       link.transcribedText = response.data.transcribed_text
+      transcribedText.value = link.transcribedText
       link.status = 'completed'
     } catch (error) {
       link.status = 'failed'
@@ -981,5 +972,11 @@ textarea::placeholder {
   width: 160px !important;
   min-width: 150px;
   max-width: 200px;
+}
+
+.equal-width-toggle{
+  font-family: ;
+  height: 35px;
+  border-radius: 20px;
 }
 </style>
