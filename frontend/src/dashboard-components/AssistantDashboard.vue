@@ -166,8 +166,15 @@
                 placeholder="Enter lecture link"
                 class="w-100"
                 @keyup.enter="addLectureLink"
+                style="border-top-right-radius: 0; border-bottom-right-radius: 0"
               />
-              <button class="btn btn-primary ms-2" @click="addLectureLink">Add</button>
+              <button
+                class="btn btn-outline-primary"
+                @click="addLectureLink"
+                style="border-top-left-radius: 0; border-bottom-left-radius: 0"
+              >
+                <font-awesome-icon :icon="['fas', 'plus']" />
+              </button>
             </div>
             <div class="mt-2">
               <div
@@ -197,24 +204,28 @@
                   height="10"
                   striped
                   class="ms-2"
-                  style="width: 200px"
+                  style="width: 250px"
                 />
                 <div class="d-flex align-items-center">
                   <font-awesome-icon
+                    v-if="link.status === 'completed'"
                     @click="toggleTranscriptionModal(link)"
                     class="fa-lg cursor-pointer"
                     :icon="['fas', 'pen-to-square']"
                   />
-                  <button class="btn btn-danger btn-sm ms-2" @click="removeLectureLink(index)">Remove</button>
+                  <button class="btn btn-danger btn-sm ms-2" @click="removeLectureLink(index)">
+                    <font-awesome-icon :icon="['fas', 'trash']" />
+                  </button>
                 </div>
               </div>
             </div>
             <button
               v-if="assistantModes[activeModeIndex].links.length"
-              class="btn-action mb-2"
+              class="btn-primary btn mb-2"
               @click="transcribeAllLectures"
             >
-              Transcribe Lectures
+            Transcribe Videos
+            <font-awesome-icon :icon="['fas', 'closed-captioning']" />
             </button>
           </div>
           <!-- Instructions Field -->
@@ -304,7 +315,7 @@
               class="d-flex ps-2 pt-1 pb-1 align-items-center file-hover"
             >
               <font-awesome-icon
-                class="text-danger fa-lg cursor-pointer pe-3"
+                class="text-danger fa-lg cursor-pointer"
                 :icon="['fas', 'square-xmark']"
                 @click="removeFile(activeModeIndex, fileIndex)"
               />
@@ -337,7 +348,10 @@
             {{ assistantModes[activeModeIndex].status === 'Active' ? 'Deactivate' : 'Activate' }}
           </button>
 
-          <button class="btn-action save-assistant-btn" @click="saveAssistant">Save Assistant</button>
+          <button class="btn-primary btn save-assistant-btn py-2" @click="saveAssistant">
+            Save Assistant
+            <font-awesome-icon :icon="['fas', 'cloud-arrow-up']" />
+          </button>
         </div>
       </div>
     </div>
@@ -353,13 +367,22 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import * as bootstrap from 'bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPenToSquare, faSquareXmark, faXmark, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
+import {
+  faPenToSquare,
+  faSquareXmark,
+  faXmark,
+  faTrash,
+  faCircleInfo,
+  faPlus,
+  faCloudArrowUp,
+  faClosedCaptioning
+} from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import InfoMoodleModal from './assistant-dashboard-components/InfoMoodleModal.vue'
 import InfoFilesModal from './assistant-dashboard-components/InfoFilesModal.vue'
 import TranscriptionModal from './assistant-dashboard-components/TranscriptionModal.vue'
 
-library.add(faPenToSquare, faSquareXmark, faXmark, faCircleInfo)
+library.add(faPenToSquare, faSquareXmark, faXmark, faTrash, faCircleInfo, faPlus, faCloudArrowUp, faClosedCaptioning)
 
 // Assistant Modes Configuration
 // ---------------------------------
@@ -618,6 +641,22 @@ function addLectureLink() {
   newLectureLink.value = ''
 }
 
+function startRandomProgressAnimation(link: LectureLinkItem) {
+  link.progress = 0
+
+  const intervalId = setInterval(() => {
+    // Randomly move progress in small steps
+    const randomIncrement = Math.floor(Math.random() * 3) + 1 // Smaller increments
+    link.progress += randomIncrement
+
+    // Cap at 95 so there's room for a final jump
+    if (link.progress >= 95) {
+      link.progress = 95
+      clearInterval(intervalId)
+    }
+  }, Math.floor(Math.random() * 1000) + 500) // Slower and more varied intervals
+}
+
 function removeLectureLink(index: number) {
   assistantModes.value[activeModeIndex.value].links.splice(index, 1)
 }
@@ -632,6 +671,9 @@ async function transcribeAllLectures() {
   for (const link of activeMode.links) {
     if (link.status === 'completed') continue
 
+    // Start random animation
+    startRandomProgressAnimation(link)
+
     link.transcribing = true
     link.status = 'transcribing'
     link.progress = 0
@@ -641,7 +683,7 @@ async function transcribeAllLectures() {
         lecture_url: link.url,
         university: 'Harvard',
         course_id: '66666',
-        mode: activeMode.name.toLowerCase() // Use mode dynamically
+        mode: activeMode.name.toLowerCase()
       })
 
       link.transcribedText = response.data.transcribed_text
@@ -651,6 +693,9 @@ async function transcribeAllLectures() {
       alert(`Failed to transcribe: ${link.url}`)
     } finally {
       link.transcribing = false
+
+      // Final jump to 100
+      link.progress = 100
     }
   }
 }
@@ -761,20 +806,6 @@ onMounted(setHeaderWidth)
 /* Add padding to content to prevent overlap */
 .content-below-header {
   padding-top: 90px; /* Adjust based on header height */
-}
-
-.btn-action {
-  background-color: green;
-  color: var(--color-white);
-  border: none;
-  padding: 0.5rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.btn-action:hover {
-  color: var(--color-white);
-  background-color: darkgreen;
 }
 
 .hover\:bg-danger:hover {
@@ -947,7 +978,7 @@ textarea::placeholder {
 }
 
 .save-assistant-btn {
-  width: 30%;
+  width: 160px !important;
   min-width: 150px;
   max-width: 200px;
 }

@@ -65,6 +65,8 @@
       <div class="right-side w-100 rounded px-3">
         <!-- Assistants Tab -->
         <AssistantDashboard v-if="activeTab === 'assistants'" />
+        <UsageDashboard v-else-if="activeTab === 'usage'" />
+        <StatsDashboard v-else-if="activeTab === 'stats'" />
       </div>
     </div>
   </div>
@@ -78,6 +80,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import {  faHome } from '@fortawesome/free-solid-svg-icons'
 import Profilemenu from '../widgets/Profilemenu.vue'
 import AssistantDashboard from '../dashboard-components/AssistantDashboard.vue'
+import StatsDashboard from '../dashboard-components/StatsDashboard.vue'
+import UsageDashboard from '../dashboard-components/UsageDashboard.vue'
 import axios from 'axios'
 
 library.add( faHome )
