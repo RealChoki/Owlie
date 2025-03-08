@@ -417,6 +417,7 @@ onUnmounted(() => {
   padding: 12px 16px;
   height: auto;
   line-height: 1.2;
+  text-transform: none;
 }
 
 .circle-info {

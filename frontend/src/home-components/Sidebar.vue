@@ -339,6 +339,7 @@ onMounted(() => {
   text-align: center;
   padding: 12px 16px;
   white-space: normal;
+  text-transform: none;
 }
 
 .quiz-mode-text {

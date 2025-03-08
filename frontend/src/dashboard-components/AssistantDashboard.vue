@@ -974,9 +974,12 @@ textarea::placeholder {
   max-width: 200px;
 }
 
-.equal-width-toggle{
-  font-family: ;
+.equal-width-toggle {
   height: 35px;
   border-radius: 20px;
+}
+
+.equal-width-btn {
+  text-transform: none;
 }
 </style>
