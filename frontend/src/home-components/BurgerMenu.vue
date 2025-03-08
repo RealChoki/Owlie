@@ -418,6 +418,8 @@ onUnmounted(() => {
   height: auto;
   line-height: 1.2;
   text-transform: none;
+  letter-spacing: 0.5px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .circle-info {

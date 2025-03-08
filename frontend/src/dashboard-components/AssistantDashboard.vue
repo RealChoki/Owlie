@@ -197,7 +197,7 @@
             </div>
             <button
               v-if="assistantModes[activeModeIndex].links.length"
-              class="btn-primary btn mb-2"
+              class="btn-outline-primary btn mb-2"
               @click="transcribeAllLectures"
             >
             Transcribe Videos
@@ -212,6 +212,7 @@
               v-model="assistantModes[activeModeIndex].instructions"
               placeholder="Assistant instructions"
               class="w-100"
+              @input="handleInstructionsInput(activeModeIndex)"
             ></textarea>
           </div>
           <!-- Display transcribed text -->
@@ -357,6 +358,7 @@ import axios from 'axios'
 import InfoMoodleModal from './assistant-dashboard-components/InfoMoodleModal.vue'
 import InfoFilesModal from './assistant-dashboard-components/InfoFilesModal.vue'
 import TranscriptionModal from './assistant-dashboard-components/TranscriptionModal.vue'
+import { format } from 'path'
 
 library.add(faPenToSquare, faSquareXmark, faXmark, faTrash, faCircleInfo, faPlus, faCloudArrowUp, faClosedCaptioning)
 
@@ -441,12 +443,17 @@ function toggleAssistantModeStatus() {
 
 const saveAssistant = async () => {
   const index = activeModeIndex.value
-  const modeName = activeAssistantMode.value + (assistantModes.value[index].moodleEnabled ? " Moodle" : "")
+  const modeName = activeAssistantMode.value
   const formData = new FormData()
+  const isMoodleToolEnabled = assistantModes.value[index].moodleEnabled
+
 
   formData.append('assistant_mode', modeName)
-  formData.append('instructions', assistantModes.value[index].instructions)
-  formData.append('transcribed_text', transcribedText.value)
+  formData.append('course_id', '66666')
+  formData.append('university', 'Harvard')
+  formData.append('instructions', finalInstructions.value)
+  formData.append('moodle_enabled', isMoodleToolEnabled ? 'true' : 'false')
+  // formData.append('transcribed_text', transcribedText.value)
 
   assistantModes.value[index].files.forEach((file) => {
     formData.append('files', file)
@@ -454,8 +461,7 @@ const saveAssistant = async () => {
 
   console.log('FormData:', {
     assistant_mode: modeName,
-    instructions: assistantModes.value[index].instructions,
-    transcribed_text: transcribedText.value,
+    instructions: finalInstructions.value,
     files: assistantModes.value[index].files.map(file => file.name)
   })
 
@@ -470,6 +476,32 @@ const saveAssistant = async () => {
     alert('Failed to create assistant')
   }
 }
+
+const moodleInstructions = `FunctionCalling: Du kannst die Funktion get_moodle_course_content nutzen, um gezielt Informationen aus dem Moodle-Kurs 'Grundlagen der Programmierung' abzurufen. Diese Funktion erfordert den Parameter 'course_id', wobei die Kurs-ID für Grundlagen der Programmierung '50115' lautet. Verwende diese Funktion nur um präzise kurs bezogene Fragen zu beantworten. Hier sind manche Anwendungsfälle:
+1. Offene Aufgaben:
+- Suche nach "completion": 0, um unvollständige Aufgaben zu identifizieren.
+- Gib die Namen und Fristen dieser Aufgaben zurück.
+2. Vorlesungsvideos:
+- Suche nach "mimetype": "video/*" und links die mediathek im url enthalten.
+- Antworte mit den URLs zu den verfügbaren Videos.
+3. Anwesenheit:
+- Suche nach "modplural": "Anwesenheit".
+- Gib Gruppenzugehörigkeit und Uhrzeit der Sitzungen an.
+4. Materialien:
+- Suche nach "type": "file" oder spezifischen Schlagwörtern.
+- Liefere Dateinamen und Download-Links.
+5. Kursübersicht:
+- Extrahiere  "name", "summary" oder  "description".
+- Erstelle eine Liste der verfügbaren Themen.
+
+Hier sind manche fragen die FunctionCalling benötigen: Welche Themen werden in den Kurs besprochen? Wann ist der Virtueller Seminarraum? Wann sind die Vorlesungen? Welche aufgaben sind noch zu erledigen? Gib mir links zu videos über Arrays Wer ist die Professorin von den Kurs?`
+
+const finalInstructions = computed(() => {
+  // We take whatever the user typed and only append moodleInstructions if moodle is enabled
+  return assistantModes.value[activeModeIndex.value].moodleEnabled
+    ? `${assistantModes.value[activeModeIndex.value].instructions}\n\n${moodleInstructions}`
+    : assistantModes.value[activeModeIndex.value].instructions
+})
 
 // ---------------------------------
 // 3. File Handling (Upload & Drag-Drop)
@@ -980,6 +1012,8 @@ textarea::placeholder {
 }
 
 .equal-width-btn {
+  letter-spacing: 0.5px;
   text-transform: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 </style>

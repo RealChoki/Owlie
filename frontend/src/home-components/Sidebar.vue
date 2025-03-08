@@ -340,6 +340,8 @@ onMounted(() => {
   padding: 12px 16px;
   white-space: normal;
   text-transform: none;
+  letter-spacing: 0.5px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .quiz-mode-text {
