@@ -83,7 +83,6 @@ import {
 import { useScreenWidth } from "../utils/useScreenWidth";
 import { setNavbarCourseTitle } from "../services/homeService";
 import { stopTTS } from "../services/ttsService";
-import WebSocketService from "../services/websocketService";
 import websocketService from "../services/websocketService";
 
 const isExpandedInput = ref(false);
