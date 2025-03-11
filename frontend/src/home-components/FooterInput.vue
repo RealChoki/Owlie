@@ -27,19 +27,28 @@
     <input
       type="file"
       ref="fileInput"
-      @change="handleFileChange"
+      @change="onFilesSelected"
       style="display: none"
       multiple
     />
 
-    <div v-if="fileCount > 0" class="d-flex flex-column align-items-start">
+    <div
+      v-if="fileCount > 0"
+      class="d-flex flex-row gap-2 align-items-center overflow-auto mb-2"
+      style="max-width: 100%"
+    >
       <div
         v-for="(file, index) in uploadedFiles"
         :key="index"
-        class="d-flex align-items-center gap-2"
+        class="d-flex align-items-center gap-2 bg-white p-2 rounded-3"
       >
         <font-awesome-icon :icon="['fas', 'file']" />
         <span>{{ file.name }}</span>
+        <font-awesome-icon
+          :icon="['fas', 'times']"
+          class="cursor-pointer text-danger"
+          @click="removeFile(index, file)"
+        />
       </div>
     </div>
 
@@ -109,7 +118,8 @@ import {
   faUpRightAndDownLeftFromCenter, 
   faPlus, 
   faArrowUp,
-  faStop
+  faStop,
+  faFile
 } from "@fortawesome/free-solid-svg-icons";
 import { 
   getMessages, 
@@ -121,9 +131,9 @@ import {
 import { 
   fileCount, 
   uploadedFiles, 
-  handleFileChange, 
+  onFilesSelected, 
   resetFileCount, 
-  triggerFileInput 
+  triggerFileInput
 } from "../services/filesService";
 import { getAssistantThreadId } from "../services/openaiService";
 import { get } from "http";
@@ -132,7 +142,8 @@ library.add(
   faUpRightAndDownLeftFromCenter,
   faPlus,
   faArrowUp,
-  faStop
+  faStop,
+  faFile
 );
 
 // Constants
@@ -223,6 +234,7 @@ const resetTextareaHeight = () => {
 // Watchers
 watch(
   () => props.messages,
+  () => {},
   { deep: true }
 );
 

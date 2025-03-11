@@ -119,14 +119,14 @@
 
           <ul class="file mt-2 text-white">
             <li
-              v-for="(file, fileIndex) in assistantModes[activeModeIndex].files"
+              v-for="file in assistantModes[activeModeIndex].files"
               :key="file.name"
               class="d-flex ps-2 pt-1 pb-1 align-items-center file-hover"
             >
               <font-awesome-icon
                 class="text-danger fa-lg cursor-pointer mr-2"
                 :icon="['fas', 'square-xmark']"
-                @click="removeFile(activeModeIndex, fileIndex)"
+                @click="removeFile(activeModeIndex, file)"
               />
               <span>{{ file.name }} ({{ formatFileSize(file.size) }})</span>
             </li>
@@ -200,8 +200,8 @@
               class="btn-outline-primary btn mb-2"
               @click="transcribeAllLectures"
             >
-            Transcribe Videos
-            <font-awesome-icon :icon="['fas', 'closed-captioning']" />
+              Transcribe Videos
+              <font-awesome-icon :icon="['fas', 'closed-captioning']" />
             </button>
           </div>
           <!-- Instructions Field -->
@@ -334,7 +334,7 @@
   </div>
 
   <InfoMoodleModal />
-  <InfoFilesModal :acceptedExtensions="acceptedExtensions" :acceptedMimeTypes="acceptedMimeTypes" />
+  <InfoFilesModal :acceptedFileTypes="acceptedFileTypes" :acceptedMimeTypes="acceptedMimeTypes" />
   <TranscriptionModal :link="selectedLink" />
 </template>
 
@@ -371,7 +371,7 @@ interface AssistantMode {
   name: 'General' | 'Quiz' | 'Exam'
   status: AssistantStatus
   moodleEnabled: boolean
-  files: File[]
+  files: Set<File>
   links: LectureLinkItem[]
   instructions: string
 }
@@ -387,7 +387,7 @@ interface LectureLinkItem {
 // ---------------------------------
 // 2. Assistant Modes Management
 // ---------------------------------
-const sharedAssistantFiles = ref<any[]>([])
+const sharedAssistantFiles = ref<Set<File>>(new Set())
 const sharedAssistantLinks = ref<any[]>([])
 
 const assistantModes = ref<AssistantMode[]>([
@@ -407,7 +407,7 @@ const assistantModes = ref<AssistantMode[]>([
     links: sharedAssistantLinks.value,
     instructions: ''
   },
-  { name: 'Exam', status: 'Activating', moodleEnabled: false, files: [], links: [], instructions: '' }
+  { name: 'Exam', status: 'Activating', moodleEnabled: false, files: new Set<File>(), links: [], instructions: '' }
 ])
 
 const activeAssistantMode = ref<'General' | 'Quiz' | 'Exam'>('General')
@@ -446,7 +446,6 @@ const saveAssistant = async () => {
   const formData = new FormData()
   const isMoodleToolEnabled = assistantModes.value[index].moodleEnabled
 
-
   formData.append('assistant_mode', modeName)
   formData.append('instructions', assistantModes.value[index].instructions)
   formData.append('moodle_enabled', isMoodleToolEnabled ? 'true' : 'false')
@@ -459,7 +458,7 @@ const saveAssistant = async () => {
   console.log('FormData:', {
     assistant_mode: modeName,
     instructions: assistantModes.value[activeModeIndex.value].instructions,
-    files: assistantModes.value[index].files.map(file => file.name)
+    files: Array.from(assistantModes.value[index].files).map((file) => file.name) // Convert Set to Array before mapping
   })
 
   try {
@@ -482,7 +481,7 @@ const isDropped = ref(false)
 const isDragValid = ref(false)
 const isFileInvalid = ref(false)
 
-const acceptedExtensions = [
+const acceptedFileTypes = [
   '.c',
   '.cpp',
   '.cs',
@@ -532,7 +531,7 @@ const acceptedMimeTypes = [
   'text/plain'
 ]
 
-const computedAccept = computed(() => [...acceptedExtensions, ...acceptedMimeTypes].join(', '))
+const computedAccept = computed(() => [...acceptedFileTypes, ...acceptedMimeTypes].join(', '))
 
 const dragText = computed(() => {
   if (!isDropped.value) return 'Drop file to upload'
@@ -559,12 +558,12 @@ function handleFileDrop(event: DragEvent) {
   if (files) {
     const selectedFiles = Array.from(files).filter((file) => {
       const fileExt = '.' + file.name.split('.').pop()?.toLowerCase()
-      return acceptedExtensions.includes(fileExt) || acceptedMimeTypes.includes(file.type)
+      return acceptedFileTypes.includes(fileExt) || acceptedMimeTypes.includes(file.type)
     })
 
     const hasInvalidFiles = Array.from(files).some((file) => {
       const fileExt = '.' + file.name.split('.').pop()?.toLowerCase()
-      return !acceptedExtensions.includes(fileExt) && !acceptedMimeTypes.includes(file.type)
+      return !acceptedFileTypes.includes(fileExt) && !acceptedMimeTypes.includes(file.type)
     })
 
     isDragValid.value = !hasInvalidFiles
@@ -574,9 +573,8 @@ function handleFileDrop(event: DragEvent) {
       isDragging.value = isDragValid.value = isFileInvalid.value = isDropped.value = false
     }, 1000)
 
-    const existingFiles = assistantModes.value[activeModeIndex.value].files.map((file) => file.name)
-    const newFiles = selectedFiles.filter((file) => !existingFiles.includes(file.name))
-    assistantModes.value[activeModeIndex.value].files.push(...newFiles)
+    const fileSet = assistantModes.value[activeModeIndex.value].files
+    selectedFiles.forEach((file) => fileSet.add(file)) // Add files to the Set
   } else {
     isDragValid.value = false
   }
@@ -586,15 +584,14 @@ function onFilesSelected(event: Event) {
   const input = event.target as HTMLInputElement
   if (input.files) {
     const selectedFiles = Array.from(input.files)
-    const index = activeModeIndex.value
-    const existingFiles = assistantModes.value[index].files.map((file) => file.name)
-    const newFiles = selectedFiles.filter((file) => !existingFiles.includes(file.name))
-    assistantModes.value[index].files.push(...newFiles)
+    const fileSet = assistantModes.value[activeModeIndex.value].files
+
+    selectedFiles.forEach((file) => fileSet.add(file)) // Add files to the Set
   }
 }
 
-function removeFile(index: number, fileIndex: number) {
-  assistantModes.value[index].files.splice(fileIndex, 1)
+function removeFile(index: number, fileToRemove: File) {
+  assistantModes.value[index].files.delete(fileToRemove)
 }
 
 function formatFileSize(size: number) {
@@ -985,6 +982,6 @@ textarea::placeholder {
 .equal-width-btn {
   letter-spacing: 0.5px;
   text-transform: none;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 </style>

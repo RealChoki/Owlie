@@ -40,9 +40,9 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 
 library.add(faXmark)
 
-// Define props for acceptedExtensions and acceptedMimeTypes
+// Define props for acceptedFileTypes and acceptedMimeTypes
 const props = defineProps({
-  acceptedExtensions: {
+  acceptedFileTypes: {
     type: Array as () => string[],
     required: true
   },
@@ -53,11 +53,11 @@ const props = defineProps({
 })
 
 const combinedData = computed(() => {
-  const maxLen = Math.max(props.acceptedExtensions.length, props.acceptedMimeTypes.length)
+  const maxLen = Math.max(props.acceptedFileTypes.length, props.acceptedMimeTypes.length)
   const result = []
   for (let i = 0; i < maxLen; i++) {
     result.push({
-      extension: props.acceptedExtensions[i] || '',
+      extension: props.acceptedFileTypes[i] || '',
       mime: props.acceptedMimeTypes[i] || ''
     })
   }

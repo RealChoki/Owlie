@@ -1,4 +1,4 @@
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import axios from 'axios'
 import {
   getAssistantId,
@@ -10,6 +10,56 @@ import {
   getAssistantMode,
   getAssistantCourse
 } from '../services/openaiService'
+
+const acceptedFileTypes = [
+  '.c',
+  '.cpp',
+  '.cs',
+  '.css',
+  '.doc',
+  '.docx',
+  '.go',
+  '.html',
+  '.java',
+  '.js',
+  '.json',
+  '.md',
+  '.pdf',
+  '.php',
+  '.pptx',
+  '.py',
+  '.py',
+  '.rb',
+  '.sh',
+  '.tex',
+  '.ts',
+  '.txt'
+]
+
+const acceptedMimeTypes = [
+  'text/x-c',
+  'text/x-c++',
+  'text/x-csharp',
+  'text/css',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/x-golang',
+  'text/html',
+  'text/x-java',
+  'text/javascript',
+  'application/json',
+  'text/markdown',
+  'application/pdf',
+  'text/x-php',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/x-python',
+  'text/x-script.python',
+  'text/x-ruby',
+  'application/x-sh',
+  'text/x-tex',
+  'application/typescript',
+  'text/plain'
+]
 
 const fileState = reactive({
   files: [] as string[],
@@ -121,7 +171,11 @@ export async function resetFileService() {
 }
 
 export const fileCount = ref(0)
-export const uploadedFiles = ref<Set<string>>(new Set())
+export const uploadedFiles = ref<Set<File>>(new Set())
+const isDragging = ref(false)
+const isDragValid = ref(false)
+const isFileInvalid = ref(false)
+const isDropped = ref(false)
 
 export function triggerFileInput(fileInputRef: HTMLInputElement | null) {
   if (fileInputRef) {
@@ -129,25 +183,77 @@ export function triggerFileInput(fileInputRef: HTMLInputElement | null) {
   }
 }
 
-export function handleFileChange(event: Event, fileInputRef: HTMLInputElement | null) {
+export function onFilesSelected(event: Event) {
   const input = event.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
     const files = Array.from(input.files)
-    const newFiles = files.filter((file) => {
-      const fileKey = `${file.name}-${file.size}`
-      if (!uploadedFiles.value.has(fileKey)) {
-        uploadedFiles.value.add(fileKey)
-        return true
+    files.filter((file) => {
+      // Check if the file's extension is accepted
+      const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase()
+      if (!acceptedFileTypes.includes(fileExtension)) {
+        return false
       }
+
+      if (!uploadedFiles.value.has(file)) {
+        uploadedFiles.value.add(file);
+        return true;
+      }
+      
       return false
     })
-
-    if (newFiles.length > 0) {
-      uploadFiles(newFiles) // Assuming you have this function elsewhere
-      fileCount.value += newFiles.length
-    }
-    input.value = ''
   }
+  console.log('Choosen files:', uploadedFiles.value)
+}
+
+const dragText = computed(() => {
+  if (!isDropped.value) return 'Drop file to upload'
+  return isFileInvalid.value ? 'Invalid file type' : 'Valid file type'
+})
+
+function handleDragOver(event: DragEvent) {
+  event.preventDefault()
+  isDragging.value = true
+  isDragValid.value = true
+}
+
+function handleDragLeave() {
+  isDragging.value = false
+  isDragValid.value = false
+}
+
+function handleFileDrop(event: DragEvent) {
+  event.preventDefault()
+  isDragging.value = false
+  isDropped.value = true
+
+  const files = event.dataTransfer?.files
+  if (files) {
+    const selectedFiles = Array.from(files).filter((file) => {
+      const fileExt = '.' + file.name.split('.').pop()?.toLowerCase()
+      return acceptedFileTypes.includes(fileExt) || acceptedMimeTypes.includes(file.type)
+    })
+
+    const hasInvalidFiles = Array.from(files).some((file) => {
+      const fileExt = '.' + file.name.split('.').pop()?.toLowerCase()
+      return !acceptedFileTypes.includes(fileExt) && !acceptedMimeTypes.includes(file.type)
+    })
+
+    isDragValid.value = !hasInvalidFiles
+    isFileInvalid.value = hasInvalidFiles
+
+    setTimeout(() => {
+      isDragging.value = isDragValid.value = isFileInvalid.value = isDropped.value = false
+    }, 1000)
+
+    const fileSet = uploadedFiles.value
+    selectedFiles.forEach((file) => fileSet.add(file)) // Add files to the Set
+  } else {
+    isDragValid.value = false
+  }
+}
+
+function removeFile(fileToRemove: File) {
+  uploadedFiles.value.delete(fileToRemove)
 }
 
 export function resetFileCount() {
@@ -164,7 +270,7 @@ export default {
   resetFileService,
   fileCount,
   uploadedFiles,
-  handleFileChange,
+  onFilesSelected,
   resetFileCount,
   triggerFileInput
 }
