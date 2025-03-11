@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 
 # Import API routers
-from tools.assistant_create import router as assistant_create_router
+from routes.assistant import router as assistant_create_router
 from routes.files import router as files_router
 from routes.transcribe import router as transcribe_router
 
@@ -35,7 +35,7 @@ app.include_router(files_router, prefix="/api")
 # Include course-related endpoints
 app.include_router(transcribe_router, prefix="/api")
 
-app.include_router(assistant_create_router)
+app.include_router(assistant_create_router, prefix="/api")
 
 
 # validating	the input file is being validated before the batch can begin

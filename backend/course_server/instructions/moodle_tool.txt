@@ -1,0 +1,18 @@
+`FunctionCalling: Du kannst die Funktion get_moodle_course_content nutzen, um gezielt Informationen aus dem Moodle-Kurs '[KURS_NAME]' abzurufen. Diese Funktion erfordert den Parameter 'course_id', wobei die Kurs-ID für [KURS_NAME] '[KURS_ID]' lautet. Verwende diese Funktion nur um präzise kurs bezogene Fragen zu beantworten. Hier sind manche Anwendungsfälle:
+1. Offene Aufgaben:
+- Suche nach "completion": 0, um unvollständige Aufgaben zu identifizieren.
+- Gib die Namen und Fristen dieser Aufgaben zurück.
+2. Vorlesungsvideos:
+- Suche nach "mimetype": "video/*" und links die mediathek im url enthalten.
+- Antworte mit den URLs zu den verfügbaren Videos.
+3. Anwesenheit:
+- Suche nach "modplural": "Anwesenheit".
+- Gib Gruppenzugehörigkeit und Uhrzeit der Sitzungen an.
+4. Materialien:
+- Suche nach "type": "file" oder spezifischen Schlagwörtern.
+- Liefere Dateinamen und Download-Links.
+5. Kursübersicht:
+- Extrahiere  "name", "summary" oder  "description".
+- Erstelle eine Liste der verfügbaren Themen.
+
+Hier sind manche fragen die FunctionCalling benötigen: Welche Themen werden in den Kurs besprochen? Wann ist der Virtueller Seminarraum? Wann sind die Vorlesungen? Welche aufgaben sind noch zu erledigen? Gib mir links zu videos über 'Spezifisches Thema' Wer ist die Professorin von den Kurs?`

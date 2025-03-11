@@ -57,11 +57,11 @@ def create_vector_store(files: list[str], transcript: str) -> str:
         logging.error(f"Failed to create vector store: {e}")
         raise
 
-@router.post("/api/assistants/create")
 async def create_assistant(
     assistant_mode: str = Form(...),
     instructions: str = Form(...),
     transcribed_text: str = Form(...),
+    moodle_enabled: str = Form("false"),
     files: list[UploadFile] = File([])
 ):
     try:
@@ -76,41 +76,39 @@ async def create_assistant(
                 f.write(await uploaded_file.read())
             saved_filenames.append(uploaded_file.filename)
         
-        # Create vector store
         print("Creating vector store...")
         vector_store_id = create_vector_store(saved_filenames, transcribed_text)
 
-        # Instead of a list of strings, we pass a list of objects:
         tools = [
             {
                 "type": "file_search",
             }
         ]
-        if "moodle" in assistant_mode.lower():
+
+        if moodle_enabled.lower() == "true":
             print("Adding Moodle tool...")
             tools.append(
                 {
                     "type": "function",
                     "function": {
-                          "name": "get_moodle_course_content",
-                            "description": "Fetches Moodle course content based on course ID.",
-                            "strict": True,
-                            "parameters": {
-                                "type": "object",
-                                "required": [
-                                "courseid"
-                                ],
-                                "properties": {
+                        "name": "get_moodle_course_content",
+                        "description": "Fetches Moodle course content based on course ID.",
+                        "strict": True,
+                        "parameters": {
+                            "type": "object",
+                            "required": ["courseid"],
+                            "properties": {
                                 "courseid": {
                                     "type": "string",
                                     "description": "The Moodle course ID, e.g., '50115'."
                                 }
-                                },
-                                "additionalProperties": False
-                            }
+                            },
+                            "additionalProperties": False
+                        }
                     }
                 }
             )
+
         print("Creating assistant in OpenAI...")
         assistant = client.beta.assistants.create(
             instructions=instructions,

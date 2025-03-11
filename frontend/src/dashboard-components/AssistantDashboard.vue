@@ -449,11 +449,9 @@ const saveAssistant = async () => {
 
 
   formData.append('assistant_mode', modeName)
-  formData.append('course_id', '66666')
-  formData.append('university', 'Harvard')
-  formData.append('instructions', finalInstructions.value)
+  formData.append('instructions', assistantModes.value[index].instructions)
   formData.append('moodle_enabled', isMoodleToolEnabled ? 'true' : 'false')
-  // formData.append('transcribed_text', transcribedText.value)
+  formData.append('transcribed_text', transcribedText.value)
 
   assistantModes.value[index].files.forEach((file) => {
     formData.append('files', file)
@@ -461,7 +459,7 @@ const saveAssistant = async () => {
 
   console.log('FormData:', {
     assistant_mode: modeName,
-    instructions: finalInstructions.value,
+    instructions: assistantModes.value[activeModeIndex.value].instructions,
     files: assistantModes.value[index].files.map(file => file.name)
   })
 
@@ -476,32 +474,6 @@ const saveAssistant = async () => {
     alert('Failed to create assistant')
   }
 }
-
-const moodleInstructions = `FunctionCalling: Du kannst die Funktion get_moodle_course_content nutzen, um gezielt Informationen aus dem Moodle-Kurs 'Grundlagen der Programmierung' abzurufen. Diese Funktion erfordert den Parameter 'course_id', wobei die Kurs-ID für Grundlagen der Programmierung '50115' lautet. Verwende diese Funktion nur um präzise kurs bezogene Fragen zu beantworten. Hier sind manche Anwendungsfälle:
-1. Offene Aufgaben:
-- Suche nach "completion": 0, um unvollständige Aufgaben zu identifizieren.
-- Gib die Namen und Fristen dieser Aufgaben zurück.
-2. Vorlesungsvideos:
-- Suche nach "mimetype": "video/*" und links die mediathek im url enthalten.
-- Antworte mit den URLs zu den verfügbaren Videos.
-3. Anwesenheit:
-- Suche nach "modplural": "Anwesenheit".
-- Gib Gruppenzugehörigkeit und Uhrzeit der Sitzungen an.
-4. Materialien:
-- Suche nach "type": "file" oder spezifischen Schlagwörtern.
-- Liefere Dateinamen und Download-Links.
-5. Kursübersicht:
-- Extrahiere  "name", "summary" oder  "description".
-- Erstelle eine Liste der verfügbaren Themen.
-
-Hier sind manche fragen die FunctionCalling benötigen: Welche Themen werden in den Kurs besprochen? Wann ist der Virtueller Seminarraum? Wann sind die Vorlesungen? Welche aufgaben sind noch zu erledigen? Gib mir links zu videos über Arrays Wer ist die Professorin von den Kurs?`
-
-const finalInstructions = computed(() => {
-  // We take whatever the user typed and only append moodleInstructions if moodle is enabled
-  return assistantModes.value[activeModeIndex.value].moodleEnabled
-    ? `${assistantModes.value[activeModeIndex.value].instructions}\n\n${moodleInstructions}`
-    : assistantModes.value[activeModeIndex.value].instructions
-})
 
 // ---------------------------------
 // 3. File Handling (Upload & Drag-Drop)

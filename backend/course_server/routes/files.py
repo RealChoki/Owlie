@@ -4,7 +4,7 @@ from tools.name_sanitizer import sanitize_filename
 
 router = APIRouter()
 
-TRANSCRIBED_FILES_DIR = Path(__file__).resolve().parent / 'transcribed_lectures' / 'Harvard' / '66666' / 'general'
+TRANSCRIBED_FILES_DIR = Path(__file__).resolve().parent.parent / 'transcribed_lectures' / 'Harvard' / '66666' / 'general'
 @router.get("/assistants/file/{filename}")
 async def get_transcribed_file(filename: str):
     try:
