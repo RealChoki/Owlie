@@ -16,9 +16,6 @@ logging.basicConfig(level=logging.ERROR)
 # Load environment variables
 load_dotenv()
 
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 # Initialize FastAPI application
 app = FastAPI()
 app.add_middleware(

@@ -32,6 +32,17 @@
       multiple
     />
 
+    <div v-if="fileCount > 0" class="d-flex flex-column align-items-start">
+      <div
+        v-for="(file, index) in uploadedFiles"
+        :key="index"
+        class="d-flex align-items-center gap-2"
+      >
+        <font-awesome-icon :icon="['fas', 'file']" />
+        <span>{{ file.name }}</span>
+      </div>
+    </div>
+
     <!-- Textarea Container -->
     <div class="position-relative d-flex align-items-center flex-grow-1">
       <textarea

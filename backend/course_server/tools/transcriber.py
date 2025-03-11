@@ -1,6 +1,11 @@
+import logging
 from pathlib import Path
 from transcribe_anything.api import transcribe
 from tools.name_sanitizer import sanitize_filename
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 def transcribe_lecture(url_or_file: str, output_dir: str) -> str:
     # Run the transcription
@@ -9,7 +14,7 @@ def transcribe_lecture(url_or_file: str, output_dir: str) -> str:
         output_dir=output_dir,
     ))
 
-    print(f"Transcription saved in: {directory}")
+    logger.info(f"Transcription saved in: {directory}")
 
     # Ensure the directory exists
     if not directory.exists():
@@ -17,11 +22,11 @@ def transcribe_lecture(url_or_file: str, output_dir: str) -> str:
 
     # Check if transcription creates a subfolder
     subdirs = [item.name for item in directory.iterdir()]
-    print(f"Contents of directory: {subdirs}")
+    logger.info(f"Contents of directory: {subdirs}")
 
     if len(subdirs) == 1 and (directory / subdirs[0]).is_dir():
         directory = directory / subdirs[0]  # Enter subfolder if necessary
-        print(f"Updated directory path: {directory}")
+        logger.info(f"Updated directory path: {directory}")
 
     # Remove all non-.txt files
     txt_files = []
@@ -30,7 +35,7 @@ def transcribe_lecture(url_or_file: str, output_dir: str) -> str:
             txt_files.append(file)  # Collect the .txt file path
         else:
             file.unlink()  # Delete non-txt files
-            print(f"Deleted: {file.name}")
+            logger.info(f"Deleted: {file.name}")
 
     # Ensure there is exactly one .txt file
     if not txt_files:
@@ -45,7 +50,7 @@ def transcribe_lecture(url_or_file: str, output_dir: str) -> str:
 
     # Rename the .txt file
     old_txt_file_path.rename(new_txt_file_path)
-    print(f"Renamed {old_txt_file_path} -> {new_txt_file_path}")
+    logger.info(f"Renamed {old_txt_file_path} -> {new_txt_file_path}")
 
     # Read and return the transcription text
     return new_txt_file_path.read_text(encoding="utf-8")
