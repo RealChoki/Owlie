@@ -1,3 +1,4 @@
+from pathlib import Path
 import os
 import uuid
 import logging
@@ -22,7 +23,7 @@ def create_vector_store(files: list[str], transcript: str) -> str:
         file_ids = []
         # Upload any local files
         for file_name in files:
-            file_path = os.path.join("uploaded_files", file_name)
+            file_path = Path("uploaded_files") / file_name
             if os.path.exists(file_path):
                 print(f"Uploading file: {file_name}")
                 with open(file_path, "rb") as f:
@@ -57,6 +58,8 @@ def create_vector_store(files: list[str], transcript: str) -> str:
         logging.error(f"Failed to create vector store: {e}")
         raise
 
+moodle_instruction_path = Path(__file__).resolve().parent.parent / "instructions" / "moodle_tool.txt"
+
 async def create_assistant(
     assistant_mode: str = Form(...),
     instructions: str = Form(...),
@@ -70,7 +73,7 @@ async def create_assistant(
         os.makedirs(upload_dir, exist_ok=True)
         saved_filenames = []
         for uploaded_file in files:
-            file_path = os.path.join(upload_dir, uploaded_file.filename)
+            file_path = Path(upload_dir) / uploaded_file.filename
             print(f"Saving file: {uploaded_file.filename}")
             with open(file_path, "wb") as f:
                 f.write(await uploaded_file.read())
@@ -86,6 +89,9 @@ async def create_assistant(
         ]
 
         if moodle_enabled.lower() == "true":
+            with open(moodle_instruction_path, "r", encoding="utf-8") as f:
+                moodle_text = f.read()
+            instructions += "\n\n" + moodle_text
             print("Adding Moodle tool...")
             tools.append(
                 {

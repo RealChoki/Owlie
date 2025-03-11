@@ -1,12 +1,12 @@
-import os
 import yaml
 from langdetect import detect, LangDetectException
 from presidio_analyzer import AnalyzerEngine
 from presidio_analyzer.nlp_engine import NlpEngineProvider
 from langchain_experimental.data_anonymizer import PresidioReversibleAnonymizer
+from pathlib import Path
 
 # Define the path to the languages configuration file
-LANGUAGES_CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),"languages-config.yml")
+LANGUAGES_CONFIG_FILE = Path(__file__).resolve().parent / "languages-config.yml"
 
 # Load the configuration data from the YAML file
 with open(LANGUAGES_CONFIG_FILE, "r") as file:

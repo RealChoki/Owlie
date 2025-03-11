@@ -124,7 +124,7 @@
               class="d-flex ps-2 pt-1 pb-1 align-items-center file-hover"
             >
               <font-awesome-icon
-                class="text-danger fa-lg cursor-pointer pe-3"
+                class="text-danger fa-lg cursor-pointer mr-2"
                 :icon="['fas', 'square-xmark']"
                 @click="removeFile(activeModeIndex, fileIndex)"
               />
@@ -212,7 +212,6 @@
               v-model="assistantModes[activeModeIndex].instructions"
               placeholder="Assistant instructions"
               class="w-100"
-              @input="handleInstructionsInput(activeModeIndex)"
             ></textarea>
           </div>
           <!-- Display transcribed text -->

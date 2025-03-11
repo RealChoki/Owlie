@@ -1,5 +1,5 @@
-
 from tools.fernet import decrypt_data
+from pathlib import Path
 import os
 import shutil
 import tempfile
@@ -38,7 +38,7 @@ async def upload_files(
     file_ids = []
     for uploaded_file in files:
         temp_dir = tempfile.gettempdir()
-        temp_file_path = os.path.join(temp_dir, uploaded_file.filename)
+        temp_file_path = Path(temp_dir) / uploaded_file.filename
 
         with open(temp_file_path, "wb") as buffer:
             shutil.copyfileobj(uploaded_file.file, buffer)
