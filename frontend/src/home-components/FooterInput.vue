@@ -1,10 +1,31 @@
 <template>
   <div
-    class="sticky-footer container-fluid d-flex align-items-end gap-2 pb-2 px-0 mt-2"
+    v-if="fileCount > 0"
+    class="d-flex gap-2 align-items-center mb-2"
+    :style="{ width: textareaWidth + 'px', overflow: 'auto' }"
     :class="{
-      'pt-4': isMessageTooLong,
-      'pt-2': !isMessageTooLong,
-      'mt-auto': !messages.length,
+      'mt-auto': !messages.length && fileCount
+    }"
+  >
+    <div
+      v-for="(file, index) in uploadedFiles"
+      :key="index"
+      class="d-flex align-items-center gap-2 bg-white p-2 rounded-3 shortened-link"
+    >
+      <font-awesome-icon :icon="['fas', 'file']" />
+      <!-- Tooltip showing up to 30 characters -->
+      <span class="mode-tooltip">
+        {{ shortenFileName(file.name) }}
+      </span>
+      <!-- Shortened display -->
+      <span>{{ shortenFileName(file.name, 10) }}</span>
+      <font-awesome-icon :icon="['fas', 'times']" class="cursor-pointer text-danger" @click="removeFile(index, file)" />
+    </div>
+  </div>
+  <div
+    class="sticky-footer container-fluid d-flex align-items-end gap-2 pb-2 px-0 mt-2 mb-2"
+    :class="{
+      'mt-auto': !messages.length && !fileCount
     }"
   >
     <!-- File Upload Button -->
@@ -15,42 +36,13 @@
         style="background-color: var(--color-gray-shadow)"
         @click="triggerFileInput(fileInput)"
       />
-      <span
-        v-if="fileCount"
-        class="file-count-indicator bg-danger text-white"
-      >
+      <span v-if="fileCount" class="file-count-indicator bg-danger text-white">
         {{ fileCount }}
       </span>
     </div>
 
     <!-- Hidden File Input -->
-    <input
-      type="file"
-      ref="fileInput"
-      @change="onFilesSelected"
-      style="display: none"
-      multiple
-    />
-
-    <div
-      v-if="fileCount > 0"
-      class="d-flex flex-row gap-2 align-items-center overflow-auto mb-2"
-      style="max-width: 100%"
-    >
-      <div
-        v-for="(file, index) in uploadedFiles"
-        :key="index"
-        class="d-flex align-items-center gap-2 bg-white p-2 rounded-3"
-      >
-        <font-awesome-icon :icon="['fas', 'file']" />
-        <span>{{ file.name }}</span>
-        <font-awesome-icon
-          :icon="['fas', 'times']"
-          class="cursor-pointer text-danger"
-          @click="removeFile(index, file)"
-        />
-      </div>
-    </div>
+    <input type="file" ref="fileInput" @change="onFilesSelected" style="display: none" multiple />
 
     <!-- Textarea Container -->
     <div class="position-relative d-flex align-items-center flex-grow-1">
@@ -95,7 +87,7 @@
         :icon="['fas', 'arrow-up']"
         :class="{
           'cursor-pointer': !disableSendButton() && !isBurgerMenuOpen,
-          'btn-disabled': disableSendButton(),
+          'btn-disabled': disableSendButton()
         }"
         class="btn-circle bg-white"
         @click="sendMessage"
@@ -111,43 +103,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { 
-  faUpRightAndDownLeftFromCenter, 
-  faPlus, 
-  faArrowUp,
-  faStop,
-  faFile
-} from "@fortawesome/free-solid-svg-icons";
-import { 
-  getMessages, 
-  sendMessage as sendChatMessage, 
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faStop, faFile } from '@fortawesome/free-solid-svg-icons'
+import {
+  getMessages,
+  sendMessage as sendChatMessage,
   currentUserInput,
   cancelAssistantResponse,
   isCurrentAssistantResponseComplete
-} from "../services/chatService";
-import { 
-  fileCount, 
-  uploadedFiles, 
-  onFilesSelected, 
-  resetFileCount, 
-  triggerFileInput
-} from "../services/filesService";
-import { getAssistantThreadId } from "../services/openaiService";
-import { get } from "http";
+} from '../services/chatService'
+import { fileCount, uploadedFiles, onFilesSelected, resetFileCount, triggerFileInput } from '../services/filesService'
+import { getAssistantThreadId } from '../services/openaiService'
+import { get } from 'http'
 
-library.add(
-  faUpRightAndDownLeftFromCenter,
-  faPlus,
-  faArrowUp,
-  faStop,
-  faFile
-);
+library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faStop, faFile)
 
 // Constants
-const MAX_MESSAGE_LENGTH = 2000;
+const MAX_MESSAGE_LENGTH = 2000
 
 // Props
 const props = defineProps({
@@ -155,96 +129,111 @@ const props = defineProps({
   isBurgerMenuOpen: Boolean,
   messages: {
     type: Array,
-    required: true,
-  },
-});
+    required: true
+  }
+})
 
 // Emits
-const emit = defineEmits(["toggle-overlay", "send-message"]);
+const emit = defineEmits(['toggle-overlay', 'send-message'])
 
 // Refs
-const isSearchFocused = ref(false);
-const textarea = ref<HTMLTextAreaElement | null>(null);
-const fileInput = ref<HTMLInputElement | null>(null);
-const showResizeIcon = ref(false);
+const isSearchFocused = ref(false)
+const textarea = ref<HTMLTextAreaElement | null>(null)
+const fileInput = ref<HTMLInputElement | null>(null)
+const showResizeIcon = ref(false)
 
 // Computed properties
-const messageLength = computed(() => currentUserInput.value.length);
-const isMessageTooLong = computed(() => messageLength.value > MAX_MESSAGE_LENGTH);
+const messageLength = computed(() => currentUserInput.value.length)
+const isMessageTooLong = computed(() => messageLength.value > MAX_MESSAGE_LENGTH)
 
 // Methods
-const toggleOverlay = () => emit("toggle-overlay", !props.isExpandedInput);
+const toggleOverlay = () => emit('toggle-overlay', !props.isExpandedInput)
 
-const isFirstMessage = () => getMessages().length === 0;
+const isFirstMessage = () => getMessages().length === 0
 
 const disableSendButton = () => {
   const isLastMessageFromAssistant = () => {
-    const messages = getMessages();
-    const lastMessage = messages[messages.length - 1];
-    return (lastMessage?.role === "assistant" && lastMessage.isComplete) || isFirstMessage();
-  };
-  
+    const messages = getMessages()
+    const lastMessage = messages[messages.length - 1]
+    return (lastMessage?.role === 'assistant' && lastMessage.isComplete) || isFirstMessage()
+  }
+
   const isMessageValid = () => {
-    return currentUserInput.value.trim() !== "" || fileCount.value > 0;
-  };
+    return currentUserInput.value.trim() !== '' || fileCount.value > 0
+  }
 
   return (
-    !(
-      isLastMessageFromAssistant() &&
-      isMessageValid()
-    ) ||
-    isMessageTooLong.value ||
-    !Boolean(getAssistantThreadId())
-  );
-};
+    !(isLastMessageFromAssistant() && isMessageValid()) || isMessageTooLong.value || !Boolean(getAssistantThreadId())
+  )
+}
 
 const sendMessage = () => {
   if (!disableSendButton() && !props.isBurgerMenuOpen) {
-    sendChatMessage(currentUserInput.value.trim());
-    resetFileCount();
+    sendChatMessage(currentUserInput.value.trim())
+    resetFileCount()
   }
-};
+}
 
 const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === "Enter" && !event.shiftKey && window.innerWidth > 768) {
-    event.preventDefault();
-    sendMessage();
+  if (event.key === 'Enter' && !event.shiftKey && window.innerWidth > 768) {
+    event.preventDefault()
+    sendMessage()
   }
-};
+}
 
 const resizeTextarea = () => {
-  const target = textarea.value;
-  if (!target) return;
-  
-  target.style.height = "45px"; // Reset height
-  const maxHeight = parseFloat(window.getComputedStyle(target).maxHeight);
-  const newHeight = Math.min(target.scrollHeight, maxHeight);
-  
-  target.style.height = `${newHeight}px`;
-  showResizeIcon.value = newHeight > 91 && Boolean(currentUserInput.value);
-};
+  const target = textarea.value
+  if (!target) return
+
+  target.style.height = '45px' // Reset height
+  const maxHeight = parseFloat(window.getComputedStyle(target).maxHeight)
+  const newHeight = Math.min(target.scrollHeight, maxHeight)
+
+  target.style.height = `${newHeight}px`
+  showResizeIcon.value = newHeight > 91 && Boolean(currentUserInput.value)
+}
 
 const resetTextareaHeight = () => {
   if (textarea.value) {
-    textarea.value.style.height = "45px";
+    textarea.value.style.height = '45px'
   }
-  showResizeIcon.value = false;
-};
+  showResizeIcon.value = false
+}
+
+function shortenFileName(name: string, maxLength = 25) {
+  return name.length > maxLength ? name.slice(0, maxLength) + '...' : name
+}
+
+const textareaWidth = ref(0)
+
+const updateWidth = () => {
+    textareaWidth.value = textarea.value.offsetWidth
+    console.log(textareaWidth.value)
+}
+
+onMounted(() => {
+  updateWidth()
+  window.addEventListener('resize', updateWidth)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWidth)
+})
 
 // Watchers
 watch(
   () => props.messages,
   () => {},
   { deep: true }
-);
+)
 
 watch(currentUserInput, (newValue) => {
-  if (newValue === "") {
-    resetTextareaHeight();
+  if (newValue === '') {
+    resetTextareaHeight()
   } else {
-    nextTick(resizeTextarea);
+    nextTick(resizeTextarea)
   }
-});
+})
 </script>
 
 <style scoped>
@@ -337,5 +326,42 @@ watch(currentUserInput, (newValue) => {
   .custom-input {
     max-height: calc(1.5em * 10 + 16px) !important;
   }
+}
+
+.shortened-link {
+  position: relative;
+}
+
+.shortened-link .mode-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(120%);
+  left: 50%;
+  transform: translateX(-20%);
+  background-color: var(--color-gray-light);
+  color: #fff;
+  padding: 0.4em 0.6em;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.shortened-link:hover .mode-tooltip {
+  display: block;
+  animation: fadeIn 0.3s forwards;
+  opacity: 1;
+}
+
+.shortened-link .mode-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 20%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--color-gray-light) transparent transparent transparent;
 }
 </style>

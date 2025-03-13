@@ -196,6 +196,7 @@ export function onFilesSelected(event: Event) {
 
       if (!uploadedFiles.value.has(file)) {
         uploadedFiles.value.add(file);
+        fileCount.value = uploadedFiles.value.size;
         return true;
       }
       

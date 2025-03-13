@@ -9,7 +9,7 @@
       />
     </transition>
     <div
-      class="container d-flex flex-column vh-100"
+      class="container d-flex flex-column vh-100 position-relative"
       :style="{
         position: !isSidebarOpen && !isBurgerMenuOpen ? 'fixed' : 'relative',
         left: !isSidebarOpen && !isBurgerMenuOpen ? '50%' : 'auto',
@@ -26,7 +26,7 @@
         :class="{ 'blur-effect': isBurgerMenuOpen && !isWideScreen }"
       />
       
-      <OwlLogo v-if="!chatMessages.length" :class="{ 'blur-effect': isBurgerMenuOpen && !isWideScreen }"/>
+      <OwlLogo v-if="!chatMessages.length" :class="{ 'blur-effect': isBurgerMenuOpen && !isWideScreen }" class="position-absolute owlie"/>
       
       <div
         class="flex-grow-1 d-flex flex-column overflow-hidden"
@@ -222,5 +222,11 @@ watch(isWideScreen, (newVal) => {
 
 .blur-effect {
   filter: blur(1.5px);
+}
+
+.owlie{
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
