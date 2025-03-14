@@ -253,8 +253,9 @@ function handleFileDrop(event: DragEvent) {
   }
 }
 
-function removeFile(fileToRemove: File) {
+export function removeFile(fileToRemove: File) {
   uploadedFiles.value.delete(fileToRemove)
+  fileCount.value = uploadedFiles.value.size
 }
 
 export function resetFileCount() {
@@ -264,6 +265,7 @@ export function resetFileCount() {
 
 export default {
   uploadFiles,
+  removeFile,
   getFiles,
   getCurrentFile,
   setCurrentFile,

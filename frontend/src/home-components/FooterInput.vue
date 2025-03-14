@@ -13,7 +13,6 @@
         class="d-flex align-items-center gap-2 bg-white p-2 rounded-3 shortened-link"
       >
         <font-awesome-icon :icon="['fas', 'file']" />
-        <!-- Tooltip showing up to 30 characters -->
         <span class="mode-tooltip">
           {{ file.name }}
         </span>
@@ -21,8 +20,9 @@
         <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ file.name }}</span>
         <font-awesome-icon
           :icon="['fas', 'times']"
-          class="cursor-pointer text-danger"
-          @click="removeFile(index, file)"
+          class="cursor-pointer icon-click-effect text-danger"
+          style="width: 18px; height: 18px"
+          @click="removeFile(file)"
         />
       </div>
     </div>
@@ -37,7 +37,7 @@
     <div class="position-relative">
       <font-awesome-icon
         :icon="['fas', 'plus']"
-        class="cursor-pointer btn-circle align-self-end"
+        class="cursor-pointer btn-circle align-self-end icon-click-effect"
         style="background-color: var(--color-gray-shadow)"
         @click="triggerFileInput(fileInput)"
       />
@@ -71,7 +71,7 @@
       <font-awesome-icon
         v-if="showResizeIcon"
         :icon="['fas', 'up-right-and-down-left-from-center']"
-        class="top-right-icon cursor-pointer"
+        class="top-right-icon cursor-pointer icon-click-effect"
         @click="toggleOverlay"
       />
 
@@ -91,7 +91,7 @@
         v-if="isCurrentAssistantResponseComplete"
         :icon="['fas', 'arrow-up']"
         :class="{
-          'cursor-pointer': !disableSendButton() && !isBurgerMenuOpen,
+          'cursor-pointer icon-click-effect': !disableSendButton() && !isBurgerMenuOpen,
           'btn-disabled': disableSendButton()
         }"
         class="btn-circle bg-white"
@@ -100,7 +100,7 @@
       <font-awesome-icon
         v-else
         :icon="['fas', 'stop']"
-        class="cursor-pointer btn-circle bg-light align-self-end"
+        class="cursor-pointer btn-circle bg-light align-self-end icon-click-effect"
         @click="cancelAssistantResponse"
       />
     </div>
@@ -111,7 +111,7 @@
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faStop, faFile } from '@fortawesome/free-solid-svg-icons'
+import { faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faStop, faFile, faTimes } from '@fortawesome/free-solid-svg-icons'
 import {
   getMessages,
   sendMessage as sendChatMessage,
@@ -119,11 +119,11 @@ import {
   cancelAssistantResponse,
   isCurrentAssistantResponseComplete
 } from '../services/chatService'
-import { fileCount, uploadedFiles, onFilesSelected, resetFileCount, triggerFileInput } from '../services/filesService'
+import { fileCount, uploadedFiles, onFilesSelected, resetFileCount, triggerFileInput, removeFile } from '../services/filesService'
 import { getAssistantThreadId } from '../services/openaiService'
 import { get } from 'http'
 
-library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faStop, faFile)
+library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faStop, faFile, faTimes)
 
 // Constants
 const MAX_MESSAGE_LENGTH = 2000
@@ -144,6 +144,7 @@ const emit = defineEmits(['toggle-overlay', 'send-message'])
 // Refs
 const isSearchFocused = ref(false)
 const textarea = ref<HTMLTextAreaElement | null>(null)
+const textareaWidth = ref(0)
 const fileInput = ref<HTMLInputElement | null>(null)
 const showResizeIcon = ref(false)
 
@@ -205,12 +206,11 @@ const resetTextareaHeight = () => {
   showResizeIcon.value = false
 }
 
-const textareaWidth = ref(0)
-
 const updateWidth = () => {
   textareaWidth.value = textarea.value.offsetWidth
 }
 
+// Lifecycle hooks
 onMounted(() => {
   updateWidth()
   window.addEventListener('resize', updateWidth)
@@ -221,6 +221,7 @@ onUnmounted(() => {
 })
 
 // Watchers
+// idk if we need this
 watch(
   () => props.messages,
   () => {},
@@ -233,6 +234,10 @@ watch(currentUserInput, (newValue) => {
   } else {
     nextTick(resizeTextarea)
   }
+})
+
+watch(fileCount, () => {
+  updateWidth()
 })
 </script>
 
@@ -330,7 +335,7 @@ watch(currentUserInput, (newValue) => {
 
 .shortened-link {
   position: relative;
-  max-width: 135px; 
+  max-width: 135px;
   max-height: 40px;
 }
 
@@ -353,7 +358,6 @@ watch(currentUserInput, (newValue) => {
 .shortened-link:hover .mode-tooltip {
   display: block;
   animation: fadeIn 0.3s forwards;
-  opacity: 1;
 }
 
 .shortened-link .mode-tooltip::after {
