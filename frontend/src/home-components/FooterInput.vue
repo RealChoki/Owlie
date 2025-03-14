@@ -1,25 +1,30 @@
 <template>
   <div
     v-if="fileCount > 0"
-    class="d-flex gap-2 align-items-center mb-2"
-    :style="{ width: textareaWidth + 'px', overflow: 'auto' }"
+    class="d-flex justify-content-center mb-2"
     :class="{
       'mt-auto': !messages.length && fileCount
     }"
   >
-    <div
-      v-for="(file, index) in uploadedFiles"
-      :key="index"
-      class="d-flex align-items-center gap-2 bg-white p-2 rounded-3 shortened-link"
-    >
-      <font-awesome-icon :icon="['fas', 'file']" />
-      <!-- Tooltip showing up to 30 characters -->
-      <span class="mode-tooltip">
-        {{ shortenFileName(file.name) }}
-      </span>
-      <!-- Shortened display -->
-      <span>{{ shortenFileName(file.name, 10) }}</span>
-      <font-awesome-icon :icon="['fas', 'times']" class="cursor-pointer text-danger" @click="removeFile(index, file)" />
+    <div class="d-flex gap-2 align-items-center" :style="{ width: textareaWidth + 'px', overflow: 'auto' }">
+      <div
+        v-for="(file, index) in uploadedFiles"
+        :key="index"
+        class="d-flex align-items-center gap-2 bg-white p-2 rounded-3 shortened-link"
+      >
+        <font-awesome-icon :icon="['fas', 'file']" />
+        <!-- Tooltip showing up to 30 characters -->
+        <span class="mode-tooltip">
+          {{ file.name }}
+        </span>
+        <!-- Shortened display -->
+        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ file.name }}</span>
+        <font-awesome-icon
+          :icon="['fas', 'times']"
+          class="cursor-pointer text-danger"
+          @click="removeFile(index, file)"
+        />
+      </div>
     </div>
   </div>
   <div
@@ -200,15 +205,10 @@ const resetTextareaHeight = () => {
   showResizeIcon.value = false
 }
 
-function shortenFileName(name: string, maxLength = 25) {
-  return name.length > maxLength ? name.slice(0, maxLength) + '...' : name
-}
-
 const textareaWidth = ref(0)
 
 const updateWidth = () => {
-    textareaWidth.value = textarea.value.offsetWidth
-    console.log(textareaWidth.value)
+  textareaWidth.value = textarea.value.offsetWidth
 }
 
 onMounted(() => {
@@ -330,6 +330,8 @@ watch(currentUserInput, (newValue) => {
 
 .shortened-link {
   position: relative;
+  max-width: 135px; 
+  max-height: 40px;
 }
 
 .shortened-link .mode-tooltip {
