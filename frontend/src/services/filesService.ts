@@ -172,10 +172,8 @@ export async function resetFileService() {
 
 export const fileCount = ref(0)
 export const uploadedFiles = ref<Set<File>>(new Set())
-const isDragging = ref(false)
-const isDragValid = ref(false)
-const isFileInvalid = ref(false)
-const isDropped = ref(false)
+export const isDragging = ref(false)
+export const computedAcceptedFileTypes = computed(() => [...acceptedFileTypes, ...acceptedMimeTypes])
 
 export function triggerFileInput(fileInputRef: HTMLInputElement | null) {
   if (fileInputRef) {
@@ -187,70 +185,25 @@ export function onFilesSelected(event: Event) {
   const input = event.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
     const files = Array.from(input.files)
-    files.filter((file) => {
-      // Check if the file's extension is accepted
+
+    files.forEach((file) => {
       const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase()
       if (!acceptedFileTypes.includes(fileExtension)) {
-        return false
+        return
       }
 
-      if (!uploadedFiles.value.has(file)) {
-        uploadedFiles.value.add(file);
-        fileCount.value = uploadedFiles.value.size;
-        return true;
+      // Check if a file with the same name and size already exists in the set
+      const fileExists = Array.from(uploadedFiles.value).some(
+        (existingFile) => existingFile.name === file.name && existingFile.size === file.size
+      )
+
+      if (!fileExists) {
+        uploadedFiles.value.add(file)
+        fileCount.value = uploadedFiles.value.size
       }
-      
-      return false
     })
   }
   console.log('Choosen files:', uploadedFiles.value)
-}
-
-const dragText = computed(() => {
-  if (!isDropped.value) return 'Drop file to upload'
-  return isFileInvalid.value ? 'Invalid file type' : 'Valid file type'
-})
-
-function handleDragOver(event: DragEvent) {
-  event.preventDefault()
-  isDragging.value = true
-  isDragValid.value = true
-}
-
-function handleDragLeave() {
-  isDragging.value = false
-  isDragValid.value = false
-}
-
-function handleFileDrop(event: DragEvent) {
-  event.preventDefault()
-  isDragging.value = false
-  isDropped.value = true
-
-  const files = event.dataTransfer?.files
-  if (files) {
-    const selectedFiles = Array.from(files).filter((file) => {
-      const fileExt = '.' + file.name.split('.').pop()?.toLowerCase()
-      return acceptedFileTypes.includes(fileExt) || acceptedMimeTypes.includes(file.type)
-    })
-
-    const hasInvalidFiles = Array.from(files).some((file) => {
-      const fileExt = '.' + file.name.split('.').pop()?.toLowerCase()
-      return !acceptedFileTypes.includes(fileExt) && !acceptedMimeTypes.includes(file.type)
-    })
-
-    isDragValid.value = !hasInvalidFiles
-    isFileInvalid.value = hasInvalidFiles
-
-    setTimeout(() => {
-      isDragging.value = isDragValid.value = isFileInvalid.value = isDropped.value = false
-    }, 1000)
-
-    const fileSet = uploadedFiles.value
-    selectedFiles.forEach((file) => fileSet.add(file)) // Add files to the Set
-  } else {
-    isDragValid.value = false
-  }
 }
 
 export function removeFile(fileToRemove: File) {
@@ -275,5 +228,6 @@ export default {
   uploadedFiles,
   onFilesSelected,
   resetFileCount,
-  triggerFileInput
+  triggerFileInput,
+  computedAcceptedFileTypes
 }

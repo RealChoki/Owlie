@@ -1,27 +1,36 @@
 <template>
   <div
     v-if="fileCount > 0"
-    class="d-flex justify-content-center mb-2"
+    class="d-flex justify-content-end mb-2 mx-5 px-2" 
     :class="{
       'mt-auto': !messages.length && fileCount
     }"
   >
-    <div class="d-flex gap-2 align-items-center" :style="{ width: textareaWidth + 'px', overflow: 'auto' }">
+      <div
+      class="d-flex gap-1 align-items-center justify-content-end"
+      :style="{
+        width: isMessageTooLong ? (textareaWidth - 110) + 'px' : '',
+      }"
+      style="margin-bottom: -0.5em; overflow: auto"
+    >
       <div
         v-for="(file, index) in uploadedFiles"
         :key="index"
-        class="d-flex align-items-center gap-2 bg-white p-2 rounded-3 shortened-link"
+        class="d-flex align-items-center p-2 rounded-4 shortened-link file-div"
       >
-        <font-awesome-icon :icon="['fas', 'file']" />
         <span class="mode-tooltip">
           {{ file.name }}
         </span>
         <!-- Shortened display -->
-        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ file.name }}</span>
+        <span
+          class="text-white"
+          style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; cursor: default;"
+          >{{ file.name }}</span
+        >
         <font-awesome-icon
           :icon="['fas', 'times']"
-          class="cursor-pointer icon-click-effect text-danger"
-          style="width: 18px; height: 18px"
+          class="cursor-pointer rounded-4 x-icon"
+          style="width: 15px; height: 15px"
           @click="removeFile(file)"
         />
       </div>
@@ -47,7 +56,7 @@
     </div>
 
     <!-- Hidden File Input -->
-    <input type="file" ref="fileInput" @change="onFilesSelected" style="display: none" multiple />
+    <input type="file" ref="fileInput" @change="onFilesSelected" style="display: none" multiple :accept="computedAcceptedFileTypes.join(', ')"/>
 
     <!-- Textarea Container -->
     <div class="position-relative d-flex align-items-center flex-grow-1">
@@ -111,7 +120,14 @@
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faStop, faFile, faTimes } from '@fortawesome/free-solid-svg-icons'
+import {
+  faUpRightAndDownLeftFromCenter,
+  faPlus,
+  faArrowUp,
+  faStop,
+  faFile,
+  faTimes
+} from '@fortawesome/free-solid-svg-icons'
 import {
   getMessages,
   sendMessage as sendChatMessage,
@@ -119,7 +135,15 @@ import {
   cancelAssistantResponse,
   isCurrentAssistantResponseComplete
 } from '../services/chatService'
-import { fileCount, uploadedFiles, onFilesSelected, resetFileCount, triggerFileInput, removeFile } from '../services/filesService'
+import {
+  fileCount,
+  uploadedFiles,
+  onFilesSelected,
+  resetFileCount,
+  triggerFileInput,
+  removeFile,
+  computedAcceptedFileTypes
+} from '../services/filesService'
 import { getAssistantThreadId } from '../services/openaiService'
 import { get } from 'http'
 
@@ -335,8 +359,9 @@ watch(fileCount, () => {
 
 .shortened-link {
   position: relative;
-  max-width: 135px;
+  max-width: 125px;
   max-height: 40px;
+  z-index: 9999;
 }
 
 .shortened-link .mode-tooltip {
@@ -353,11 +378,23 @@ watch(fileCount, () => {
   white-space: nowrap;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+  z-index: 9999;
 }
 
 .shortened-link:hover .mode-tooltip {
   display: block;
   animation: fadeIn 0.3s forwards;
+  z-index: 9999;
+  opacity: 1;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .shortened-link .mode-tooltip::after {
@@ -369,5 +406,16 @@ watch(fileCount, () => {
   border-width: 6px;
   border-style: solid;
   border-color: var(--color-gray-light) transparent transparent transparent;
+  z-index: 9999;
+}
+
+.file-div {
+  background-color: var(--color-gray-shadow);
+  height: 1.6em;
+}
+
+.x-icon {
+  color: rgb(189, 189, 189);
+  padding: 0.15em;
 }
 </style>
