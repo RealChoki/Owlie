@@ -357,7 +357,6 @@ import axios from 'axios'
 import InfoMoodleModal from './assistant-dashboard-components/InfoMoodleModal.vue'
 import InfoFilesModal from './assistant-dashboard-components/InfoFilesModal.vue'
 import TranscriptionModal from './assistant-dashboard-components/TranscriptionModal.vue'
-import { format } from 'path'
 
 library.add(faPenToSquare, faSquareXmark, faXmark, faTrash, faCircleInfo, faPlus, faCloudArrowUp, faClosedCaptioning)
 
