@@ -1,30 +1,33 @@
 <template>
   <div
     v-if="fileCount > 0"
-    class="d-flex justify-content-end mb-2 mx-5 px-2" 
+    class="d-flex justify-content-end mb-2 mx-5 px-2"
     :class="{
       'mt-auto': !messages.length && fileCount
     }"
   >
-      <div
+    <span v-if="tooltipVisible" class="mode-tooltip" :style="{ top: tooltipY + 'px', left: tooltipX + 'px' }">
+      {{ hoveredFilename }}
+    </span>
+    <div
       class="d-flex gap-1 align-items-center justify-content-end"
       :style="{
-        width: isMessageTooLong ? (textareaWidth - 110) + 'px' : '',
+        width: isMessageTooLong ? textareaWidth - 110 + 'px' : ''
       }"
       style="margin-bottom: -0.5em; overflow: auto"
     >
       <div
         v-for="(file, index) in uploadedFiles"
         :key="index"
-        class="d-flex align-items-center p-2 rounded-4 shortened-link file-div"
+        class="d-flex align-items-center p-2 rounded-4 shortened-link file-div position-relative"
+        @mouseenter="showTooltip(file.name)"
+        @mouseleave="hideTooltip"
+        @mousemove="updateTooltipPosition"
       >
-        <span class="mode-tooltip">
-          {{ file.name }}
-        </span>
         <!-- Shortened display -->
         <span
           class="text-white"
-          style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; cursor: default;"
+          style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; cursor: default"
           >{{ file.name }}</span
         >
         <font-awesome-icon
@@ -56,7 +59,14 @@
     </div>
 
     <!-- Hidden File Input -->
-    <input type="file" ref="fileInput" @change="onFilesSelected" style="display: none" multiple :accept="computedAcceptedFileTypes.join(', ')"/>
+    <input
+      type="file"
+      ref="fileInput"
+      @change="onFilesSelected"
+      style="display: none"
+      multiple
+      :accept="computedAcceptedFileTypes.join(', ')"
+    />
 
     <!-- Textarea Container -->
     <div class="position-relative d-flex align-items-center flex-grow-1">
@@ -148,6 +158,28 @@ import { getAssistantThreadId } from '../services/openaiService'
 import { get } from 'http'
 
 library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faStop, faFile, faTimes)
+
+const tooltipX = ref(0)
+const tooltipY = ref(0)
+const hoveredFilename = ref('')
+const tooltipVisible = ref(false)
+
+function showTooltip(name: string) {
+  hoveredFilename.value = name
+  setTimeout(() => {
+    tooltipVisible.value = true
+  }, 500)
+}
+
+function hideTooltip() {
+  hoveredFilename.value = ''
+  tooltipVisible.value = false
+}
+
+function updateTooltipPosition(event: MouseEvent) {
+  tooltipX.value = event.pageX - 300
+  tooltipY.value = event.pageY - 30
+}
 
 // Constants
 const MAX_MESSAGE_LENGTH = 2000
@@ -361,31 +393,19 @@ watch(fileCount, () => {
   position: relative;
   max-width: 125px;
   max-height: 40px;
-  z-index: 9999;
+  z-index: 1001;
 }
 
-.shortened-link .mode-tooltip {
-  display: none;
+.mode-tooltip {
   position: absolute;
-  bottom: calc(120%);
-  left: 50%;
-  transform: translateX(-20%);
-  background-color: var(--color-gray-light);
+  background-color: #333;
   color: #fff;
   padding: 0.4em 0.6em;
   border-radius: 4px;
   font-size: 0.65rem;
   white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  pointer-events: none; /* So the mouse can pass through to the parent element */
   z-index: 9999;
-}
-
-.shortened-link:hover .mode-tooltip {
-  display: block;
-  animation: fadeIn 0.3s forwards;
-  z-index: 9999;
-  opacity: 1;
 }
 
 @keyframes fadeIn {
@@ -395,18 +415,6 @@ watch(fileCount, () => {
   100% {
     opacity: 1;
   }
-}
-
-.shortened-link .mode-tooltip::after {
-  content: '';
-  position: absolute;
-  bottom: -12px;
-  left: 20%;
-  transform: translateX(-50%);
-  border-width: 6px;
-  border-style: solid;
-  border-color: var(--color-gray-light) transparent transparent transparent;
-  z-index: 9999;
 }
 
 .file-div {
