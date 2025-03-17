@@ -67,6 +67,8 @@ const fileState = reactive({
   isTempAssistant: false as boolean
 })
 
+//only uploading one file at a time
+// use File Set instead of array
 export async function uploadFiles(filesToUpload: File[]) {
   try {
     // Save the file names in the file state
