@@ -166,9 +166,7 @@ const tooltipVisible = ref(false)
 
 function showTooltip(name: string) {
   hoveredFilename.value = name
-  setTimeout(() => {
-    tooltipVisible.value = true
-  }, 500)
+  tooltipVisible.value = true
 }
 
 function hideTooltip() {
@@ -229,9 +227,26 @@ const disableSendButton = () => {
   )
 }
 
+interface ExtendedFile extends File {
+  content?: string | ArrayBuffer | null
+}
+
 const sendMessage = () => {
   if (!disableSendButton() && !props.isBurgerMenuOpen) {
-    sendChatMessage(currentUserInput.value.trim())
+    let finalMessage = currentUserInput.value.trim()
+
+    // Gather file content as hidden data
+    const hiddenFileContents = Array.from(uploadedFiles.value).map((file) => {
+      const typedFile = file as ExtendedFile
+      return {
+        name: typedFile.name,
+        content: typedFile.content
+      }
+    })
+
+    console.log('Sending message:', finalMessage)
+    // Pass hidden file content separately
+    sendChatMessage(finalMessage, hiddenFileContents)
     resetFileCount()
   }
 }

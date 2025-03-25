@@ -62,21 +62,23 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import {
-  //   onFilesSelected,
   isDragging,
   uploadedFiles,
-  computedAcceptedFileTypes
-  //   isDragValid,
-  //   isFileInvalid,
-  //   isDropped
+  computedAcceptedFileTypes,
+  readNonPdfFile,
+  readPdfFile,
+  fileCount
 } from '../services/filesService'
 
 library.add(faCircleInfo)
 
-const fileCount = ref(0)
 const isDragValid = ref(false)
 const isFileInvalid = ref(false)
 const isDropped = ref(false)
+
+interface ExtendedFile extends File {
+  content?: string | ArrayBuffer | null
+}
 
 const dragText = computed(() => {
   if (!isDropped.value) return 'Drop file to upload'
@@ -92,6 +94,7 @@ function handleDragLeave() {
   isDragging.value = false
   isDragValid.value = false
 }
+
 function handleFileDrop(event: DragEvent) {
   event.preventDefault()
   setTimeout(() => {
@@ -122,12 +125,27 @@ function handleFileDrop(event: DragEvent) {
 
     const fileSet = uploadedFiles.value
 
-    selectedFiles.forEach((file) => {
-      // Check if the file is already in the Set by comparing its name (or other unique identifier like size, type)
+    selectedFiles.forEach(async (file) => {
       const fileAlreadyExists = Array.from(fileSet).some((existingFile) => existingFile.name === file.name)
 
       if (!fileAlreadyExists) {
-        fileSet.add(file)
+        const typedFile = file as ExtendedFile
+
+        try {
+          if (file.name.toLowerCase().endsWith('.pdf')) {
+            // Handle PDF files
+            const pdfText = await readPdfFile(file)
+            typedFile.content = pdfText as string | ArrayBuffer
+          } else {
+            // Handle non-PDF files
+            typedFile.content = (await readNonPdfFile(file)) as string | ArrayBuffer
+          }
+
+          fileSet.add(typedFile)
+          fileCount.value = uploadedFiles.value.size
+        } catch (error) {
+          console.error('Error reading file:', file.name, error)
+        }
       }
     })
 

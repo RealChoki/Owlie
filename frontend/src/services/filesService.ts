@@ -218,6 +218,52 @@ export function resetFileCount() {
   uploadedFiles.value.clear()
 }
 
+import * as pdfjsLib from 'pdfjs-dist'
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/node_modules/pdfjs-dist/build/pdf.worker.min.mjs' // Adjust the path
+
+export async function readPdfFile(file: File) {
+  const reader = new FileReader()
+  return new Promise((resolve, reject) => {
+    reader.onload = async (event) => {
+      try {
+        const arrayBuffer = event.target?.result as ArrayBuffer
+        const pdfDoc = await pdfjsLib.getDocument(arrayBuffer).promise
+
+        let pdfText = ''
+        const numPages = pdfDoc.numPages
+        for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+          const page = await pdfDoc.getPage(pageNum)
+          const textContent = await page.getTextContent()
+
+          textContent.items.forEach((item: any) => {
+            pdfText += item.str + ' '
+          })
+        }
+
+        resolve(pdfText)
+      } catch (error) {
+        reject(error)
+      }
+    }
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+// Function to read non-PDF files as text
+export function readNonPdfFile(file: File) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      try {
+        resolve(event.target?.result)
+      } catch (error) {
+        reject(error)
+      }
+    }
+    reader.readAsText(file)
+  })
+}
+
 export default {
   uploadFiles,
   removeFile,
@@ -231,5 +277,7 @@ export default {
   onFilesSelected,
   resetFileCount,
   triggerFileInput,
-  computedAcceptedFileTypes
+  computedAcceptedFileTypes,
+  readNonPdfFile,
+  readPdfFile
 }

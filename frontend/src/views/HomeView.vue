@@ -4,7 +4,7 @@
       <Sidebar v-if="isWideScreen && isSidebarOpen" @closeSidebar="closeSidebar" />
     </transition>
     <div
-      class="container d-flex flex-column vh-100 position-relative w-100 h-100"
+      class="container d-flex flex-column vh-100"
       :style="{
         position: !isSidebarOpen && !isBurgerMenuOpen ? 'fixed' : 'relative',
         left: !isSidebarOpen && !isBurgerMenuOpen ? '50%' : 'auto',

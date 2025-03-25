@@ -247,15 +247,11 @@ function consumeHalfHeart() {
 }
 
 // Exported functions
-export async function sendMessage(content: string) {
-
-  console.log(
-    `[sendMessage] Attempting to send message. Current heartCount: ${heartCount.value}, messageCount: ${messageCount.value}`
-  )
-
-  if (!content.trim()) {
-    return
-  }
+export async function sendMessage(
+  content: string,
+  fileContents?: Array<{ name: string; content: string | ArrayBuffer | null }>
+) {
+  console.log('[sendMessage] Sending user message and hidden file data')
 
   addUserMessage(content)
 
@@ -265,14 +261,23 @@ export async function sendMessage(content: string) {
   }
 
   incrementMessageCount()
-
   if (messageCount.value >= 2) {
     consumeHalfHeart()
   }
 
   chatState.currentUserInput = ''
+
   try {
-    await sendToThread(content)
+    // Append file content silently
+    let payload = content
+    if (fileContents && fileContents.length > 0) {
+      payload += '\n\n[Hidden File Data]\n'
+      fileContents.forEach((file) => {
+        payload += `Filename: ${file.name}\nContent:\n${file.content}\n\n`
+      })
+    }
+    console.log('Sending payload:', payload)
+    await sendToThread(payload)
   } catch (error) {
     // handleSendMessageError(error)
   }
