@@ -17,7 +17,7 @@
           <font-awesome-icon
             class="icon-click-effect nav-icon-holder"
             :icon="['fas', 'home']"
-            style="color: var(--color-white)"
+            style="color: var(--color-gray-shadow)"
           />
         </button>
         <div class="nav-icon-holder">

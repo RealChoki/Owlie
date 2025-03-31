@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { heartCount, messageCount } from '../services/chatService'
-import { getHeartCountLS, setHeartCountLS, getMessageCountLS } from '../services/localStorageService'
+import { heartCount, userMessageTokens } from '../services/chatService'
+import { getHeartCountLS, setHeartCountLS, setUserMessageTokensLS } from '../services/localStorageService'
 
 const LAST_REGEN_TIME_KEY = 'lastRegenTime'
 const REGEN_INTERVAL_MS = 3 * 60 * 1000 // 3 minutes in milliseconds
@@ -18,7 +18,6 @@ function handleStorageChange(event: StorageEvent) {
 
 function initializeHeartCount() {
     heartCount.value = getHeartCountLS()
-    messageCount.value = getMessageCountLS()
 }
 
 function setupHeartRegeneration() {
@@ -51,8 +50,20 @@ function setupHeartRegeneration() {
     }
 
     function regenerateHearts(amount: number) {
-        heartCount.value = Math.min(heartCount.value + amount, totalHearts)
-        setHeartCountLS(heartCount.value)
+        const newHeartCount = Math.min(heartCount.value + amount, totalHearts);
+        const heartsHealed = newHeartCount - heartCount.value; // How many hearts were restored
+
+        if (heartsHealed > 0) {
+            heartCount.value = newHeartCount;
+            setHeartCountLS(heartCount.value);
+
+            // Restore tokens (1,000 per half-heart)
+            const tokensToRestore = heartsHealed * 1000;
+            userMessageTokens.value = Math.min(userMessageTokens.value + tokensToRestore, 10000);
+            setUserMessageTokensLS(userMessageTokens.value);
+
+            console.log(`Regenerated ${heartsHealed} hearts and restored ${tokensToRestore} tokens.`);
+        }
     }
 
     function updateLastRegenTime(time: number) {

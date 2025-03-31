@@ -25,7 +25,7 @@ const localStorageUtils = {
 // Keys and default values
 const keys = {
   heartCount: { key: "heartCount", defaultValue: 5 },
-  messageCount: { key: "messageCount", defaultValue: 0 },
+  userMessageTokens: { key: "userMessageTokens", defaultValue: 10000 },
   currentCourse: {
     key: "currentCourse",
     defaultValue: "Grundlagen der Programmierung",
@@ -48,10 +48,10 @@ export const setHeartCountLS = (value: number) =>
   localStorageUtils.set(keys.heartCount.key, value);
 
 // Message Count
-export const getMessageCountLS = () =>
-  localStorageUtils.get(keys.messageCount.key, keys.messageCount.defaultValue);
-export const setMessageCountLS = (value: number) =>
-  localStorageUtils.set(keys.messageCount.key, value);
+export const getUserMessageTokensLS = () =>
+  localStorageUtils.get(keys.userMessageTokens.key, keys.userMessageTokens.defaultValue);
+export const setUserMessageTokensLS = (value: number) =>
+  localStorageUtils.set(keys.userMessageTokens.key, value);
 
 // Current Course
 export const getCurrentCourseLS = () =>

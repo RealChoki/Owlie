@@ -1,127 +1,123 @@
 <template>
-  <div
-    v-if="fileCount > 0"
-    class="d-flex justify-content-end mb-2 mx-5 px-2"
-    :class="{
-      'mt-auto': !messages.length && fileCount
-    }"
-  >
-    <span v-if="tooltipVisible" class="mode-tooltip" :style="{ top: tooltipY + 'px', left: tooltipX + 'px' }">
-      {{ hoveredFilename }}
-    </span>
-    <div
-      class="d-flex gap-1 align-items-center justify-content-end"
-      :style="{
-        width: isMessageTooLong ? textareaWidth - 110 + 'px' : ''
-      }"
-      style="margin-bottom: -0.5em; overflow: auto"
-    >
+  <div class="mt-auto">
+    <div v-if="fileCount > 0" class="d-flex justify-content-end mb-2 mx-5 px-2 mb-3">
+      <span v-if="tooltipVisible" class="mode-tooltip" :style="{ top: tooltipY + 'px', left: tooltipX + 'px' }">
+        {{ hoveredFilename }}
+      </span>
       <div
-        v-for="(file, index) in uploadedFiles"
-        :key="index"
-        class="d-flex align-items-center p-2 rounded-4 shortened-link file-div position-relative"
-        @mouseenter="showTooltip(file.name)"
-        @mouseleave="hideTooltip"
-        @mousemove="updateTooltipPosition"
+        class="d-flex gap-1 align-items-center justify-content-end"
+        :style="{
+          width: isMessageTooLong ? textareaWidth - 110 + 'px' : ''
+        }"
+        style="margin-bottom: -0.5em; overflow: auto"
       >
-        <!-- Shortened display -->
-        <span
-          class="text-white"
-          style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; cursor: default"
-          >{{ file.name }}</span
+        <div
+          v-for="(file, index) in uploadedFiles"
+          :key="index"
+          class="d-flex align-items-center p-2 rounded-4 shortened-link file-div position-relative"
+          @mouseenter="showTooltip(file.name)"
+          @mouseleave="hideTooltip"
+          @mousemove="updateTooltipPosition"
         >
+          <!-- Shortened display -->
+          <span
+            class="text-white"
+            style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; cursor: default"
+            >{{ file.name }}</span
+          >
+          <font-awesome-icon
+            :icon="['fas', 'times']"
+            class="cursor-pointer rounded-4 x-icon"
+            style="width: 15px; height: 15px"
+            @click="removeFile(file)"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="sticky-footer container-fluid d-flex align-items-end gap-2 px-0 mt-2 mb-2"
+      :class="{
+        'mt-auto': !messages.length && !fileCount
+      }"
+    >
+      <!-- File Upload Button -->
+      <div class="position-relative">
         <font-awesome-icon
-          :icon="['fas', 'times']"
-          class="cursor-pointer rounded-4 x-icon"
-          style="width: 15px; height: 15px"
-          @click="removeFile(file)"
+          :icon="['fas', 'plus']"
+          class="cursor-pointer btn-circle align-self-end icon-click-effect"
+          style="background-color: var(--color-gray-shadow)"
+          @click="triggerFileInput(fileInput)"
+        />
+        <span v-if="fileCount" class="file-count-indicator bg-danger text-white">
+          {{ fileCount }}
+        </span>
+      </div>
+
+      <!-- Hidden File Input -->
+      <input
+        type="file"
+        ref="fileInput"
+        @change="onFilesSelected"
+        style="display: none"
+        multiple
+        :accept="computedAcceptedFileTypes.join(', ')"
+      />
+
+      <!-- Textarea Container -->
+      <div class="position-relative d-flex align-items-center flex-grow-1">
+        <textarea
+          ref="textarea"
+          placeholder="Type a message..."
+          aria-label="Message input"
+          v-model="currentUserInput"
+          @input="resizeTextarea"
+          @keydown="handleKeydown"
+          @focus="isSearchFocused = true"
+          @blur="isSearchFocused = false"
+          :class="{
+            'input-focused': isSearchFocused,
+            'custom-input': true,
+            'cursor-default': isBurgerMenuOpen
+          }"
+        ></textarea>
+
+        <!-- Resize Icon -->
+        <font-awesome-icon
+          v-if="showResizeIcon"
+          :icon="['fas', 'up-right-and-down-left-from-center']"
+          class="top-right-icon cursor-pointer icon-click-effect"
+          @click="toggleOverlay"
+        />
+
+        <!-- Character Count -->
+        <div v-if="isMessageTooLong" class="character-count">
+          <span :class="{ 'text-danger': isMessageTooLong }">
+            {{ messageLength }}
+          </span>
+          / {{ MAX_MESSAGE_LENGTH }}
+        </div>
+      </div>
+
+      <!-- Input Actions -->
+      <div class="input-actions align-self-end d-flex gap-2">
+        <!-- Send Button -->
+        <font-awesome-icon
+          v-if="isCurrentAssistantResponseComplete"
+          :icon="['fas', 'arrow-up']"
+          :class="{
+            'cursor-pointer icon-click-effect': !disableSendButton() && !isBurgerMenuOpen,
+            'btn-disabled': disableSendButton()
+          }"
+          class="btn-circle bg-white"
+          @click="sendMessage"
+        />
+        <font-awesome-icon
+          v-else
+          :icon="['fas', 'stop']"
+          class="cursor-pointer btn-circle bg-light align-self-end icon-click-effect"
+          @click="cancelAssistantResponse"
         />
       </div>
-    </div>
-  </div>
-  <div
-    class="sticky-footer container-fluid d-flex align-items-end gap-2 pb-2 px-0 mt-2 mb-2"
-    :class="{
-      'mt-auto': !messages.length && !fileCount
-    }"
-  >
-    <!-- File Upload Button -->
-    <div class="position-relative">
-      <font-awesome-icon
-        :icon="['fas', 'plus']"
-        class="cursor-pointer btn-circle align-self-end icon-click-effect"
-        style="background-color: var(--color-gray-shadow)"
-        @click="triggerFileInput(fileInput)"
-      />
-      <span v-if="fileCount" class="file-count-indicator bg-danger text-white">
-        {{ fileCount }}
-      </span>
-    </div>
-
-    <!-- Hidden File Input -->
-    <input
-      type="file"
-      ref="fileInput"
-      @change="onFilesSelected"
-      style="display: none"
-      multiple
-      :accept="computedAcceptedFileTypes.join(', ')"
-    />
-
-    <!-- Textarea Container -->
-    <div class="position-relative d-flex align-items-center flex-grow-1">
-      <textarea
-        ref="textarea"
-        placeholder="Type a message..."
-        aria-label="Message input"
-        v-model="currentUserInput"
-        @input="resizeTextarea"
-        @keydown="handleKeydown"
-        @focus="isSearchFocused = true"
-        @blur="isSearchFocused = false"
-        :class="{
-          'input-focused': isSearchFocused,
-          'custom-input': true,
-          'cursor-default': isBurgerMenuOpen
-        }"
-      ></textarea>
-
-      <!-- Resize Icon -->
-      <font-awesome-icon
-        v-if="showResizeIcon"
-        :icon="['fas', 'up-right-and-down-left-from-center']"
-        class="top-right-icon cursor-pointer icon-click-effect"
-        @click="toggleOverlay"
-      />
-
-      <!-- Character Count -->
-      <div v-if="isMessageTooLong" class="character-count">
-        <span :class="{ 'text-danger': isMessageTooLong }">
-          {{ messageLength }}
-        </span>
-        / {{ MAX_MESSAGE_LENGTH }}
-      </div>
-    </div>
-
-    <!-- Input Actions -->
-    <div class="input-actions align-self-end d-flex gap-2">
-      <!-- Send Button -->
-      <font-awesome-icon
-        v-if="isCurrentAssistantResponseComplete"
-        :icon="['fas', 'arrow-up']"
-        :class="{
-          'cursor-pointer icon-click-effect': !disableSendButton() && !isBurgerMenuOpen,
-          'btn-disabled': disableSendButton()
-        }"
-        class="btn-circle bg-white"
-        @click="sendMessage"
-      />
-      <font-awesome-icon
-        v-else
-        :icon="['fas', 'stop']"
-        class="cursor-pointer btn-circle bg-light align-self-end icon-click-effect"
-        @click="cancelAssistantResponse"
-      />
     </div>
   </div>
 </template>

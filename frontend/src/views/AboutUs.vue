@@ -1,4 +1,14 @@
 <template>
+    <button          
+      @click="handleHomeClick"
+      class="position-absolute mt-3"
+    >
+    <font-awesome-icon
+        class="icon-click-effect nav-icon-holder cursor-pointer"
+        :icon="['fas', 'home']"
+        style="color: var(--color-gray-shadow); margin-left: 1.9em"
+    />
+    </button>
     <div class="d-flex justify-content-center container">
         <div class="d-flex flex-column justify-content-center align-items-center text-center vh-100 w-75">
             <h1 class="text-white fw-bold mb-4">
@@ -26,6 +36,21 @@
         </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {  faHome } from '@fortawesome/free-solid-svg-icons'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+library.add(faHome)
+
+const handleHomeClick = () => {
+  router.push("/");
+};
+</script>
 
 <style scoped>
 .container{

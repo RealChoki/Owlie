@@ -1,8 +1,7 @@
 import { computed, reactive, ref, watch } from 'vue'
-import { getHeartCountLS, setHeartCountLS, getMessageCountLS, setMessageCountLS } from '../services/localStorageService'
+import { getHeartCountLS, setHeartCountLS, getUserMessageTokensLS, setUserMessageTokensLS } from '../services/localStorageService'
 
 import { getAssistantId, getAssistantThreadId } from '../services/openaiService'
-import axios from 'axios';
 import websocketService from '../services/websocketService'
 
 // Reactive state
@@ -16,15 +15,16 @@ const chatState = reactive({
 
 // Reactive references
 export const heartCount = ref(getHeartCountLS())
-export const messageCount = ref(getMessageCountLS())
+export const userMessageTokens = ref(getUserMessageTokensLS())
+export const nextHeartMilestone = ref(Math.floor(userMessageTokens.value / 1000) * 1000);
 
 // Watchers to update local storage
 watch(heartCount, (newValue) => {
   setHeartCountLS(newValue)
 })
 
-watch(messageCount, (newValue) => {
-  setMessageCountLS(newValue)
+watch(userMessageTokens, (newValue) => {
+  setUserMessageTokensLS(newValue)
 })
 
 // No hearts messages
@@ -47,9 +47,9 @@ function getRandomNoHeartsMessage() {
 
 function resetCounts() {
   heartCount.value = 5
-  messageCount.value = 0
+  userMessageTokens.value = 10000
   setHeartCountLS(heartCount.value)
-  setMessageCountLS(messageCount.value)
+  setUserMessageTokensLS(userMessageTokens.value)
 }
 
 // async function sendToThread(content: string) {
@@ -236,13 +236,8 @@ function addAssistantMessage(content: string) {
   chatState.messages.push({ content, role: 'assistant', index: chatState.messages.length })
 }
 
-function incrementMessageCount() {
-  messageCount.value += 1
-}
-
 function consumeHalfHeart() {
   heartCount.value = Math.max(heartCount.value - 0.5, 0)
-  messageCount.value = 0
   console.log(`[sendMessage] Consumed half a heart. New heartCount: ${heartCount.value}`)
 }
 
@@ -260,11 +255,6 @@ export async function sendMessage(
     return
   }
 
-  incrementMessageCount()
-  if (messageCount.value >= 2) {
-    consumeHalfHeart()
-  }
-
   chatState.currentUserInput = ''
 
   try {
@@ -277,6 +267,9 @@ export async function sendMessage(
       })
     }
     console.log('Sending payload:', payload)
+
+    updateTokensAndConsume(payload);
+
     await sendToThread(payload)
   } catch (error) {
     // handleSendMessageError(error)
@@ -284,9 +277,6 @@ export async function sendMessage(
 }
 
 export async function resendMessage(index: number) {
-  console.log(
-    `[resendMessage] Attempting to resend message. Current heartCount: ${heartCount.value}, messageCount: ${messageCount.value}`
-  )
   deleteMessagesFromIndex(index)
   const userIndex = index - 1
   if (userIndex >= 0 && chatState.messages[userIndex].role === 'user') {
@@ -365,10 +355,26 @@ export function getThinking() {
   return chatState.thinking
 }
 
+export function estimateOpenAITokens(text: string): number {
+  return Math.ceil(text.split(/\s+/).join(' ').length * 1.3);
+}
+
+function updateTokensAndConsume(payload: string) {
+  const tokenUsage = payload.length;
+  userMessageTokens.value -= tokenUsage;
+  setUserMessageTokensLS(userMessageTokens.value);
+
+  while (userMessageTokens.value < nextHeartMilestone.value) {
+    consumeHalfHeart();
+    nextHeartMilestone.value -= 1000;
+  }
+
+  console.log(`Tokens used: ${tokenUsage}, Remaining tokens: ${userMessageTokens.value}`);
+}
+
 export default {
   sendMessage,
   getMessages,
   clearMessages,
   getThinking,
-  messageCount
 }
