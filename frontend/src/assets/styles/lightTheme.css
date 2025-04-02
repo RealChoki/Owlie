@@ -1,0 +1,22 @@
+.light-theme {
+    /* General Colors */
+    --color-white: #ffffff;
+    --color-black: #1a1a1a; /* or a darker tone for text */
+  
+    /* main bg color*/
+    --color-background-dark: #f0f0f0; /* lighter background */
+  
+    /* footer/expanded input */
+    --color-gray-dark: #e0e0e0;
+    /* selected course, togglebtn, profile menu */
+    --color-gray-medium: #d0d0d0;
+    --color-gray-light: #c0c0c0;
+  
+    --color-gray-lighter: #b0b0b0;
+
+    /* fontawesome icons */
+    --color-gray-shadow: #a0a0a0;
+  
+    /* Disable btns */
+    --color-disabled: rgb(220, 220, 220);
+}

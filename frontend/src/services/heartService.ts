@@ -7,7 +7,7 @@ import {
 } from '../services/localStorageService'
 
 const LAST_REGEN_TIME_KEY = 'lastRegenTime'
-const REGEN_INTERVAL_MS = 0.1 * 60 * 1000 // 3 minutes in milliseconds
+const REGEN_INTERVAL_MS = 0.1 * 60 * 1000 // 3 minutes in milliseconds 0.1-> 3
 const HEARTS_PER_INTERVAL = 0.5
 const totalHearts = 5
 

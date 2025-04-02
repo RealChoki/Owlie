@@ -11,6 +11,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '@fortawesome/fontawesome-free/css/all.css';
 import "@/assets/styles/colorVariables.css";
+import "@/assets/styles/lightTheme.css";
 import "@/assets/styles/globalClasses.css";
 
 // Import Vuetify components and directives
