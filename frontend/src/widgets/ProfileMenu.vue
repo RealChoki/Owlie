@@ -26,13 +26,12 @@
         <font-awesome-icon :icon="['fas', 'gear']" /> Settings
       </a>
       <a
-        href="#"
-        class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+        class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded cursor-pointer"
         @click="navigateToAboutUs"
       >
         <font-awesome-icon :icon="['fas', 'info-circle']" /> About Us
       </a>
-      <a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded" @click="logout">
+      <a class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded cursor-pointer" @click="logout">
         <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Log Out
       </a>
     </nav>

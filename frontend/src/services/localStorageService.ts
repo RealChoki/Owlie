@@ -39,7 +39,24 @@ const keys = {
   oldAssistantId: { key: "old_assistant_id", defaultValue: null },
   threadId: { key: "thread_id", defaultValue: null },
   oldThreadId: { key: "old_thread_id", defaultValue: null },
+  theme: { key: "theme", defaultValue: "dark" },
+  language: { key: "language", defaultValue: "de" },
 };
+
+// Selected Theme
+export const setThemeLS = (theme: string) =>
+  localStorageUtils.set(keys.theme.key, theme);
+
+export const getThemeLS = () =>
+  localStorageUtils.get(keys.theme.key, keys.theme.defaultValue);
+
+// Selected Language
+export const setLanguageLS = (language: string) =>
+  localStorageUtils.set(keys.language.key, language);
+
+export const getLanguageLS = () =>
+  localStorageUtils.get(keys.language.key, keys.language.defaultValue);
+
 
 // Heart Count
 export const getHeartCountLS = () =>

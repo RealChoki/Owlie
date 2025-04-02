@@ -24,7 +24,14 @@
         </div>
         <div class="d-flex flex-column align-items-center position-relative w-50">
           <div class="hearts-container d-flex align-items-center gap-0.5">
-            <span v-for="(heartClass, index) in heartClasses" :key="index" class="heart-icon">
+            <span
+              v-for="(heartClass, index) in heartClasses"
+              :key="index"
+              class="heart-icon"
+              @mouseenter="showTooltip"
+              @mousemove="moveTooltip"
+              @mouseleave="hideTooltip"
+            >
               <template v-if="heartClass === 'heart-filled'">
                 <!-- Full Heart -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30">
@@ -90,6 +97,7 @@
                 </svg>
               </template>
             </span>
+            <div v-if="tooltipVisible" class="tooltip" :style="tooltipStyle">Tokens: {{ userMessageTokens }}</div>
           </div>
           <p class="assistant-title">
             {{ navbarCourseTitle }}
@@ -136,7 +144,7 @@ import { useThread } from '../hooks/useThread'
 import { useScreenWidth } from '../utils/useScreenWidth'
 import Profilemenu from '@/widgets/Profilemenu.vue'
 import SettingsMenuModal from '@/home-components/SettingsMenuModal.vue'
-import { heartCount, clearMessages } from '../services/chatService'
+import { heartCount, clearMessages, userMessageTokens } from '../services/chatService'
 import { getHeartCountLS, setHeartCountLS } from '../services/localStorageService'
 import { navbarCourseTitle } from '../services/homeService'
 import {
@@ -181,6 +189,24 @@ function openSettings() {
   showSettings.value = true
   isProfileMenuVisible.value = false // ensure the profile menu closes
   openModal('settingsModal')
+}
+
+const tooltipVisible = ref(false)
+const tooltipStyle = ref({ top: '0px', left: '0px' })
+
+const showTooltip = () => {
+  tooltipVisible.value = true
+}
+
+const hideTooltip = () => {
+  tooltipVisible.value = false
+}
+
+const moveTooltip = (event) => {
+  tooltipStyle.value = {
+    top: `${event.clientY + 10}px`, // Add 10px to avoid overlap
+    left: `${event.clientX + 10}px` // Add 10px to avoid overlap
+  }
 }
 
 const toggleBurgerMenu = () => {
@@ -248,5 +274,19 @@ onMounted(() => {
   bottom: -18px;
   font-weight: bold;
   white-space: nowrap;
+}
+
+.tooltip {
+  position: fixed;
+  background-color: #333;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0.9;
+  transition: opacity 0.2s;
 }
 </style>
