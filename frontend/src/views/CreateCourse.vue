@@ -488,7 +488,7 @@ const goToCourseDashboard = (course: {
 
 <style scoped>
 .form-label {
-  color: var(--color-white);
+  color: var(--text-color);
   margin-bottom: 0.1em;
 }
 
@@ -504,22 +504,22 @@ const goToCourseDashboard = (course: {
 
 .btn-action {
   background-color: green;
-  color: var(--color-white);
+  color: var(--text-color);
   border-color: var(--color-gray-light);
 }
 .btn-action:hover {
   background-color: darkgreen; /* Darker green on hover */
-  color: var(--color-white);
+  color: var(--text-color);
   border-color: var(--color-gray-light);
 }
 .btn-action:focus {
   background-color: darkgreen; /* Darker green on focus */
-  color: var(--color-white);
+  color: var(--text-color);
   border-color: var(--color-gray-light);
 }
 .btn-action:active {
   background-color: #004d00; /* Even darker green on active */
-  color: var(--color-white);
+  color: var(--text-color);
   border-color: var(--color-gray-light);
 }
 .btn-action:disabled {
@@ -534,7 +534,7 @@ const goToCourseDashboard = (course: {
 
 .login-input {
   background-color: var(--color-gray-medium);
-  color: var(--color-white);
+  color: var(--text-color);
   padding: 0.5rem;
   padding-left: 1rem;
   border: 1px solid var(--color-gray-light);
@@ -621,7 +621,7 @@ const goToCourseDashboard = (course: {
 /* btn-secondary styling (if not already defined globally) */
 .btn-secondary {
   background-color: var(--color-gray-medium);
-  color: var(--color-white);
+  color: var(--text-color);
   border: 1px solid var(--color-gray-light);
 }
 

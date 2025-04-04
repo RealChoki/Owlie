@@ -18,8 +18,8 @@
 
       <div
         v-else-if="message.role === 'assistant'"
-        :class="['assistant-msg text-white']"
-        class="position-relative"
+        class="position-relative assistant-msg"
+        style="color: var(--text-color)"
       >
         <img
           v-if="!thinking || message.isComplete"
@@ -72,7 +72,8 @@
         alt="assistant"
         class="assistant-pfp p-1 pt-0"
       />
-      <span class="thinking-animation text-white fst-italic ms-1"
+      <span class="thinking-animation fst-italic ms-1"
+        style="color: var(--text-color)"
         >thinking<span class="dot">.</span><span class="dot">.</span
         ><span class="dot">.</span></span
       >

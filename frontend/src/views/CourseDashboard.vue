@@ -38,21 +38,21 @@
           <ul class="p-0 mt-1">
             <li
               :class="{ 'selected-sidebar-item': activeTab === 'assistants' }"
-              class="list-item-hover py-2 rounded text-white cursor-pointer"
+              class="list-item-hover py-2 rounded cursor-pointer"
               @click="activeTab = 'assistants'"
             >
               Assistants
             </li>
             <li
               :class="{ 'selected-sidebar-item': activeTab === 'usage' }"
-              class="list-item-hover py-2 rounded text-white cursor-pointer"
+              class="list-item-hover py-2 rounded cursor-pointer"
               @click="activeTab = 'usage'"
             >
               Usage
             </li>
             <li
               :class="{ 'selected-sidebar-item': activeTab === 'stats' }"
-              class="list-item-hover py-2 rounded text-white cursor-pointer"
+              class="list-item-hover py-2 rounded cursor-pointer"
               @click="activeTab = 'stats'"
             >
               Stats
@@ -122,6 +122,7 @@ function handleHomeClick() {
   list-style-type: none;
   transition: background-color 0.5s ease, color 0.5s ease;
   padding-left: 0.8em !important;
+  color: var(--text-color);
 }
 
 .list-item-hover:hover {

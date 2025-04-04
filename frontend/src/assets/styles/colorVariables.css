@@ -1,38 +1,101 @@
 :root {
-
   /* General Colors */
   --color-white: #ffffff;
   --color-black: #0a0a0a;
-  
-  /* main bg color*/
-  --color-background-dark: #131213;
-  
-  /* footer/expanded input */
-  --color-gray-dark: #232323;
-  /* selected course, togglebtn, profile menu */
-  --color-gray-medium: #2a2a2a;
-  --color-gray-light: #414141;
-  
-  --color-gray-lighter: #747474;
 
-  /* fontawesome icons */
-  --color-gray-shadow: #5b5b5b;
+  /* Backgrounds */
+  --color-background-dark: #131213;           /* Main background */
+
+  /* Grays */
+  --color-gray-dark: #232323;                 /* Footer / Expanded input background */
+  --color-gray-medium: #2a2a2a;               /* Selected course, toggle button, profile menu */
+  --color-gray-light: #414141;                /* Section headers, dividers */
+
+  --color-gray-lighter: #747474;              /* Placeholder text, muted labels */
+  --color-gray-shadow: #5b5b5b;               /* FontAwesome icons / Icon shadows */
+
+  /* UI States */
+  --color-disabled: rgb(196, 195, 195);       /* Disabled buttons / inputs */
+
+  /* Text */
+  --text-color: #ffffff;                     /* Text color for dark mode */
+
+  /* Chat */
+  --chat-bubble: #1a1a1b;                     /* Chat bubbles background */
+
+  /* Extra (unassigned) */
+  --color-burger-hover: #41414160;            /* Burger menu hover (semi-transparent) */
+  --color-burger-active: #41414149;           /* Burger menu active/pressed (more transparent) */
+
+  --color-owlie-gray: #444444;                /* Owlie mascot / avatar background */
+}
+
+
+/* Light mode — applied with: <html data-theme="white"> */
+[data-theme="light"] {
+  --color-white: #0a0a0a;
+  --color-black: #ffffff;
+
+  --color-background-dark: #f9f9f9;           /* Main background lightened */
   
-  /* Disable btns */
-  --color-disabled: rgb(196, 195, 195);
+  --color-gray-dark: #e8e8e8;                 /* Footer / input area */
+  --color-gray-medium: #dcdcdc;               /* Toggles, menus */
+  --color-gray-light: #c4c4c4;                /* Section headers / lines */
   
+  --color-gray-lighter: #9e9e9e;              /* Placeholder text */
+  --color-gray-shadow: #b0b0b0;               /* Icons / shadows */
+
+  --color-disabled: #e0e0e0;                  /* Disabled state */
+
+
+  /* Text */
+  --text-color: #0a0a0a;                     /* Text color for light mode */
+
+
+  --chat-bubble: #f1f1f1;                     /* Chat bubble background */
+
+  --color-burger-hover: #c4c4c460;            /* Semi-transparent hover */
+  --color-burger-active: #c4c4c449;           /* Active burger press */
+
+  --color-owlie-gray: #bbbbbb;                /* Owlie avatar background */
+
+
+
+
+  /* COMPONENT COLORS */
+  --background: #131213;
+  --message-input: #232323;
+  --message-input-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+
+  --profile-menu: #2A2A2A;
+  --settings: #232323;
+  --settings-option: #ffffff;
   
-  /*
+  --sidebar: #0A0A0A;
+  --hover: #414141;
+  --chat-bubble: #1A1A1B;
+  --chat-bubble-shadow: 0 0px 10px #b0b0b0;
+  --send-button-background: #ffffff;
+  --send-button-background-inactive: #C4C3C3;
+  --stop-button-background: #ffffff;
+  
+  --send-file-button-background: #5b5b5b;
 
-  burger
-  #41414160
-  #41414149
+  --profile-menu-icons: #ffffff;
+  --homepage-icons: #5D5D5D;
 
-  chat bubble
-  #1a1a1b
+  --magnifying-glass-inactive: #5b5b5b;
 
-  owlie
-  #444444
+  --mode-selector-background: #2a2a2a;
+  --mode-selector-background-hover: #323232;
+  --mode-selector-background-selected: #4c4c4c;
 
-  */
+  --info-icon-background: #ffffff;
+
+  --reload-icon-open: #ffffff;
+  --reload-icon-close: #5b5b5b;
+
+  --expand-message-input-icon: #5b5b5b;
+
+  --file-widget-background: #5b5b5b;
 }

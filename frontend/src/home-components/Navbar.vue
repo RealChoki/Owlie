@@ -19,7 +19,7 @@
             class="icon-click-effect cursor-pointer nav-icon"
             :icon="['fas', 'arrows-rotate']"
             @click="handleRefreshClick"
-            style="color: var(--color-white); opacity: 0.85"
+            style="color: var(--text-color); opacity: 0.85"
           />
         </div>
         <div class="d-flex flex-column align-items-center position-relative w-50">

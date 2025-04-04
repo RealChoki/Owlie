@@ -734,7 +734,7 @@ onMounted(setHeaderWidth)
 <style scoped>
 .form-check-input:checked {
   background-color: var(--color-gray-lighter);
-  border-color: var(--color-white);
+  border-color: var(--text-color);
 }
 
 .form-check-input:checked::before {
@@ -763,13 +763,13 @@ onMounted(setHeaderWidth)
 
 .tab-item-active {
   background-color: var(--color-gray-light);
-  color: var(--color-white);
+  color: var(--text-color);
   font-weight: bold;
 }
 
 .tab-item-inactive {
   background-color: var(--color-gray-dark);
-  color: var(--color-white);
+  color: var(--text-color);
 }
 
 .tab-left-rounded {
@@ -834,7 +834,7 @@ onMounted(setHeaderWidth)
 input,
 textarea {
   background-color: var(--color-gray-medium);
-  color: var(--color-white);
+  color: var(--text-color);
   padding: 0.5rem;
   padding-left: 1rem;
   border: 1px solid var(--color-gray-light);
@@ -854,7 +854,7 @@ textarea::placeholder {
 
 .lecture-link {
   background-color: var(--color-gray-medium);
-  color: var(--color-white);
+  color: var(--text-color);
   padding: 0.5rem;
   border-radius: 6px;
   margin-bottom: 0.5rem;

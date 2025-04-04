@@ -9,29 +9,36 @@
       'profile-menu-nav-edit-quiz': props.origin === 'Nav-EditQuiz'
     }"
   >
-    <nav class="p-2 text-white">
+    <nav class="p-2" style="color: var(--text-color)">
       <div ref="ProfileMenuUniversityRef" class="p-2">Hochschule für Technik und Wirtschaft Berlin</div>
       <hr class="my-1" />
       <a
         href="#"
-        class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+        class="d-flex align-items-center gap-2 text-decoration-none p-2 rounded"
+        style="color: var(--text-color)"
         @click="navigateToProfile"
       >
         <font-awesome-icon :icon="['fas', 'user-circle']" /> Profile
       </a>
       <a
         @click="emit('openSettings')"
-        class="cursor-pointer d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded"
+        class="cursor-pointer d-flex align-items-center gap-2 text-decoration-none p-2 rounded"
+        style="color: var(--text-color)"
       >
         <font-awesome-icon :icon="['fas', 'gear']" /> Settings
       </a>
       <a
-        class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded cursor-pointer"
+        class="d-flex align-items-center gap-2 text-decoration-none p-2 rounded cursor-pointer"
+        style="color: var(--text-color)"
         @click="navigateToAboutUs"
       >
         <font-awesome-icon :icon="['fas', 'info-circle']" /> About Us
       </a>
-      <a class="d-flex align-items-center gap-2 text-decoration-none text-white p-2 rounded cursor-pointer" @click="logout">
+      <a
+        class="d-flex align-items-center gap-2 text-decoration-none p-2 rounded cursor-pointer"
+        style="color: var(--text-color)"
+        @click="logout"
+      >
         <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Log Out
       </a>
     </nav>

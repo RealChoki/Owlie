@@ -7,7 +7,7 @@
         v-if="owlDisplayMessage !== ''"
         class="owl-speech-bubble p-2 position-absolute translate-middle-y"
       >
-        <p class="m-0 text-white text-center">
+        <p class="m-0 text-center" style="color: var(--text-color)">
           {{ owlDisplayMessage }}
         </p>
       </div>
@@ -19,20 +19,6 @@
       />
     </div>
   </div>
-
-  <!-- worked code/falls back code maybe use this for small screen -->
-  <!-- <div
-            v-if="!chatMessages.length"
-            class="d-flex justify-content-center align-items-center h-50 logo-container flex-column"
-          >
-        <img
-          src="../assets/icons/OwlLogo.png"
-          style="width: 75px"
-          @click="handleOwlClick"
-          :class="{ 'blur-effect': isBurgerMenuOpen && !isWideScreen }"
-        />
-        <p class="text-white small fst-italic">{{ owlDisplayMessage }}</p>
-      </div> -->
 </template>
 
 <script setup lang="ts">

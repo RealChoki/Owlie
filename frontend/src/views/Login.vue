@@ -138,7 +138,7 @@ const onSubmit = async () => {
 .login-left {
   min-width: 420px;
   background-color: var(--color-black);
-  color: var(--color-white);
+  color: var(--text-color);
 }
 
 .login-right {
@@ -147,7 +147,7 @@ const onSubmit = async () => {
 }
 
 .btn-action {
-  background-color: var(--color-white);
+  background-color: var(--text-color);
   color: var(--color-black);
   border-color: var(--color-gray-light);
 }
@@ -177,7 +177,7 @@ const onSubmit = async () => {
 
 .login-input {
   background-color: var(--color-gray-medium);
-  color: var(--color-white);
+  color: var(--text-color);
   padding: 0.5rem;
   padding-left: 1rem;
   border: 1px solid var(--color-gray-light);

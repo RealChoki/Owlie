@@ -21,8 +21,7 @@
         >
           <!-- Shortened display -->
           <span
-            class="text-white"
-            style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; cursor: default"
+            style="color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; cursor: default"
             >{{ file.name }}</span
           >
           <font-awesome-icon
@@ -48,7 +47,8 @@
           style="background-color: var(--color-gray-shadow)"
           @click="triggerFileInput(fileInput)"
         />
-        <span v-if="fileCount" class="file-count-indicator bg-danger text-white">
+        <span v-if="fileCount" class="file-count-indicator bg-danger"
+        style="color: var(--text-color)">
           {{ fileCount }}
         </span>
       </div>
@@ -329,7 +329,7 @@ watch(fileCount, () => {
   flex: 1;
   background-color: var(--color-gray-dark);
   border: none;
-  color: white;
+  color: var(--text-color);
   border-radius: 25px;
   height: 45px;
   max-height: calc(1.5em * 6 + 16px);
@@ -369,7 +369,7 @@ watch(fileCount, () => {
 }
 
 .input-focused::placeholder {
-  color: white !important;
+  color: var(--text-color) !important;
 }
 
 .file-count-indicator {

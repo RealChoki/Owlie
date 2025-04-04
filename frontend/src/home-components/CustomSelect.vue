@@ -113,11 +113,11 @@ background-color: var(--color-gray-light);
 
 .selected-option {
 display: inline-block;
-color: var(--color-white);
+color: var(--text-color);
 }
 
 .chevron-icon {
-color: var(--color-white);
+color: var(--text-color);
 margin-left: 5px;
 font-size: 0.8em;
 }
@@ -136,7 +136,7 @@ border-radius: 6px;
 max-height: 200px;
 overflow-y: auto;
 z-index: 100;     
-color: var(--color-white);
+color: var(--text-color);
 }
 
 .options-list li {

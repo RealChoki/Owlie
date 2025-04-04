@@ -15,7 +15,7 @@
       <font-awesome-icon
         :icon="['fas', 'magnifying-glass']"
         class="magnifying-glass cursor-pointer"
-        :class="{ 'text-white': isSearchFocused }"
+        :style="{ color: isSearchFocused ? 'var(text-color)' : '' }"
         @click="focusInput"
       />
       <img
@@ -31,7 +31,7 @@
         <li
           v-for="(course, index) in filteredCourses"
           :key="index"
-          class="list-item-hover rounded text-white py-1"
+          class="list-item-hover rounded py-1"
           :class="courseClass(course)"
           @click="
             isCourseClickable(course) ? selectCourse(course) : null;
@@ -56,7 +56,7 @@
     <div
       class="mode-toggle d-flex flex-column align-items-center modes-container p-3 pt-2"
     >
-      <div class="d-flex gap-2 text-white">
+      <div class="d-flex gap-2" style="color: var(--text-color)">
         <h6 class="m-0">Switch mode to:</h6>
       </div>
       <div
@@ -72,15 +72,16 @@
       >
         <v-btn
           @click="toggleMode"
-          class="equal-width-btn max-width-450 text-white"
+          class="equal-width-btn max-width-450"
+          style="color: var(--text-color)"
           base-color="var(--color-gray-medium)"
-
         >
           {{ selectedMode === "general" ? "Quiz" : "General" }}
         </v-btn>
         <font-awesome-icon
           :icon="['fas', 'circle-info']"
-          class="circle-info text-white cursor-pointer"
+          class="circle-info cursor-pointer"
+          style="color: var(--text-color)"
           @click="toggleInfo"
         />
       </div>
@@ -104,7 +105,7 @@
             />
           </div>
         </div>
-        <div class="text-start text-truncate text-white">
+        <div class="text-start text-truncate" style="color: var(--text-color)">
           <span>David Svoboda</span>
         </div>
       </button>
@@ -329,7 +330,7 @@ onUnmounted(() => {
 
 .burger-menu-search-bar {
   background-color: var(--color-gray-medium);
-  color: white;
+  color: var(--text-color);
   border: none;
   border-radius: 20px;
   padding: 0.5rem;
@@ -360,7 +361,7 @@ onUnmounted(() => {
 }
 
 .input-focused::placeholder {
-  color: white !important;
+  color: var(--text-color) !important;
 }
 
 .list-item-hover {
@@ -368,6 +369,7 @@ onUnmounted(() => {
   padding-left: 0.2em;
   list-style-type: none;
   transition: background-color 0.5s ease, color 0.5s ease;
+  color: var(--text-color);
 }
 
 .list-item-hover:hover {
@@ -467,10 +469,6 @@ onUnmounted(() => {
   background: linear-gradient(to bottom, white, var(--color-gray-shadow));
   opacity: 1;
 }
-
-
-
-
 
 .profile-btn {
   border-radius: 5px;

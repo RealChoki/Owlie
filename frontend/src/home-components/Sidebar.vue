@@ -14,7 +14,7 @@
       <font-awesome-icon
         :icon="['fas', 'magnifying-glass']"
         class="magnifying-glass cursor-pointer"
-        :class="{ 'text-white': isSearchFocused }"
+        :style="{ color: isSearchFocused ? 'var(--color-white)' : '' }"
         @click="focusInput"
       />
       <img
@@ -30,7 +30,7 @@
         <li
           v-for="(course, index) in filteredCourses"
           :key="index"
-          class="list-item-hover rounded text-white py-1"
+          class="list-item-hover rounded py-1"
           :class="courseClass(course)"
           @click="onCourseClick(course)"
         >
@@ -58,7 +58,7 @@
     <div
       class="mode-toggle d-flex flex-column align-items-center modes-container p-3 pt-2"
     >
-      <div class="d-flex gap-2 text-white">
+      <div class="d-flex gap-2" style="color: var(--text-color)">
         <h6 class="m-0">
           Select a mode
           <font-awesome-icon
@@ -239,7 +239,7 @@ onMounted(() => {
 
 .sidebar-search-bar {
   background-color: var(--color-gray-medium);
-  color: white;
+  color: var(--text-color);
   border: none;
   border-radius: 20px;
   padding: 0.5rem;
@@ -255,7 +255,7 @@ onMounted(() => {
 }
 
 .input-focused::placeholder {
-  color: white !important;
+  color: var(--text-color) !important;
 }
 
 .search-container {
@@ -284,6 +284,7 @@ onMounted(() => {
   padding-left: 0.2em;
   list-style-type: none;
   transition: background-color 0.5s ease, color 0.5s ease;
+  color: var(--text-color);
 }
 
 .list-item-hover:hover {
@@ -341,6 +342,7 @@ onMounted(() => {
   white-space: normal;
   text-transform: none;
   letter-spacing: 0.5px;
+  color: var(--text-color);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 

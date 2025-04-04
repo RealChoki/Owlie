@@ -12,12 +12,13 @@
           <font-awesome-icon
             :icon="['fas', 'down-left-and-up-right-to-center']"
             @click.stop="closeExpandedInput"
-            class="collapse-icon text-white cursor-pointer"
+            class="collapse-icon cursor-pointer"
+            style="color: var(--text-color)"
           />
         </div>
         <textarea
-          class="full-screen-textarea text-white flex-grow-1"
-          style="background-color: var(--color-gray-dark)"
+          class="full-screen-textarea flex-grow-1"
+          style="background-color: var(--color-gray-dark); color: var(--text-color)"
           placeholder="Type a message..."
           aria-label="Message input"
           v-model="currentUserInput"

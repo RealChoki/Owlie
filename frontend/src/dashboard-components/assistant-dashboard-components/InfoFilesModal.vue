@@ -77,11 +77,11 @@ const combinedData = computed(() => {
 }
 
 .modal-title {
-  color: var(--color-white);
+  color: var(--text-color);
 }
 
 .modal-body {
-  color: var(--color-white);
+  color: var(--text-color);
   padding-bottom: 0;
 }
 
@@ -100,7 +100,7 @@ table thead th,
 table tbody td {
   border-left: 1px solid #333; /* Border only between columns */
   border-top: 1px solid #333; /* Border only between rows */
-  color: var(--color-white);
+  color: var(--text-color);
 }
 
 table tbody td:first-child,

@@ -6,9 +6,10 @@
           class="modal-header d-flex justify-content-between align-items-center"
           style="border-color: var(--color-gray-lighter)"
         >
-          <h5 class="modal-title text-white"><b>Settings</b></h5>
+          <h5 class="modal-title" style="color: var(--text-color)"><b>Settings</b></h5>
           <font-awesome-icon
-            class="fa-2x cursor-pointer text-white"
+            class="fa-2x cursor-pointer"
+            style="color: var(--text-color)"
             :icon="['fas', 'xmark']"
             data-bs-dismiss="modal"
             aria-label="Close"
@@ -17,7 +18,7 @@
 
         <div class="modal-body">
           <div class="settings-option mb-1">
-            <label class="text-white theme-label" @click="handleThemeOpened">Theme</label>
+            <label class="theme-label" style="color: var(--text-color)" @click="handleThemeOpened">Theme</label>
             <div class="theme-select">
               <CustomSelect
                 v-model="theme"
@@ -30,7 +31,9 @@
           </div>
 
           <div class="settings-option">
-            <label class="text-white language-label" @click="handleLanguageOpened">Language</label>
+            <label class="language-label" style="color: var(--text-color)" @click="handleLanguageOpened"
+              >Language</label
+            >
             <div class="language-select">
               <CustomSelect
                 v-model="language"
@@ -57,7 +60,7 @@ import { setThemeLS, getThemeLS, setLanguageLS, getLanguageLS } from '@/services
 library.add(faXmark, faChevronDown, faChevronUp)
 defineEmits(['close'])
 
-const theme = ref(getThemeLS()) 
+const theme = ref(getThemeLS())
 const language = ref(getLanguageLS())
 
 // Refs to control the open state for each select:
@@ -93,44 +96,38 @@ function handleDocumentClick(e: MouseEvent) {
   const languageSelect = document.querySelector('.language-select')
 
   if (themeSelectOpen.value) {
-    if (
-      !themeLabel?.contains(e.target as Node) &&
-      !themeSelect?.contains(e.target as Node)
-    ) {
+    if (!themeLabel?.contains(e.target as Node) && !themeSelect?.contains(e.target as Node)) {
       themeSelectOpen.value = false
     }
   }
   if (languageSelectOpen.value) {
-    if (
-      !languageLabel?.contains(e.target as Node) &&
-      !languageSelect?.contains(e.target as Node)
-    ) {
+    if (!languageLabel?.contains(e.target as Node) && !languageSelect?.contains(e.target as Node)) {
       languageSelectOpen.value = false
     }
   }
 }
 
+const applyTheme = (newTheme) => {
+  document.documentElement.setAttribute('data-theme', newTheme)
+  localStorage.setItem('theme', newTheme)
+}
+
 onMounted(() => {
   document.addEventListener('click', handleDocumentClick)
+  applyTheme(theme.value)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleDocumentClick)
 })
 
-// Watch for theme changes and save to localStorage
 watch(theme, (newTheme) => {
-  if (newTheme === 'light') {
-    document.documentElement.classList.add('light-theme')
-  } else {
-    document.documentElement.classList.remove('light-theme')
-  }
-  setThemeLS(newTheme) // Save the selected theme to localStorage
+  document.documentElement.setAttribute('data-theme', newTheme)
+  setThemeLS(newTheme)
 })
 
-// Watch for language changes and save to localStorage
 watch(language, (newLanguage) => {
-  setLanguageLS(newLanguage) // Save the selected language to localStorage
+  setLanguageLS(newLanguage)
 })
 </script>
 

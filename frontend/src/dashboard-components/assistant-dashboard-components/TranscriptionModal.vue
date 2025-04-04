@@ -144,11 +144,11 @@ const updateTranscribedFile = async (fileName: string, content: string) => {
 }
 
 .modal-title {
-  color: var(--color-white);
+  color: var(--text-color);
 }
 
 .modal-body {
-  color: var(--color-white);
+  color: var(--text-color);
   padding-bottom: 0;
 }
 
