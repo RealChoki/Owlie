@@ -8,10 +8,7 @@
     aria-expanded="open"
   >
     <div class="selected-option">{{ selectedOptionLabel }}</div>
-    <font-awesome-icon
-      :icon="open ? ['fas', 'chevron-up'] : ['fas', 'chevron-down']"
-      class="chevron-icon"
-    />
+    <font-awesome-icon :icon="open ? ['fas', 'chevron-up'] : ['fas', 'chevron-down']" class="chevron-icon" />
     <ul v-if="open" class="options-list">
       <li
         v-for="(option, index) in options"
@@ -27,7 +24,6 @@
 
 <script setup lang="ts">
 import { ref, computed, defineProps, defineEmits, watch } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const props = defineProps({
   modelValue: { type: String, required: true },
@@ -74,8 +70,7 @@ function onKeydown(event: KeyboardEvent) {
       highlightedIndex.value = (highlightedIndex.value + 1) % props.options.length
       break
     case 'ArrowUp':
-      highlightedIndex.value =
-        (highlightedIndex.value - 1 + props.options.length) % props.options.length
+      highlightedIndex.value = (highlightedIndex.value - 1 + props.options.length) % props.options.length
       break
     case 'Enter':
       if (highlightedIndex.value >= 0) {
@@ -99,57 +94,58 @@ const selectedOptionLabel = computed(() => {
 
 <style scoped>
 .custom-select {
-position: relative;
-display: inline-block;
-border: 1px solid var(--color-gray-light);
-border-radius: 6px;
-padding: 5px 10px;
-cursor: pointer;
+  position: relative;
+  display: inline-block;
+  border: 1px solid var(--custom-select-border-color);
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  background: var(--custom-select-bg);
 }
 
 .custom-select:hover {
-background-color: var(--color-gray-light);
+  background-color: var(--custom-select-hover-bg);
 }
 
 .selected-option {
-display: inline-block;
-color: var(--text-color);
+  display: inline-block;
+  color: var(--text-color);
 }
 
 .chevron-icon {
-color: var(--text-color);
-margin-left: 5px;
-font-size: 0.8em;
+  color: var(--text-color);
+  margin-left: 5px;
+  font-size: 0.8em;
 }
 
 .options-list {
-list-style: none;
-padding: 0;
-margin: 0;
-position: absolute;
-top: calc(100% + 5px);
-left: 0;
-right: 0;
-background: var(--color-gray-medium);
-border: 1px solid var(--color-gray-light);
-border-radius: 6px;
-max-height: 200px;
-overflow-y: auto;
-z-index: 100;     
-color: var(--text-color);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  background: var(--custom-select-option-bg);
+  border: 1px solid var(--custom-select-option-border-color);
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  color: var(--text-color);
 }
 
 .options-list li {
-padding: 5px 10px;
-cursor: pointer;
+  padding: 5px 10px;
+  cursor: pointer;
 }
 
 .options-list li:hover {
-background-color: var(--color-gray-light);
+  background-color: var(--custom-select-option-bg-hover);
 }
 
-.options-list li:nth-child(n+1):hover,
+.options-list li:nth-child(n + 1):hover,
 .options-list li.active {
-background-color: var(--color-gray-light);
+  background-color: var(--custom-select-option-bg-active);
 }
 </style>

@@ -7,23 +7,29 @@ const activeCourses = ref<string[]>(["Grundlagen der Programmierung"]);
 export const courses = ref<string[]>([]);
 
 export async function fetchCourses() {
-  try {
-    const response = await fetch(
-      "http://localhost:8000/api/courses?university=hochschule_fuer_technik_und_wirtschaft_berlin&degree=bachelor&subject=wirtschaftsinformatik"
-    );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    courses.value = data.courses.map((course: string) =>
-      course.replace(/_/g, " ")
-    );
-    // temp for /quiz
-    localStorage.setItem("courses", JSON.stringify(courses.value));
-  } catch (error) {
-    console.error("There has been a problem with your fetch operation:", error);
-    throw error;
-  }
+  // try {
+  //   const response = await fetch(
+  //     "http://localhost:8000/api/courses?university=hochschule_fuer_technik_und_wirtschaft_berlin&degree=bachelor&subject=wirtschaftsinformatik"
+  //   );
+  //   if (!response.ok) {
+  //     throw new Error("Network response was not ok");
+  //   }
+  //   const data = await response.json();
+  //   courses.value = data.courses.map((course: string) =>
+  //     course.replace(/_/g, " ")
+  //   );
+  //   // temp for /quiz
+  //   localStorage.setItem("courses", JSON.stringify(courses.value));
+  // } catch (error) {
+  //   console.error("There has been a problem with your fetch operation:", error);
+  //   throw error;
+  // }
+
+  courses.value = [
+    "Grundlagen der Programmierung",
+    "Statistics",
+    "Software Engineering"
+  ];
 }
 
 export async function fetchAssistantIds(courseName: string, modeName: string) {

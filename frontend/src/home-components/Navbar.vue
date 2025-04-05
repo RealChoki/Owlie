@@ -2,24 +2,39 @@
   <div>
     <nav class="navbar navbar-expand-lg navbar-light pb-4">
       <div class="container-fluid">
-        <img
+        <svg
           v-if="!isWideScreen"
+          width="27"
+          height="27"
+          viewBox="0 0 100 100"
+          xmlns="http://www.w3.org/2000/svg"
           class="mt-3 icon-click-effect cursor-pointer"
-          src="../assets/icons/MenuOpen.png"
           @click="toggleBurgerMenu"
-        />
-        <img
+        >
+          <rect x="0" y="15" width="100" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
+          <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
+          <rect x="0" y="73" width="33" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
+        </svg>
+
+        <svg
           v-else-if="isWideScreen && !isSidebarOpen"
+          width="27"
+          height="27"
+          viewBox="0 0 100 100"
+          xmlns="http://www.w3.org/2000/svg"
           class="mt-3 icon-click-effect cursor-pointer"
-          src="../assets/icons/MenuOpen.png"
           @click="toggleSidebar"
-        />
+        >
+          <rect x="0" y="15" width="100" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
+          <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
+          <rect x="0" y="73" width="33" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
+        </svg>
         <div v-else class="nav-icon-holder mt-3">
           <font-awesome-icon
             class="icon-click-effect cursor-pointer nav-icon"
             :icon="['fas', 'arrows-rotate']"
             @click="handleRefreshClick"
-            style="color: var(--text-color); opacity: 0.85"
+            style="color: var(--reload-icon-left); opacity: 0.85"
           />
         </div>
         <div class="d-flex flex-column align-items-center position-relative w-50">
@@ -37,8 +52,8 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30">
                   <defs>
                     <linearGradient id="heartGradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="0">
-                      <stop offset="0%" stop-color="white" />
-                      <stop offset="100%" stop-color="var(--color-gray-shadow)" />
+                      <stop offset="0%" stop-color="var(--hearts-bg-start)" />
+                      <stop offset="100%" stop-color="var(--hearts-bg-end)" />
                     </linearGradient>
                   </defs>
                   <path
@@ -55,8 +70,8 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30">
                   <defs>
                     <linearGradient id="halfHeartGradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="0">
-                      <stop offset="0%" stop-color="white" />
-                      <stop offset="100%" stop-color="var(--color-gray-shadow)" />
+                      <stop offset="0%" stop-color="var(--hearts-bg-start)" />
+                      <stop offset="100%" stop-color="var(--hearts-bg-end)" />
                     </linearGradient>
                     <clipPath id="leftHalf">
                       <rect x="0" y="0" width="12" height="24"></rect>
@@ -84,8 +99,8 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30">
                   <defs>
                     <linearGradient id="emptyHeartGradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="0">
-                      <stop offset="0%" stop-color="white" />
-                      <stop offset="100%" stop-color="var(--color-gray-shadow)" />
+                      <stop offset="0%" stop-color="var(--hearts-bg-start)" />
+                      <stop offset="100%" stop-color="var(--hearts-bg-end)" />
                     </linearGradient>
                   </defs>
                   <path
@@ -104,23 +119,20 @@
           </p>
         </div>
         <div class="nav-icon-holder mt-3">
-          <div
+          <font-awesome-icon
             v-if="isWideScreen && isSidebarOpen"
-            class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle icon-click-effect pfp-container"
-          >
-            <img
-              alt="User"
-              src="https://s.gravatar.com/avatar/6276a6c42e2f0f22bb0a96c4b1f2bd32?s=480&amp;r=pg&amp;d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fsh.png"
-              class="img-fluid rounded-circle"
-              @click="toggleProfileMenu"
-            />
-          </div>
+            class="nav-icon cursor-pointer icon-click-effect"
+            :icon="['fas', 'user-circle']"
+            @click="toggleProfileMenu"
+            style="color: var(--profile-icon-navbar);"
+          />
           <font-awesome-icon
             v-else
             class="nav-icon"
             :class="{ 'cursor-pointer icon-click-effect': !isBurgerMenuOpen }"
             :icon="['fas', 'arrows-rotate']"
             @click="handleRefreshClick"
+            style="color: var(--reload-icon-right);"
           />
         </div>
       </div>
@@ -137,9 +149,6 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faArrowsRotate, faHeart, faUserCircle } from '@fortawesome/free-solid-svg-icons'
 import { useThread } from '../hooks/useThread'
 import { useScreenWidth } from '../utils/useScreenWidth'
 import Profilemenu from '@/widgets/Profilemenu.vue'
@@ -157,7 +166,6 @@ import {
 import * as bootstrap from 'bootstrap'
 
 // FontAwesome library setup
-library.add(faArrowsRotate, faHeart, faUserCircle)
 
 // Props and emits
 const props = defineProps({
@@ -252,7 +260,6 @@ onMounted(() => {
 
 <style scoped>
 .nav-icon {
-  color: var(--color-gray-shadow);
   font-size: 1.8rem;
 }
 
@@ -265,7 +272,7 @@ onMounted(() => {
 }
 
 .assistant-title {
-  background: linear-gradient(90deg, white, var(--color-gray-shadow));
+  background: var(--assistant-title-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-size: 12px;

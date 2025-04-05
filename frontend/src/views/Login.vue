@@ -1,15 +1,6 @@
 <template>
-  <div class="container-fluid vh-100 d-flex p-2 py-4">
-    <!-- Left Section -->
-    <!-- <div
-      class="logo-container d-flex align-items-center px-4 mt-3 position-fixed"
-    >
-      <img src="../assets/icons/OwlLogo.png" alt="Logo" class="logo" />
-      <div class="text-white">
-        <span class="fw-bold ms-2">Owlie</span>
-        <span class="fst-italic"> - personal student assistant</span>
-      </div>
-    </div> -->
+  <div class=" vh-100 d-flex p-2 py-4" style="color: var(--text-color)">
+    <img src="../assets/icons/htw.png" alt="" style="position: fixed; top: 20px; left: 30px; width: 50px" />
     <div class="login-left d-flex align-items-center justify-content-center">
       <div class="p-4 w-100">
         <h1 class="text-center mb-4">Login</h1>
@@ -55,7 +46,7 @@
     <!-- Right Section -->
     <!-- src="../assets/videos/vecteezy_abstract-grey-and-black-professional-motion-background_34700930.mp4" -->
     <div class="login-right">
-      <div class="container h-100">
+      <div class="pe-3 h-100 rm-0">
         <video
           class="image_preview_container"
           type="video/m4v"
@@ -80,6 +71,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import "@/assets/styles/loginStyles.css";
 
 const username = ref("");
 const password = ref("");
@@ -133,54 +125,50 @@ const onSubmit = async () => {
 */
 
 .container-fluid {
-  background-color: var(--color-black);
+  background-color: var(--background);
 }
+
 .login-left {
   min-width: 420px;
-  background-color: var(--color-black);
+  background-color: var(--background);
   color: var(--text-color);
 }
 
 .login-right {
   flex-grow: 1;
-  background-color: var(--color-black);
+  background-color: var(--background);
 }
 
 .btn-action {
-  background-color: var(--text-color);
-  color: var(--color-black);
-  border-color: var(--color-gray-light);
+  background-color: var(--login-button-bg);
+  color: var(--login-button-color);
 }
 
 .btn-action:hover {
-  background-color: #e0e0e0;
-  color: var(--color-black);
-  border-color: var(--color-gray-light);
+  background-color: var(--login-button-bg-hover);
+  color: var(--login-button-color);
 }
 
 .btn-action:focus {
-  background-color: #e0e0e0;
-  color: var(--color-black);
-  border-color: var(--color-gray-light);
+  background-color: var(--login-button-bg-hover);
+  color: var(--login-button-color);
 }
 
 .btn-action:active {
-  background-color: #d1d1d1;
-  color: var(--color-black);
-  border-color: var(--color-gray-light);
+  background-color: var(--login-button-bg-active);
+  color: var(--login-button-color);
 }
 
 .btn-action:disabled {
   background-color: var(--color-disabled);
-  border-color: var(--color-disabled);
 }
 
 .login-input {
-  background-color: var(--color-gray-medium);
+  background-color: var(--login-input-bg);
   color: var(--text-color);
   padding: 0.5rem;
   padding-left: 1rem;
-  border: 1px solid var(--color-gray-light);
+  border: 1px solid var(--login-input-border-color);
   border-radius: 6px;
 }
 
@@ -188,8 +176,4 @@ const onSubmit = async () => {
   outline: none;
 }
 
-.login-input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-  transition: color 0.2s ease;
-}
 </style>

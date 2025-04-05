@@ -1,7 +1,7 @@
 <template>
   <div
     class="container-fluid p-0 m-0"
-    style="background-color: var(--color-background-dark)"
+    style="background-color: var(--background)"
   >
     <RouterView />
   </div>
@@ -31,6 +31,6 @@
 }
 
 html {
-  background-color: var(--color-background-dark);
+  background-color: var(--background);
 }
 </style>

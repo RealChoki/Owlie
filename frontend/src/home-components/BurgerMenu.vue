@@ -15,14 +15,23 @@
       <font-awesome-icon
         :icon="['fas', 'magnifying-glass']"
         class="magnifying-glass cursor-pointer"
-        :style="{ color: isSearchFocused ? 'var(text-color)' : '' }"
+        :style="{
+          color: isSearchFocused ? 'var(--magnifying-glass-icon-active)' : 'var(--magnifying-glass-icon-inactive)'
+        }"
         @click="focusInput"
       />
-      <img
-        src="../assets/icons/MenuClose.png"
+      <svg
+        width="30"
+        height="30"
+        viewBox="0 0 100 100"
+        xmlns="http://www.w3.org/2000/svg"
         class="ms-3 icon-click-effect cursor-pointer"
         @click="closeBurgerMenu"
-      />
+      >
+        <rect x="0" y="15" width="33" height="12" rx="4" fill="var(--buger-menu-icon-close)" />
+        <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--buger-menu-icon-close)" />
+        <rect x="0" y="73" width="100" height="12" rx="4" fill="var(--buger-menu-icon-close)" />
+      </svg>
     </div>
 
     <!-- Scrollable Course List -->
@@ -53,35 +62,27 @@
       </ul>
     </div>
 
-    <div
-      class="mode-toggle d-flex flex-column align-items-center modes-container p-3 pt-2"
-    >
+    <div class="mode-toggle d-flex flex-column align-items-center modes-container p-3 pt-2">
       <div class="d-flex gap-2" style="color: var(--text-color)">
         <h6 class="m-0">Switch mode to:</h6>
       </div>
-      <div
-        v-if="showInfo"
-        class="small mt-1 text-warning text-center max-width-450"
-      >
-        Quiz mode: A quiz feature that assesses knowledge, tracks performance,
-        and provides personalized feedback.
+      <div v-if="showInfo" class="small mt-1 text-warning text-center max-width-450">
+        Quiz mode: A quiz feature that assesses knowledge, tracks performance, and provides personalized feedback.
       </div>
 
-      <div
-        class="d-flex justify-content-center mt-2 w-100 position-relative max-width-450"
-      >
+      <div class="d-flex justify-content-center mt-2 w-100 position-relative max-width-450">
         <v-btn
           @click="toggleMode"
           class="equal-width-btn max-width-450"
           style="color: var(--text-color)"
-          base-color="var(--color-gray-medium)"
+          base-color="var(--mode-selector-bg)"
         >
-          {{ selectedMode === "general" ? "Quiz" : "General" }}
+          {{ selectedMode === 'general' ? 'Quiz' : 'General' }}
         </v-btn>
         <font-awesome-icon
           :icon="['fas', 'circle-info']"
           class="circle-info cursor-pointer"
-          style="color: var(--text-color)"
+          style="color: var(--info-icon-bg)"
           @click="toggleInfo"
         />
       </div>
@@ -92,18 +93,14 @@
         type="button"
         aria-haspopup="menu"
         @click="toggleProfileMenu"
-        :style="{ backgroundColor: isProfileMenuVisible ? '#41414160' : '' }"
+        :style="{ backgroundColor: isProfileMenuVisible ? 'var(--profile-btn-selected-bg)' : '' }"
       >
-        <div class="me-2">
-          <div
-            class="d-flex align-items-center justify-content-center overflow-hidden rounded-circle pfp-container"
-          >
-            <img
-              alt="User"
-              src="https://scontent-ber1-1.cdninstagram.com/v/t51.2885-19/461621119_507240088873650_7983337688478167496_n.jpg?stp=dst-jpg_s100x100_tt6&_nc_cat=103&ccb=1-7&_nc_sid=bf7eb4&_nc_ohc=kHBp3yUY_PwQ7kNvgFeKn_N&_nc_zt=24&_nc_ht=scontent-ber1-1.cdninstagram.com&oh=00_AYBQT7SUl2ZHW8UjAiqcHAlemBrR3CEeujwiaKBKIERGCQ&oe=676F6C48"
-              class="img-fluid rounded-circle"
-            />
-          </div>
+        <div class="me-2 ms-1">
+          <font-awesome-icon
+            class="cursor-pointer icon-click-effect"
+            :icon="['fas', 'user-circle']"
+            style="color: var(--text-color)"
+          />
         </div>
         <div class="text-start text-truncate" style="color: var(--text-color)">
           <span>David Svoboda</span>
@@ -113,110 +110,101 @@
         v-if="isProfileMenuVisible"
         :origin="'BurgerMenu'"
         @toggleProfileMenu="toggleProfileMenu"
+        @openSettings="openSettings"
         :style="{ width: buttonWidth + 'px' }"
-        />
+      />
     </div>
+    <SettingsMenuModal />
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  computed,
-  onMounted,
-  onUnmounted,
-  watch,
-  nextTick,
-} from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-  faMagnifyingGlass,
-  faCircleInfo,
-  faUserCircle,
-  faGear,
-  faRightFromBracket,
-  faInfoCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import { VBtn, VBtnToggle } from "vuetify/components";
-import { useThread } from "../hooks/useThread";
-import { clearMessages } from "../services/chatService";
-import { fetchAssistantIds, courses } from "../services/courseService";
-import {
-  getAssistantCourse,
-  getAssistantMode,
-  setAssistantCourse,
-  setAssistantMode,
-} from "../services/openaiService";
-import { setNavbarCourseTitle } from "../services/homeService";
-import ProfileMenu from "@/widgets/ProfileMenu.vue";
-import { stopTTS } from "../services/ttsService";
-
-library.add(
-  faMagnifyingGlass,
-  faCircleInfo,
-  faUserCircle,
-  faGear,
-  faRightFromBracket,
-  faInfoCircle
-);
+import SettingsMenuModal from '@/home-components/SettingsMenuModal.vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { VBtn, VBtnToggle } from 'vuetify/components'
+import { useThread } from '../hooks/useThread'
+import { clearMessages } from '../services/chatService'
+import { fetchAssistantIds, courses } from '../services/courseService'
+import { getAssistantCourse, getAssistantMode, setAssistantCourse, setAssistantMode } from '../services/openaiService'
+import { setNavbarCourseTitle } from '../services/homeService'
+import ProfileMenu from '@/widgets/ProfileMenu.vue'
+import { stopTTS } from '../services/ttsService'
+import * as bootstrap from 'bootstrap'
 
 const props = defineProps({
-  isBurgerMenuOpen: Boolean,
-});
+  isBurgerMenuOpen: Boolean
+})
 
-const emit = defineEmits(["closeBurgerMenu"]);
+const emit = defineEmits(['closeBurgerMenu'])
 
-const searchQuery = ref("");
-const isSearchFocused = ref(false);
-const searchInput = ref<HTMLInputElement | null>(null);
 
-const selectedMode = ref(getAssistantMode() || "general");
-const courseClicked = ref<{ course: string; mode: string } | null>(null);
-const showInfo = ref(false);
-
-function toggleMode() {
-  selectedMode.value = selectedMode.value === "general" ? "quiz" : "general";
+const showSettings = ref(false)
+function openModal(modalId: string) {
+  const modalElement = document.getElementById(modalId)
+  if (modalElement) {
+    const modal = new bootstrap.Modal(modalElement)
+    modal.show()
+  }
 }
 
-const clickableCourses = ref<string[]>([
-  "Grundlagen der Programmierung",
-  "Investition und Finanzierung",
-  "Statistik",
-]);
+function openSettings() {
+  showSettings.value = true
+  openModal('settingsModal')
+}
 
-const profileBtn = ref<HTMLElement | null>(null);
-const buttonWidth = ref(0);
+const searchQuery = ref('')
+const isSearchFocused = ref(false)
+const searchInput = ref<HTMLInputElement | null>(null)
+
+const selectedMode = ref(getAssistantMode() || 'general')
+const courseClicked = ref<{ course: string; mode: string } | null>(null)
+const showInfo = ref(false)
+
+function toggleMode() {
+  selectedMode.value = selectedMode.value === 'general' ? 'quiz' : 'general'
+}
+
+const clickableCourses = ref<string[]>(['Grundlagen der Programmierung', 'Investition und Finanzierung', 'Statistik'])
+
+const profileBtn = ref<HTMLElement | null>(null)
+const buttonWidth = ref(0)
 const updatetoggleProfileMenuWidth = () => {
   if (profileBtn.value) {
-    buttonWidth.value = profileBtn.value.offsetWidth;
+    buttonWidth.value = profileBtn.value.offsetWidth
   }
-};
+}
 
-const isProfileMenuVisible = ref(false);
+const isProfileMenuVisible = ref(false)
 const toggleProfileMenu = () => {
-  isProfileMenuVisible.value = !isProfileMenuVisible.value;
-    if (showInfo.value) {
-    toggleInfo();
+  isProfileMenuVisible.value = !isProfileMenuVisible.value
+  if (showInfo.value) {
+    toggleInfo()
   }
-};
+}
 
 function isCourseClickable(course: string): boolean {
-  return clickableCourses.value.includes(course);
+
+  // temp code
+  if (course === 'Grundlagen der Programmierung' && (selectedMode.value === 'exam')) {
+    return false; // Exclude this course and 'exam' mode
+  }
+  // end temp code
+  
+  return clickableCourses.value.includes(course)
 }
 
 // Generate dynamic classes for courses
 const courseClass = (course: string) => ({
   unclickable: !isCourseClickable(course),
-  "cursor-pointer": isCourseClickable(course),
-  "selected-course": isCourseClicked(course),
-});
+  'cursor-pointer': isCourseClickable(course),
+  'selected-course': isCourseClicked(course)
+})
 
 function handleCourseClick(course: string) {
   if (!isCourseClickable(course)) {
-    return;
+    return
   }
-  setNavbarCourseTitle(course, selectedMode.value);
+  setNavbarCourseTitle(course, selectedMode.value)
 }
 
 function isCourseClicked(course: string): boolean {
@@ -224,100 +212,100 @@ function isCourseClicked(course: string): boolean {
     courseClicked.value !== null &&
     course === courseClicked.value.course &&
     selectedMode.value === courseClicked.value.mode
-  );
+  )
 }
 
 const filteredCourses = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  const filtered = courses.value.filter((course) =>
-    course.toLowerCase().includes(query)
-  );
+  const query = searchQuery.value.toLowerCase()
+  const filtered = courses.value.filter((course) => course.toLowerCase().includes(query))
 
-  const clickable = filtered.filter(isCourseClickable);
-  const unclickable = filtered.filter((course) => !isCourseClickable(course));
+  const clickable = filtered.filter(isCourseClickable)
+  const unclickable = filtered.filter((course) => !isCourseClickable(course))
 
-  return [...clickable, ...unclickable.sort()];
-});
+  return [...clickable, ...unclickable.sort()]
+})
 
-const { clearThread, initializeThread } = useThread(ref(undefined), () => {});
+const { clearThread, initializeThread } = useThread(ref(undefined), () => {})
 
 async function selectCourse(course: string) {
-  if (!isCourseClickable(course)) {return;}
-  console.log("Selected course:", course);
+  if (!isCourseClickable(course)) {
+    return
+  }
+  console.log('Selected course:', course)
   setTimeout(() => {
-    closeBurgerMenu();
-  }, 350);
-  courseClicked.value = { course, mode: selectedMode.value };
+    closeBurgerMenu()
+  }, 350)
+  courseClicked.value = { course, mode: selectedMode.value }
 
-  const modeName = selectedMode.value;
-  const courseName = course;
-  const currentMode = getAssistantMode();
-  const currentCourse = getAssistantCourse();
+  const modeName = selectedMode.value
+  const courseName = course
+  const currentMode = getAssistantMode()
+  const currentCourse = getAssistantCourse()
 
   if (course !== currentCourse || modeName !== currentMode) {
-    console.log("Course or mode changed. Resetting thread and messages.");
-    stopTTS();
-    clearThread();
-    clearMessages(false);
-    setAssistantCourse(course);
-    setAssistantMode(modeName);
+    console.log('Course or mode changed. Resetting thread and messages.')
+    stopTTS()
+    clearThread()
+    clearMessages(false)
+    setAssistantCourse(course)
+    setAssistantMode(modeName)
     try {
-      await fetchAssistantIds(courseName, modeName);
-      await initializeThread();
+      await fetchAssistantIds(courseName, modeName)
+      await initializeThread()
     } catch (error) {
-      console.error("Error initializing thread:", error);
-      return;
+      console.error('Error initializing thread:', error)
+      return
     }
   } else {
-    console.log("Same course and mode selected. No action taken.");
+    console.log('Same course and mode selected. No action taken.')
   }
 }
 
 function closeBurgerMenu() {
-  emit("closeBurgerMenu");
+  emit('closeBurgerMenu')
 }
 
 function focusInput() {
-  searchInput.value?.focus();
+  searchInput.value?.focus()
 }
 
 function toggleInfo() {
-  showInfo.value = !showInfo.value;
+  showInfo.value = !showInfo.value
 }
 
 function handleResize() {
   if (window.innerWidth >= 768) {
-    emit("closeBurgerMenu");
+    emit('closeBurgerMenu')
   }
-  updatetoggleProfileMenuWidth();
+  updatetoggleProfileMenuWidth()
 }
 
 onMounted(() => {
-  window.addEventListener("resize", handleResize);
-  handleResize(); // Initial check
-  const currentCourse = getAssistantCourse();
-  const currentMode = getAssistantMode();
+  window.addEventListener('resize', handleResize)
+  handleResize() // Initial check
+  const currentCourse = getAssistantCourse()
+  const currentMode = getAssistantMode()
   if (currentCourse && currentMode) {
-    courseClicked.value = { course: currentCourse, mode: currentMode };
-    selectedMode.value = currentMode;
+    courseClicked.value = { course: currentCourse, mode: currentMode }
+    selectedMode.value = currentMode
   }
-});
+})
 
 // Remove the resize handler when the component is unmounted
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
-});
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <style scoped>
 .burger-menu {
-  background-color: var(--color-black);
+  background-color: var(--sidebar-bg);
   height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
   width: 80vw;
-  z-index: 1000;
+  z-index: 10;
   min-width: 305px;
   padding-right: 10px !important;
 }
@@ -329,7 +317,7 @@ onUnmounted(() => {
 }
 
 .burger-menu-search-bar {
-  background-color: var(--color-gray-medium);
+  background-color: var(--course-search-bg);
   color: var(--text-color);
   border: none;
   border-radius: 20px;
@@ -356,7 +344,6 @@ onUnmounted(() => {
   position: absolute;
   font-size: 1.2rem;
   left: 15px;
-  color: var(--color-gray-shadow);
   transition: color 0.2s ease;
 }
 
@@ -373,17 +360,17 @@ onUnmounted(() => {
 }
 
 .list-item-hover:hover {
-  background-color: var(--color-gray-light);
+  background-color: var(--course-hover-bg);
 }
 
 .list-item-hover::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 0;
   height: 100%;
-  background: linear-gradient(to bottom, white, var(--color-gray-shadow));
+  background: var(--course-sidebar-gradient);
   opacity: 0;
   transition: width 0.5s ease, opacity 0.5s ease;
 }
@@ -421,7 +408,11 @@ onUnmounted(() => {
   line-height: 1.2;
   text-transform: none;
   letter-spacing: 0.5px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.equal-width-btn:hover {
+  background-color: var(--mode-selector-bg-hover) !important;
 }
 
 .circle-info {
@@ -443,7 +434,7 @@ onUnmounted(() => {
 }
 
 .modes-container {
-  background-color: var(--color-black);
+  background-color: var(--sidebar-bg);
   overflow: visible;
 }
 
@@ -453,31 +444,30 @@ onUnmounted(() => {
 }
 
 .selected-course {
-  background-color: var(--color-gray-medium);
+  background-color: var(--course-selected-bg);
   position: relative;
   overflow: hidden;
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 .selected-course::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 5px;
   height: 100%;
-  background: linear-gradient(to bottom, white, var(--color-gray-shadow));
+  background: var(--course-sidebar-gradient);
   opacity: 1;
 }
 
 .profile-btn {
   border-radius: 5px;
-  background-color: var(--color-black);
+  background-color: var(--sidebar-bg);
   transition: background-color 0.5s ease;
 }
 
 .profile-btn:hover {
-  background-color: #41414149;
+  background-color: var(--profile-btn-hover-bg);
 }
-
 </style>

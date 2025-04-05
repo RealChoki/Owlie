@@ -1,0 +1,15 @@
+:root {
+  /* View: Login */
+  --background: #131213;
+
+  --text-color: #ffffff;
+  --login-button-bg: #ffffff;
+  --login-button-bg-hover: #e0e0e0;
+  --login-button-bg-active: #d1d1d1;
+  --login-button-color: #000000;
+
+  --login-input-bg: #2a2a2a;
+  --login-input-border-color: #414141;
+
+  --color-disabled: rgb(220, 220, 220);
+}

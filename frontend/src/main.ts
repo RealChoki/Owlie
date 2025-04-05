@@ -1,18 +1,73 @@
 import { createApp } from 'vue'
-import { createVuetify } from 'vuetify';
+import { createVuetify } from 'vuetify'
 import App from './App.vue'
-//import posthogPlugin from "../plugins/posthog"; //import the plugin. 
+//import posthogPlugin from "../plugins/posthog"; //import the plugin.
 import router from './router'
 
 // Import Vuetify styles and other dependencies
-import 'vuetify/styles';
-import '@mdi/font/css/materialdesignicons.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import '@fortawesome/fontawesome-free/css/all.css';
-import "@/assets/styles/colorVariables.css";
-import "@/assets/styles/lightTheme.css";
-import "@/assets/styles/globalClasses.css";
+import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import '@fortawesome/fontawesome-free/css/all.css'
+import '@/assets/styles/colorVariables.css'
+import '@/assets/styles/globalClasses.css'
+
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+  faChevronDown,
+  faChevronUp,
+  faUserCircle,
+  faGear,
+  faRightFromBracket,
+  faInfoCircle,
+  faDownLeftAndUpRightToCenter,
+  faArrowUp,
+  faXmark,
+  faHome,
+  faMagnifyingGlass,
+  faCircleInfo,
+  faArrowsRotate,
+  faHeart,
+  faUpRightAndDownLeftFromCenter,
+  faPlus,
+  faStop,
+  faFile,
+  faTimes,
+  faCopy,
+  faCheck,
+  faArrowRotateRight,
+  faVolumeHigh,
+  faVolumeXmark
+} from '@fortawesome/free-solid-svg-icons'
+
+library.add(
+  faChevronDown,
+  faChevronUp,
+  faUserCircle,
+  faGear,
+  faRightFromBracket,
+  faInfoCircle,
+  faDownLeftAndUpRightToCenter,
+  faArrowUp,
+  faXmark,
+  faHome,
+  faMagnifyingGlass,
+  faCircleInfo,
+  faArrowsRotate,
+  faHeart,
+  faUpRightAndDownLeftFromCenter,
+  faPlus,
+  faStop,
+  faFile,
+  faTimes,
+  faCopy,
+  faCheck,
+  faArrowRotateRight,
+  faVolumeHigh,
+  faVolumeXmark
+)
 
 // Import Vuetify components and directives
 import * as components from 'vuetify/components'
@@ -23,17 +78,16 @@ const vuetify = createVuetify({
   components,
   directives,
   theme: {
-    defaultTheme: 'dark',
-  },
+    defaultTheme: 'dark'
+  }
 })
 
 // Create Vue app instance
-const app = createApp(App);
+const app = createApp(App)
 
-// Use Vuetify, router, and mount the app
-app.use(vuetify);
-app.use(router);
-//app.use(posthogPlugin); //install the plugin
+app.component('font-awesome-icon', FontAwesomeIcon)
+app.use(vuetify)
+app.use(router)
 
 // Mount the app to the DOM
-app.mount('#app');
+app.mount('#app')

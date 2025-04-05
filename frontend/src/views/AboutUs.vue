@@ -3,34 +3,34 @@
     <font-awesome-icon
       class="icon-click-effect nav-icon-holder cursor-pointer"
       :icon="['fas', 'home']"
-      style="color: var(--color-gray-shadow); margin-left: 1.9em"
+      style="color: var(--home-icon); margin-left: 1.9em"
     />
   </button>
   <div class="d-flex justify-content-center container">
     <div class="d-flex flex-column justify-content-center align-items-center text-center vh-100 w-75">
-      <h1 class="fw-bold mb-4" style="color: var(--color-white">
+      <h1 class="fw-bold mb-4" style="color: var(--text-color)">
         Creating an AI Assistant that Empowers Independent Problem-Solving
       </h1>
-      <p class="w-75 paragraph-desktop" style="color: var(--color-white">
+      <p class="w-75 paragraph-desktop" style="color: var(--text-color)">
         Welcome! We are a passionate team of 2 business informatics students (<a
           href="https://github.com/RealChoki"
-          style="color: var(--color-white"
+          style="color: var(--text-color)"
           >Choki's GitHub</a
         >
-        and <a href="https://github.com/davidcraccer" style="color: var(--color-white">David's GitHub</a>) from HTW
+        and <a href="https://github.com/davidcraccer" style="color: var(--text-color)">David's GitHub</a>) from HTW
         Berlin with a dream. Meet Owlie – our innovative AI teaching assistant. Unlike traditional AI tools that often
         provide immediate answers, Owlie encourages students to think critically and solve problems independently by
         offering hints, guidance, and personalized feedback.
       </p>
-      <p class="w-75 paragraph-desktop" style="color: var(--color-white">
+      <p class="w-75 paragraph-desktop" style="color: var(--text-color)">
         Our goal is to address the challenges AI faces in education, such as promoting critical thinking over quick
         solutions, and fostering a deeper understanding of concepts. By helping students develop problem-solving skills,
         we believe AI can truly empower learners.
       </p>
-      <p class="w-75 paragraph-mobile" style="color: var(--color-white">
+      <p class="w-75 paragraph-mobile" style="color: var(--text-color)">
         We are two business informatics students (<a
           href="https://github.com/RealChoki"
-          style="color: var(--color-white"
+          style="color: var(--text-color)"
           >Choki</a
         >
         and <a href="https://github.com/davidcraccer" style="color: var(--text-color)">David</a>) from HTW Berlin,
@@ -38,20 +38,14 @@
         critical thinking. Instead of simply providing answers, Owlie offers hints, guidance, and personalized feedback
         to help students develop problem-solving skills while maintaining academic integrity.
       </p>
-      <img class="owl-logo w-25 mt-4" src="../assets/icons/OwlLogo.png" alt="Owl Logo" />
+      <img class="owl-logo w-25 mt-4" src="../assets/icons/owl.svg" alt="Owl Logo" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faHome } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'vue-router'
-
 const router = useRouter()
-
-library.add(faHome)
 
 const handleHomeClick = () => {
   router.push('/')

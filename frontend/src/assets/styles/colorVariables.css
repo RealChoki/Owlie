@@ -4,98 +4,277 @@
   --color-black: #0a0a0a;
 
   /* Backgrounds */
-  --color-background-dark: #131213;           /* Main background */
+  --color-background-dark: #131213;
+  /* Main background */
 
   /* Grays */
-  --color-gray-dark: #232323;                 /* Footer / Expanded input background */
-  --color-gray-medium: #2a2a2a;               /* Selected course, toggle button, profile menu */
-  --color-gray-light: #414141;                /* Section headers, dividers */
+  --color-gray-dark: #232323;
+  /* Footer / Expanded input background */
+  --color-gray-medium: #2a2a2a;
+  /* Selected course, toggle button, profile menu */
+  --color-gray-light: #414141;
+  /* Section headers, dividers */
 
-  --color-gray-lighter: #747474;              /* Placeholder text, muted labels */
-  --color-gray-shadow: #5b5b5b;               /* FontAwesome icons / Icon shadows */
+  --color-gray-lighter: #747474;
+  /* Placeholder text, muted labels */
+  --color-gray-shadow: #5b5b5b;
+  /* FontAwesome icons / Icon shadows */
 
-  /* UI States */
-  --color-disabled: rgb(196, 195, 195);       /* Disabled buttons / inputs */
+  /* General */
+  --text-color: #ffffff;
+  --background: #131213;
+  --hover: #414141;
+  --color-disabled: rgb(196, 195, 195);
 
-  /* Text */
-  --text-color: #ffffff;                     /* Text color for dark mode */
 
-  /* Chat */
-  --chat-bubble: #1a1a1b;                     /* Chat bubbles background */
 
-  /* Extra (unassigned) */
-  --color-burger-hover: #41414160;            /* Burger menu hover (semi-transparent) */
-  --color-burger-active: #41414149;           /* Burger menu active/pressed (more transparent) */
+  /* View: Home */
 
-  --color-owlie-gray: #444444;                /* Owlie mascot / avatar background */
+  /* Footer */
+  --message-input-bg: #232323;
+  --message-input-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+  
+  --message-input-expand-icon-bg: #5b5b5b;
+  --message-input-expand-icon: #232323;
+  --message-input-expand-icon-border: 1px solid #5b5b5b;
+
+  --expanded-input-bg: #232323;
+
+  --footer-buttons-color: #131213;
+  --send-button-bg: #ffffff;
+  --stop-button-bg: #ffffff;
+  --upload-file-button-bg: #5b5b5b;
+  --file-widget-bg: #5b5b5b;
+  --file-widget-border: #5b5b5b;
+  --file-widget-x-icon: rgb(189, 189, 189);
+
+  /* Navbar */
+  --reload-icon-left: #ffffff;
+  --reload-icon-right: #5b5b5b;
+
+  --hearts-bg-start: #ffffff;
+  --hearts-bg-end: #5b5b5b;
+
+  --assistant-title-gradient: linear-gradient(90deg, #ffffff, #5b5b5b);
+
+  --buger-menu-icon-open: #ffffff;
+
+  --profile-icon-navbar: #5b5b5b;
+
+  /* Navbar Profile Menu */
+  --profile-menu-bg: #2A2A2A;
+  --profile-menu-border-color: #414141;
+  --profile-menu-item-hover-bg: #414141;
+
+  /* Navbar Settings Modal */
+  --settings-bg: #232323;
+  --settings-seperator-color: #747474;
+
+  /* Navbar Settings Custom Select */
+  --custom-select-bg: #232323;
+  --custom-select-border-color: #414141;
+  --custom-select-hover-bg: #414141;
+
+  --custom-select-option-bg: #2A2A2A;
+  --custom-select-option-border-color: #414141;
+  --custom-select-option-bg-hover: #414141;
+  --custom-select-option-bg-active: #414141;
+
+  /* Sidebar */
+  --sidebar-bg: #0A0A0A;
+
+  --course-search-bg: #2a2a2a;
+
+  --buger-menu-icon-close: #5b5b5b;
+
+  --magnifying-glass-icon-active: #ffffff;
+  --magnifying-glass-icon-inactive: #5b5b5b;
+
+  --course-sidebar-gradient: linear-gradient(to bottom, #ffffff, #5b5b5b);
+  --course-selected-bg: #2a2a2a;
+  --course-hover-bg: #414141;
+
+  --info-icon-bg: #ffffff;
+
+  --profile-icon-sidebar: #ffffff;
+  --profile-btn-hover-bg: #41414149;
+  --profile-btn-selected-bg: #41414160;
+
+  --mode-selector-bg: #2a2a2a;
+  --mode-selector-bg-hover: #323232;
+  --mode-selector-bg-selected: #4c4c4c;
+
+
+  /* Main */
+  --file-drop-border-dark: #414141;
+  --file-drop-border-light: #5b5b5b;
+  --file-drop-bg: #2a2a2a;
+
+  --owlie-gradient: linear-gradient(90deg, #ffffff, #5b5b5b);
+
+  --owlie-speech-bubble-bg: #232323;
+  --owlie-speech-bubble-shadow: 1.1px 1.1px #5b5b5b;
+
+  --chat-bubble-bg: #1A1A1B;
+  --chat-bubble-shadow: 0 0px 10px #b0b0b0;
+
+  --response-action-icon: #747474;
+  --response-action-icon-hover: #2a2a2a;
+
+
+
+  /* View: AboutUs */
+
+  /* Navbar */
+  --home-icon: #ffffff;
+
+
+  /* ExpandedInput */
+  --collapse-icon-bg: #ffffff;
+
 }
 
 
 /* Light mode — applied with: <html data-theme="white"> */
 [data-theme="light"] {
-  --color-white: #0a0a0a;
-  --color-black: #ffffff;
+  /* General Colors */
+  --color-white: #ffffff;
+  --color-black: #0a0a0a;
 
-  --color-background-dark: #f9f9f9;           /* Main background lightened */
-  
-  --color-gray-dark: #e8e8e8;                 /* Footer / input area */
-  --color-gray-medium: #dcdcdc;               /* Toggles, menus */
-  --color-gray-light: #c4c4c4;                /* Section headers / lines */
-  
-  --color-gray-lighter: #9e9e9e;              /* Placeholder text */
-  --color-gray-shadow: #b0b0b0;               /* Icons / shadows */
+  /* Backgrounds */
+  --color-background-dark: #131213;
+  /* Main background */
 
-  --color-disabled: #e0e0e0;                  /* Disabled state */
+  /* Grays */
+  --color-gray-dark: #232323;
+  /* Footer / Expanded input background */
+  --color-gray-medium: #2a2a2a;
+  /* Selected course, toggle button, profile menu */
+  --color-gray-light: #414141;
+  /* Section headers, dividers */
 
-
-  /* Text */
-  --text-color: #0a0a0a;                     /* Text color for light mode */
-
-
-  --chat-bubble: #f1f1f1;                     /* Chat bubble background */
-
-  --color-burger-hover: #c4c4c460;            /* Semi-transparent hover */
-  --color-burger-active: #c4c4c449;           /* Active burger press */
-
-  --color-owlie-gray: #bbbbbb;                /* Owlie avatar background */
+  --color-gray-lighter: #747474;
+  /* Placeholder text, muted labels */
+  --color-gray-shadow: #5b5b5b;
+  /* FontAwesome icons / Icon shadows */
 
 
 
 
   /* COMPONENT COLORS */
-  --background: #131213;
-  --message-input: #232323;
-  --message-input-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
 
-  --profile-menu: #2A2A2A;
-  --settings: #232323;
-  --settings-option: #ffffff;
+  /* General */
+  --text-color: #0D0D0D;
+  --background: #ffffff;
+  --hover: #ECECEC;
+  --color-disabled: rgb(168, 168, 168);
+
+
+  /* View: Home */
+
+  /* Footer */
+  --message-input-bg: #ffffff;
+  --message-input-shadow: 0px 3px 9px rgba(59, 59, 59, 0.2);
   
-  --sidebar: #0A0A0A;
-  --hover: #414141;
-  --chat-bubble: #1A1A1B;
-  --chat-bubble-shadow: 0 0px 10px #b0b0b0;
-  --send-button-background: #ffffff;
-  --send-button-background-inactive: #C4C3C3;
-  --stop-button-background: #ffffff;
-  
-  --send-file-button-background: #5b5b5b;
+  --message-input-expand-icon-bg: #ffffff;
+  --message-input-expand-icon: #5D5D5D;
+  --message-input-expand-icon-border: 1px solid #dadada;
 
-  --profile-menu-icons: #ffffff;
-  --homepage-icons: #5D5D5D;
+  --expanded-input-bg: #ffffff;
 
-  --magnifying-glass-inactive: #5b5b5b;
+  --footer-buttons-color: #ffffff;
+  --send-button-bg: #000000;
+  --stop-button-bg: #000000;
+  --upload-file-button-bg: #5D5D5D;
+  --file-widget-bg: #ffffff;
+  --file-widget-border: #dadada;
+  --file-widget-x-icon: #5D5D5D;
 
-  --mode-selector-background: #2a2a2a;
-  --mode-selector-background-hover: #323232;
-  --mode-selector-background-selected: #4c4c4c;
 
-  --info-icon-background: #ffffff;
+  /* Navbar */
+  --reload-icon-left: #000000;
+  --reload-icon-right: #5D5D5D;
 
-  --reload-icon-open: #ffffff;
-  --reload-icon-close: #5b5b5b;
+  --hearts-bg-start: #383838;
+  --hearts-bg-end: #c0c0c0;
 
-  --expand-message-input-icon: #5b5b5b;
+  --assistant-title-gradient: linear-gradient(90deg, #383838, #c0c0c0);
 
-  --file-widget-background: #5b5b5b;
+  --buger-menu-icon-open: #5b5b5b;
+
+  --profile-icon-navbar: #5D5D5D;
+
+  /* Navbar Profile Menu */
+  --profile-menu-bg: #ffffff;
+  --profile-menu-border-color: #dadada;
+  --profile-menu-item-hover-bg: #ECECEC;
+
+  /* Navbar Settings Modal */
+  --settings-bg: #ffffff;
+  --settings-seperator-color: #d4d4d4;
+
+  /* Navbar Settings Custom Select */
+  --custom-select-bg: #ffffff;
+  --custom-select-border-color: #dadada;
+  --custom-select-hover-bg: #ECECEC;
+
+  --custom-select-option-bg: #ffffff;
+  --custom-select-option-border-color: #dadada;
+  --custom-select-option-bg-hover: #ECECEC;
+  --custom-select-option-bg-active: #ECECEC;
+
+  /* Sidebar */
+  --sidebar-bg: #f9f9f9;
+
+  --course-search-bg: #E3E3E3;
+  /*CHANGE*/
+
+  --buger-menu-icon-close: #ffffff;
+
+  --magnifying-glass-icon-active: #000000;
+  --magnifying-glass-icon-inactive: #afafaf;
+
+  --course-sidebar-gradient: linear-gradient(to bottom, #383838, #c0c0c0);
+  --course-selected-bg: #E3E3E3;
+  --course-hover-bg: #ECECEC;
+
+  --info-icon-bg: #000000;
+
+  --profile-icon-sidebar: #000000;
+  --profile-btn-hover-bg: #41414149;
+  --profile-btn-selected-bg: #41414160;
+
+  --mode-selector-bg: #E3E3E3;
+  --mode-selector-bg-hover: #bbbbbb;
+  --mode-selector-bg-selected: #ECECEC;
+
+
+  /* Main */
+  --file-drop-border-dark: #414141;
+  --file-drop-border-light: #5b5b5b;
+  --file-drop-bg: #2a2a2a;
+
+  --owlie-gradient: linear-gradient(90deg, #5D5D5D, #000000);
+
+  --owlie-speech-bubble-bg: #f4f4f4;
+  /*CHANGE*/
+  --owlie-speech-bubble-shadow: 1.1px 1.1px #dadada;
+  /*CHANGE*/
+
+  --chat-bubble-bg: #f4f4f4;
+  --chat-bubble-shadow: 0 0px 0px #ffffff;
+  /*CHANGE*/
+
+  --response-action-icon: #5D5D5D;
+  --response-action-icon-hover: #F9F9F9;
+
+
+
+  /* View: AboutUs */
+
+  /* Navbar */
+  --home-icon: #000000;
+
+  /* ExpandedInput */
+  --collapse-icon-bg: #000000;
 }

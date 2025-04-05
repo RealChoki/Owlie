@@ -44,7 +44,7 @@
         <font-awesome-icon
           :icon="['fas', 'plus']"
           class="cursor-pointer btn-circle align-self-end icon-click-effect"
-          style="background-color: var(--color-gray-shadow)"
+          style="background-color: var(--upload-file-button-bg)"
           @click="triggerFileInput(fileInput)"
         />
         <span v-if="fileCount" class="file-count-indicator bg-danger"
@@ -85,7 +85,7 @@
         <font-awesome-icon
           v-if="showResizeIcon"
           :icon="['fas', 'up-right-and-down-left-from-center']"
-          class="top-right-icon cursor-pointer icon-click-effect"
+          class="expand-icon cursor-pointer icon-click-effect"
           @click="toggleOverlay"
         />
 
@@ -108,13 +108,15 @@
             'cursor-pointer icon-click-effect': !disableSendButton() && !isBurgerMenuOpen,
             'btn-disabled': disableSendButton()
           }"
-          class="btn-circle bg-white"
+          class="btn-circle"
+          style="background-color: var(--send-button-bg)"
           @click="sendMessage"
         />
         <font-awesome-icon
           v-else
           :icon="['fas', 'stop']"
-          class="cursor-pointer btn-circle bg-light align-self-end icon-click-effect"
+          class="cursor-pointer btn-circle align-self-end icon-click-effect"
+          style="background-color: var(--stop-button-bg)"
           @click="cancelAssistantResponse"
         />
       </div>
@@ -124,16 +126,6 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import {
-  faUpRightAndDownLeftFromCenter,
-  faPlus,
-  faArrowUp,
-  faStop,
-  faFile,
-  faTimes
-} from '@fortawesome/free-solid-svg-icons'
 import {
   getMessages,
   sendMessage as sendChatMessage,
@@ -152,8 +144,6 @@ import {
 } from '../services/filesService'
 import { getAssistantThreadId } from '../services/openaiService'
 import { get } from 'http'
-
-library.add(faUpRightAndDownLeftFromCenter, faPlus, faArrowUp, faStop, faFile, faTimes)
 
 const tooltipX = ref(0)
 const tooltipY = ref(0)
@@ -318,6 +308,7 @@ watch(fileCount, () => {
   width: 25px;
   height: 25px;
   padding: 0.5em;
+  color: var(--footer-buttons-color);
 }
 
 .btn-disabled {
@@ -327,7 +318,8 @@ watch(fileCount, () => {
 
 .custom-input {
   flex: 1;
-  background-color: var(--color-gray-dark);
+  background-color: var(--message-input-bg);
+  box-shadow: var(--message-input-shadow);
   border: none;
   color: var(--text-color);
   border-radius: 25px;
@@ -357,13 +349,14 @@ watch(fileCount, () => {
   transition: color 0.2s ease;
 }
 
-.top-right-icon {
+.expand-icon {
   position: absolute;
   top: 7px;
   right: 7px;
   font-size: 0.8rem;
-  color: var(--color-gray-dark);
-  background-color: var(--color-gray-shadow);
+  background-color: var(--message-input-expand-icon-bg);
+  color: var(--message-input-expand-icon);
+  border: var(--message-input-expand-icon-border);
   padding: 6px;
   border-radius: 50%;
 }
@@ -429,12 +422,13 @@ watch(fileCount, () => {
 }
 
 .file-div {
-  background-color: var(--color-gray-shadow);
+  background-color: var(--file-widget-bg);
+  border: 1px solid var(--file-widget-border);;
   height: 1.6em;
 }
 
 .x-icon {
-  color: rgb(189, 189, 189);
+  color: var(--file-widget-x-icon);
   padding: 0.15em;
 }
 </style>

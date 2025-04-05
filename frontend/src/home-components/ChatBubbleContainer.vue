@@ -23,7 +23,7 @@
       >
         <img
           v-if="!thinking || message.isComplete"
-          src="../assets/icons/OwlLogo.png"
+          :src="isDarkMode ? darkModeImage : lightModeImage"
           class="assistant-pfp p-1 pt-0"
           :style="isWideScreen ? 'position: absolute; left: 5px; top: 5px' : ''"
         />
@@ -68,7 +68,7 @@
     </div>
     <div v-if="thinking">
       <img
-        src="../assets/icons/OwlLogo.png"
+        :src="isDarkMode ? darkModeImage : lightModeImage"
         alt="assistant"
         class="assistant-pfp p-1 pt-0"
       />
@@ -90,19 +90,11 @@ import {
 } from "../services/chatService";
 import { loadVoices, stopTTS, toggleTTS } from "../services/ttsService";
 import { useScreenWidth } from "../utils/useScreenWidth";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-  faCopy,
-  faCheck,
-  faArrowRotateRight,
-  faVolumeHigh,
-  faVolumeXmark,
-} from "@fortawesome/free-solid-svg-icons";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
-
-library.add(faCopy, faCheck, faArrowRotateRight, faVolumeHigh, faVolumeXmark);
+import darkModeImage from '@/assets/icons/owl.svg'
+import lightModeImage from '@/assets/icons/OwlLogoWhiteMode.png'
+import { isDarkMode } from '@/services/themeService'
 
 const messages = getMessages();
 const chatContainer = ref<HTMLDivElement | null>(null);
@@ -214,18 +206,18 @@ watch(
 }
 
 .chat-bubble {
-  background-color: #1a1a1b;
-  color: white;
+  background-color: var(--chat-bubble-bg);
+  color: var(--text-color);
   padding: 12px 20px;
   border-radius: 20px;
   max-width: 85%;
   display: inline-block;
   word-wrap: break-word;
-  box-shadow: 0 0px 10px var(--color-gray-shadow);
+  box-shadow: var(--chat-bubble-shadow);
 }
 
 .response-action-icon {
-  color: var(--color-gray-lighter);
+  color: var(--response-action-icon);
   font-size: 1em;
   padding: 0.1em 0.4em;
   border-radius: 8px;
@@ -240,7 +232,7 @@ watch(
 }
 
 .response-action-icon:hover {
-  background-color: var(--color-gray-medium);
+  background-color: var(--response-action-icon-hover);
 }
 
 .assistant-pfp {

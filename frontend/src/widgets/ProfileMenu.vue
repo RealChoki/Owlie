@@ -6,14 +6,12 @@
     :class="{
       'profile-menu-nav': props.origin === 'Nav',
       'profile-menu-burger': props.origin === 'BurgerMenu',
-      'profile-menu-nav-edit-quiz': props.origin === 'Nav-EditQuiz'
     }"
   >
     <nav class="p-2" style="color: var(--text-color)">
       <div ref="ProfileMenuUniversityRef" class="p-2">Hochschule für Technik und Wirtschaft Berlin</div>
       <hr class="my-1" />
       <a
-        href="#"
         class="d-flex align-items-center gap-2 text-decoration-none p-2 rounded"
         style="color: var(--text-color)"
         @click="navigateToProfile"
@@ -48,19 +46,14 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, nextTick, PropType } from 'vue'
 import type { Ref } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUserCircle, faGear, faRightFromBracket, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'vue-router'
 
-// Add icons to library
-library.add(faUserCircle, faGear, faRightFromBracket, faInfoCircle)
 const router = useRouter()
 
 // Props
 const props = defineProps({
   origin: {
-    type: String as PropType<'BurgerMenu' | 'Nav' | 'Nav-EditQuiz'>,
+    type: String as PropType<'BurgerMenu' | 'Nav'>,
     required: true
   },
   toggleProfileMenu: {
@@ -137,13 +130,13 @@ onUnmounted(() => {
 .profile-menu {
   z-index: 9999;
   width: 100%;
-  background-color: var(--color-gray-medium);
-  border-color: var(--color-gray-light);
+  background-color: var(--profile-menu-bg);
+  border-color: var(--profile-menu-border-color);
   border-width: 1px;
 }
 
 .profile-menu nav a:hover {
-  background-color: var(--color-gray-light);
+  background-color: var(--profile-menu-item-hover-bg);
 }
 
 /* from burger-menu */

@@ -58,9 +58,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import {
   isDragging,
   uploadedFiles,
@@ -69,8 +66,6 @@ import {
   readPdfFile,
   fileCount
 } from '../services/filesService'
-
-library.add(faCircleInfo)
 
 const isDragValid = ref(false)
 const isFileInvalid = ref(false)
@@ -178,8 +173,8 @@ function handleFileDrop(event: DragEvent) {
   gap: 10px;
   align-items: center;
   justify-content: center;
-  border: 2px dashed var(--color-gray-light);
-  background-color: var(--color-gray-medium);
+  border: 2px dashed var(--file-drop-border-dark);
+  background-color: var(--file-drop-bg);
   opacity: 0.95;
   padding: 1.5rem;
   border-radius: 10px;
@@ -187,7 +182,7 @@ function handleFileDrop(event: DragEvent) {
 
 .custom-file-upload:hover,
 .custom-file-upload.drag-over {
-  border-color: var(--color-gray-shadow);
+  border-color: var(--file-drop-border-light);
 }
 
 .custom-file-upload .icon {

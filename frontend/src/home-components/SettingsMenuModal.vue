@@ -1,10 +1,10 @@
 <template>
   <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background: var(--color-gray-dark)">
+      <div class="modal-content" style="background: var(--settings-bg)">
         <div
           class="modal-header d-flex justify-content-between align-items-center"
-          style="border-color: var(--color-gray-lighter)"
+          style="border-color: var(--settings-seperator-color)"
         >
           <h5 class="modal-title" style="color: var(--text-color)"><b>Settings</b></h5>
           <font-awesome-icon
@@ -18,7 +18,7 @@
 
         <div class="modal-body">
           <div class="settings-option mb-1">
-            <label class="theme-label" style="color: var(--text-color)" @click="handleThemeOpened">Theme</label>
+            <label class="theme-label scroll-down" @click="handleThemeOpened">Theme</label>
             <div class="theme-select">
               <CustomSelect
                 v-model="theme"
@@ -31,9 +31,7 @@
           </div>
 
           <div class="settings-option">
-            <label class="language-label" style="color: var(--text-color)" @click="handleLanguageOpened"
-              >Language</label
-            >
+            <label class="language-label scroll-down" @click="handleLanguageOpened">Language</label>
             <div class="language-select">
               <CustomSelect
                 v-model="language"
@@ -51,16 +49,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faXmark, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import CustomSelect from '@/home-components/CustomSelect.vue'
-import { setThemeLS, getThemeLS, setLanguageLS, getLanguageLS } from '@/services/localStorageService'
+import { setLanguageLS, getLanguageLS } from '@/services/localStorageService'
+import { useTheme } from '@/services/themeService'
 
-library.add(faXmark, faChevronDown, faChevronUp)
 defineEmits(['close'])
 
-const theme = ref(getThemeLS())
+const { theme } = useTheme()
 const language = ref(getLanguageLS())
 
 // Refs to control the open state for each select:
@@ -107,23 +103,12 @@ function handleDocumentClick(e: MouseEvent) {
   }
 }
 
-const applyTheme = (newTheme) => {
-  document.documentElement.setAttribute('data-theme', newTheme)
-  localStorage.setItem('theme', newTheme)
-}
-
 onMounted(() => {
   document.addEventListener('click', handleDocumentClick)
-  applyTheme(theme.value)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleDocumentClick)
-})
-
-watch(theme, (newTheme) => {
-  document.documentElement.setAttribute('data-theme', newTheme)
-  setThemeLS(newTheme)
 })
 
 watch(language, (newLanguage) => {
@@ -131,35 +116,10 @@ watch(language, (newLanguage) => {
 })
 </script>
 
+
 <style scoped>
-.settings-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.settings-modal {
-  background: var(--color-gray-medium);
-  padding: 20px;
-  border-radius: 10px;
-  width: 400px;
-  text-align: center;
-}
-
-.long-hr {
-  width: calc(100% + 40px);
-  margin: 0 -20px;
-  border: 1px solid var(--color-gray-lighter);
-}
-
 .settings-option {
+  color: var(--text-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
