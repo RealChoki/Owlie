@@ -11,9 +11,9 @@
           class="mt-3 icon-click-effect cursor-pointer"
           @click="toggleBurgerMenu"
         >
-          <rect x="0" y="15" width="100" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
-          <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
-          <rect x="0" y="73" width="33" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
+          <rect x="0" y="15" width="100" height="12" rx="4" fill="var(--burger-menu-icon-open)" />
+          <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--burger-menu-icon-open)" />
+          <rect x="0" y="73" width="33" height="12" rx="4" fill="var(--burger-menu-icon-open)" />
         </svg>
 
         <svg
@@ -25,9 +25,9 @@
           class="mt-3 icon-click-effect cursor-pointer"
           @click="toggleSidebar"
         >
-          <rect x="0" y="15" width="100" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
-          <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
-          <rect x="0" y="73" width="33" height="12" rx="4" fill="var(--buger-menu-icon-open)" />
+          <rect x="0" y="15" width="100" height="12" rx="4" fill="var(--burger-menu-icon-open)" />
+          <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--burger-menu-icon-open)" />
+          <rect x="0" y="73" width="33" height="12" rx="4" fill="var(--burger-menu-icon-open)" />
         </svg>
         <div v-else class="nav-icon-holder mt-3">
           <font-awesome-icon
@@ -156,6 +156,7 @@ import SettingsMenuModal from '@/home-components/SettingsMenuModal.vue'
 import { heartCount, clearMessages, userMessageTokens } from '../services/chatService'
 import { getHeartCountLS, setHeartCountLS } from '../services/localStorageService'
 import { navbarCourseTitle } from '../services/homeService'
+import { stopTTS } from "../services/ttsService";
 import {
   totalHearts,
   initializeHeartCount,
@@ -227,9 +228,11 @@ const toggleSidebar = () => {
 
 const handleRefreshClick = async () => {
   if (!props.isBurgerMenuOpen) {
+    stopTTS()
     clearMessages(false)
     clearThread()
     await initializeThread()
+
   }
 }
 

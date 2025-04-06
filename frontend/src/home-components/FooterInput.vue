@@ -21,7 +21,14 @@
         >
           <!-- Shortened display -->
           <span
-            style="color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; cursor: default"
+            style="
+              color: var(--text-color);
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              font-size: 11px;
+              cursor: default;
+            "
             >{{ file.name }}</span
           >
           <font-awesome-icon
@@ -47,8 +54,7 @@
           style="background-color: var(--upload-file-button-bg)"
           @click="triggerFileInput(fileInput)"
         />
-        <span v-if="fileCount" class="file-count-indicator bg-danger"
-        style="color: var(--text-color)">
+        <span v-if="fileCount" class="file-count-indicator bg-danger" style="color: var(--text-color)">
           {{ fileCount }}
         </span>
       </div>
@@ -381,7 +387,7 @@ watch(fileCount, () => {
 
 .character-count {
   font-size: 12px;
-  color: white;
+  color: var(--text-color);
   position: absolute;
   top: -20px;
   left: 20px;
@@ -423,7 +429,7 @@ watch(fileCount, () => {
 
 .file-div {
   background-color: var(--file-widget-bg);
-  border: 1px solid var(--file-widget-border);;
+  border: 1px solid var(--file-widget-border);
   height: 1.6em;
 }
 

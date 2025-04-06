@@ -13,3 +13,18 @@
 
   --color-disabled: rgb(220, 220, 220);
 }
+
+[data-theme="light"] {
+  --background: #ffffff;
+
+  --text-color: #000000;
+  --login-button-bg: #000000;
+  --login-button-bg-hover: #1a1a1a;
+  --login-button-bg-active: #333333;
+  --login-button-color: #ffffff;
+
+  --login-input-bg: #f0f0f0;
+  --login-input-border-color: #cccccc;
+
+  --color-disabled: rgb(220, 220, 220);
+}

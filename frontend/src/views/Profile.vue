@@ -60,10 +60,10 @@
   
   // 1) Mock user profile data
   const user = ref({
-    name: 'John Doe',
-    university: 'Some University',
+    name: 'Mark Zuckerberg',
+    university: 'Hochschule für Technik und Wirtschaft Berlin',
     subject: 'Computer Science',
-    profilePic: 'https://via.placeholder.com/150'
+    profilePic: 'https://media.licdn.com/dms/image/v2/D5612AQFzwc5xftrOEg/article-inline_image-shrink_400_744/article-inline_image-shrink_400_744/0/1722154108706?e=1749081600&v=beta&t=5QgeP9Eymqdw1hLYn1sdiznJZ0HWWmSaerB5bw9NoIk'
   })
   
   // 2) Mock usage data for assistant modes

@@ -1,6 +1,7 @@
 <template>
   <div
     class="custom-select"
+    :class="{ 'custom-select-active': open }"
     tabindex="0"
     @click="handleClick"
     @keydown="onKeydown"
@@ -28,17 +29,14 @@ import { ref, computed, defineProps, defineEmits, watch } from 'vue'
 const props = defineProps({
   modelValue: { type: String, required: true },
   options: { type: Array as () => { value: string; label: string }[], required: true },
-  // Controlled open state from parent:
   isOpen: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['update:modelValue', 'opened', 'closed'])
 
 const open = ref(props.isOpen)
-
 const highlightedIndex = ref(-1)
 
-// Keep local open in sync with parent's prop:
 watch(
   () => props.isOpen,
   (newVal) => {
@@ -64,7 +62,6 @@ function onKeydown(event: KeyboardEvent) {
     return
   }
 
-  // When menu is open:
   switch (event.key) {
     case 'ArrowDown':
       highlightedIndex.value = (highlightedIndex.value + 1) % props.options.length
@@ -101,10 +98,17 @@ const selectedOptionLabel = computed(() => {
   padding: 5px 10px;
   cursor: pointer;
   background: var(--custom-select-bg);
+  transition: background-color 0.3s ease;
 }
 
 .custom-select:hover {
   background-color: var(--custom-select-hover-bg);
+  border: 1px solid var(--custom-select-border-color);
+}
+
+/* New style to persist the active state background */
+.custom-select-active {
+  background-color: var(--custom-select-active-bg);
 }
 
 .selected-option {
@@ -149,3 +153,4 @@ const selectedOptionLabel = computed(() => {
   background-color: var(--custom-select-option-bg-active);
 }
 </style>
+```

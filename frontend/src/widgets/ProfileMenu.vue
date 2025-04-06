@@ -5,14 +5,14 @@
     :style="{ ...positionStyle }"
     :class="{
       'profile-menu-nav': props.origin === 'Nav',
-      'profile-menu-burger': props.origin === 'BurgerMenu',
+      'profile-menu-burger': props.origin === 'BurgerMenu'
     }"
   >
     <nav class="p-2" style="color: var(--text-color)">
       <div ref="ProfileMenuUniversityRef" class="p-2">Hochschule für Technik und Wirtschaft Berlin</div>
       <hr class="my-1" />
       <a
-        class="d-flex align-items-center gap-2 text-decoration-none p-2 rounded"
+        class="d-flex align-items-center gap-2 text-decoration-none p-2 rounded cursor-pointer"
         style="color: var(--text-color)"
         @click="navigateToProfile"
       >

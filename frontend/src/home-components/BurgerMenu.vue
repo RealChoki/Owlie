@@ -28,9 +28,9 @@
         class="ms-3 icon-click-effect cursor-pointer"
         @click="closeBurgerMenu"
       >
-        <rect x="0" y="15" width="33" height="12" rx="4" fill="var(--buger-menu-icon-close)" />
-        <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--buger-menu-icon-close)" />
-        <rect x="0" y="73" width="100" height="12" rx="4" fill="var(--buger-menu-icon-close)" />
+        <rect x="0" y="15" width="33" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
+        <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
+        <rect x="0" y="73" width="100" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
       </svg>
     </div>
 
@@ -44,17 +44,17 @@
           :class="courseClass(course)"
           @click="
             isCourseClickable(course) ? selectCourse(course) : null;
-            handleCourseClick(course);
+            handleCourseClick(course)
           "
         >
           <p class="m-0 py-2 px-2 d-flex align-items-start position-relative">
             <span class="course-name position-relative">
               {{ course }}
               <span
-                v-if="selectedMode === 'quiz'"
-                class="test-mode-text text-secondary small position-absolute top-0 end-0"
+                v-if="selectedMode !== 'general'"
+                class="mode-text text-secondary small position-absolute top-0 end-0"
               >
-                (Quiz)
+                ({{ selectedMode.charAt(0).toUpperCase() + selectedMode.slice(1) }})
               </span>
             </span>
           </p>
@@ -67,18 +67,36 @@
         <h6 class="m-0">Switch mode to:</h6>
       </div>
       <div v-if="showInfo" class="small mt-1 text-warning text-center max-width-450">
-        Quiz mode: A quiz feature that assesses knowledge, tracks performance, and provides personalized feedback.
+        <div v-if="selectedMode === 'general'">
+          An open learning environment for exploring course material, asking questions, and understanding concepts at
+          your own pace.
+        </div>
+        <div v-if="selectedMode === 'quiz'">
+          A quiz feature that assesses knowledge, tracks performance, and provides personalized feedback.
+        </div>
+        <div v-if="selectedMode === 'exam'">
+          A mock exam experience using professor-uploaded materials, where realistic exam-style questions are generated
+          for focused practice.
+        </div>
       </div>
 
       <div class="d-flex justify-content-center mt-2 w-100 position-relative max-width-450">
-        <v-btn
-          @click="toggleMode"
-          class="equal-width-btn max-width-450"
-          style="color: var(--text-color)"
+        <v-btn-toggle
+          v-model="selectedMode"
+          mandatory
+          rounded="x2"
           base-color="var(--mode-selector-bg)"
+          class="equal-width-toggle"
         >
-          {{ selectedMode === 'general' ? 'Quiz' : 'General' }}
-        </v-btn>
+          <v-btn value="general" class="equal-width-btn">General</v-btn>
+          <v-btn
+            value="quiz"
+            class="equal-width-btn"
+            style="border-left: var(--mode-selector-border); border-right: var(--mode-selector-border)"
+            >Quiz</v-btn
+          >
+          <v-btn value="exam" class="equal-width-btn">Exam</v-btn>
+        </v-btn-toggle>
         <font-awesome-icon
           :icon="['fas', 'circle-info']"
           class="circle-info cursor-pointer"
@@ -137,7 +155,6 @@ const props = defineProps({
 
 const emit = defineEmits(['closeBurgerMenu'])
 
-
 const showSettings = ref(false)
 function openModal(modalId: string) {
   const modalElement = document.getElementById(modalId)
@@ -161,10 +178,16 @@ const courseClicked = ref<{ course: string; mode: string } | null>(null)
 const showInfo = ref(false)
 
 function toggleMode() {
-  selectedMode.value = selectedMode.value === 'general' ? 'quiz' : 'general'
+  if (selectedMode.value === 'general') {
+    selectedMode.value = 'quiz'
+  } else if (selectedMode.value === 'quiz') {
+    selectedMode.value = 'exam'
+  } else {
+    selectedMode.value = 'general'
+  }
 }
 
-const clickableCourses = ref<string[]>(['Grundlagen der Programmierung', 'Investition und Finanzierung', 'Statistik'])
+const clickableCourses = ref<string[]>(['Grundlagen der Programmierung'])
 
 const profileBtn = ref<HTMLElement | null>(null)
 const buttonWidth = ref(0)
@@ -183,13 +206,12 @@ const toggleProfileMenu = () => {
 }
 
 function isCourseClickable(course: string): boolean {
-
   // temp code
-  if (course === 'Grundlagen der Programmierung' && (selectedMode.value === 'exam')) {
-    return false; // Exclude this course and 'exam' mode
+  if (course === 'Grundlagen der Programmierung' && selectedMode.value === 'exam') {
+    return false // Exclude this course and 'exam' mode
   }
   // end temp code
-  
+
   return clickableCourses.value.includes(course)
 }
 
@@ -400,19 +422,29 @@ onUnmounted(() => {
 }
 
 .equal-width-btn {
-  width: 100%;
+  flex: 1 1 0;
   text-align: center;
-  min-width: 0;
   padding: 12px 16px;
-  height: auto;
-  line-height: 1.2;
+  white-space: normal;
   text-transform: none;
   letter-spacing: 0.5px;
+  color: var(--text-color);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .equal-width-btn:hover {
   background-color: var(--mode-selector-bg-hover) !important;
+}
+
+.equal-width-btn.v-btn--active {
+  background-color: var(--mode-selector-bg-selected) !important;
+}
+
+.equal-width-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  width: 100%;
 }
 
 .circle-info {
@@ -438,7 +470,7 @@ onUnmounted(() => {
   overflow: visible;
 }
 
-.test-mode-text {
+.mode-text {
   transform: translate(30px, -5px);
   font-size: 0.7rem;
 }

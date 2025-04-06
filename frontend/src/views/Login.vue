@@ -1,5 +1,5 @@
 <template>
-  <div class=" vh-100 d-flex p-2 py-4" style="color: var(--text-color)">
+  <div class="vh-100 d-flex p-2 py-4" style="color: var(--text-color)">
     <img src="../assets/icons/htw.png" alt="" style="position: fixed; top: 20px; left: 30px; width: 50px" />
     <div class="login-left d-flex align-items-center justify-content-center">
       <div class="p-4 w-100">
@@ -29,39 +29,39 @@
           </div>
 
           <!-- Text and Login Button Container -->
-          <div
-            class="d-flex justify-content-between align-items-center mb-4 gap-3"
-          >
+          <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
             <span class="small text-start cursor-pointer" style="width: 50%"
               >Don't have an account? <strong>Register</strong></span
             >
 
-            <button type="submit" class="btn btn-action" style="width: 50%">
-              Login
-            </button>
+            <button type="submit" class="btn btn-action" style="width: 50%">Login</button>
           </div>
         </form>
       </div>
     </div>
-    <!-- Right Section -->
-    <!-- src="../assets/videos/vecteezy_abstract-grey-and-black-professional-motion-background_34700930.mp4" -->
     <div class="login-right">
       <div class="pe-3 h-100 rm-0">
         <video
+          v-if="isDarkMode"
           class="image_preview_container"
           type="video/m4v"
           preload="auto"
-          src="https://videos.pexels.com/video-files/1877846/1877846-hd_1920_1080_30fps.mp4"
+          src="@/assets/videos/dark_sky.mp4"
           autoplay
           loop
           muted
-          style="
-            opacity: 1;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 20px;
-          "
+          style="opacity: 1; width: 100%; height: 100%; object-fit: cover; border-radius: 20px"
+        ></video>
+        <video
+          v-else
+          class="image_preview_container"
+          type="video/m4v"
+          preload="auto"
+          src="@/assets/videos/blue_sky.mp4"
+          autoplay
+          loop
+          muted
+          style="opacity: 1; width: 100%; height: 100%; object-fit: cover; border-radius: 20px"
         ></video>
       </div>
     </div>
@@ -69,52 +69,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import "@/assets/styles/loginStyles.css";
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import '@/assets/styles/loginStyles.css'
+import { isDarkMode } from '@/services/themeService'
 
-const username = ref("");
-const password = ref("");
+const username = ref('')
+const password = ref('')
 
-const router = useRouter();
+const router = useRouter()
 
 // Store the token in sessionStorage after login
 const onSubmit = async () => {
   if (!username.value || !password.value) {
-    alert("Please fill in all fields.");
-    return;
+    alert('Please fill in all fields.')
+    return
   }
 
   try {
-    const response = await fetch(
-      "https://moodle.htw-berlin.de/login/token.php",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          username: username.value,
-          password: password.value,
-          service: "moodle_mobile_app",
-        }),
-      }
-    );
+    const response = await fetch('https://moodle.htw-berlin.de/login/token.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        username: username.value,
+        password: password.value,
+        service: 'moodle_mobile_app'
+      })
+    })
 
-    const data = await response.json();
+    const data = await response.json()
 
     if (data.token) {
       // Store token in sessionStorage
-      sessionStorage.setItem("auth_token", data.token);
-      console.log("Token stored in sessionStorage:", data.token);
-      router.push("/");
+      sessionStorage.setItem('auth_token', data.token)
+      console.log('Token stored in sessionStorage:', data.token)
+      router.push('/')
     } else {
-      alert("Login failed. Please check your credentials.");
+      alert('Login failed. Please check your credentials.')
     }
   } catch (error) {
-    console.error("Error during login:", error);
+    console.error('Error during login:', error)
   }
-};
+}
 </script>
 
 <style scoped>
@@ -175,5 +173,4 @@ const onSubmit = async () => {
 .login-input:focus {
   outline: none;
 }
-
 </style>

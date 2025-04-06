@@ -38,13 +38,16 @@
         critical thinking. Instead of simply providing answers, Owlie offers hints, guidance, and personalized feedback
         to help students develop problem-solving skills while maintaining academic integrity.
       </p>
-      <img class="owl-logo w-25 mt-4" src="../assets/icons/owl.svg" alt="Owl Logo" />
+      <img v-if="isDarkMode" class="owl-logo w-25 mt-4" src="../assets/icons/owl.svg" alt="Owl Logo" />
+      <img v-else class="owl-logo w-25 mt-4" src="../assets/icons/owlLogoWhiteMode.png" alt="Owl Logo" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { isDarkMode } from '@/services/themeService'
+
 const router = useRouter()
 
 const handleHomeClick = () => {

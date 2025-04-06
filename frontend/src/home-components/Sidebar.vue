@@ -14,7 +14,9 @@
       <font-awesome-icon
         :icon="['fas', 'magnifying-glass']"
         class="magnifying-glass cursor-pointer"
-        :style="{ color: isSearchFocused ? 'var(--magnifying-glass-icon-active)' : 'var(--magnifying-glass-icon-inactive)' }"
+        :style="{
+          color: isSearchFocused ? 'var(--magnifying-glass-icon-active)' : 'var(--magnifying-glass-icon-inactive)'
+        }"
         @click="focusInput"
       />
       <svg
@@ -25,9 +27,9 @@
         class="ms-3 icon-click-effect cursor-pointer"
         @click="closeSidebar"
       >
-        <rect x="0" y="15" width="33" height="12" rx="4" fill="var(--buger-menu-icon-close)" />
-        <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--buger-menu-icon-close)" />
-        <rect x="0" y="73" width="100" height="12" rx="4" fill="var(--buger-menu-icon-close)" />
+        <rect x="0" y="15" width="33" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
+        <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
+        <rect x="0" y="73" width="100" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
       </svg>
     </div>
 
@@ -45,16 +47,10 @@
             <span class="course-name position-relative">
               {{ course }}
               <span
-                v-if="selectedMode === 'quiz'"
-                class="quiz-mode-text text-secondary small position-absolute top-0 end-0"
+                v-if="selectedMode !== 'general'"
+                class="mode-text text-secondary small position-absolute top-0 end-0"
               >
-                (Quiz)
-              </span>
-              <span
-                v-if="selectedMode === 'exam'"
-                class="exam-mode-text text-secondary small position-absolute top-0 end-0"
-              >
-                (Exam)
+                ({{ selectedMode.charAt(0).toUpperCase() + selectedMode.slice(1) }})
               </span>
             </span>
           </p>
@@ -66,16 +62,26 @@
       <div class="d-flex gap-2" style="color: var(--text-color)">
         <h6 class="m-0">
           Select a mode
-          <font-awesome-icon 
-          :icon="['fas', 'circle-info']" 
-          class="circle-info cursor-pointer" 
-          @click="toggleInfo"
-          style="color: var(--info-icon-bg)" 
+          <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            class="circle-info cursor-pointer"
+            @click="toggleInfo"
+            style="color: var(--info-icon-bg)"
           />
         </h6>
       </div>
       <div v-if="showInfo" class="small mt-1 text-warning text-center">
-        Quiz mode: A quiz feature that assesses knowledge, tracks performance, and provides personalized feedback.
+        <div v-if="selectedMode === 'general'">
+          An open learning environment for exploring course material, asking questions, and understanding concepts at
+          your own pace.
+        </div>
+        <div v-if="selectedMode === 'quiz'">
+          A quiz feature that assesses knowledge, tracks performance, and provides personalized feedback.
+        </div>
+        <div v-if="selectedMode === 'exam'">
+          A mock exam experience using professor-uploaded materials, where realistic exam-style questions are generated
+          for focused practice.
+        </div>
       </div>
 
       <div class="toggle-btn-container d-flex justify-content-center mt-2 w-100">
@@ -87,7 +93,12 @@
           class="equal-width-toggle"
         >
           <v-btn value="general" class="equal-width-btn">General</v-btn>
-          <v-btn value="quiz" class="equal-width-btn">Quiz</v-btn>
+          <v-btn
+            value="quiz"
+            class="equal-width-btn"
+            style="border-left: var(--mode-selector-border); border-right: var(--mode-selector-border)"
+            >Quiz</v-btn
+          >
           <v-btn value="exam" class="equal-width-btn">Exam</v-btn>
         </v-btn-toggle>
       </div>
@@ -120,7 +131,7 @@ const selectedMode = ref(getAssistantMode() || 'general')
 const courseClicked = ref<{ course: string; mode: string } | null>(null)
 const showInfo = ref(false)
 
-const clickableCourses = ref<string[]>(['Grundlagen der Programmierung', 'Statistik'])
+const clickableCourses = ref<string[]>(['Grundlagen der Programmierung'])
 
 // Computed
 const filteredCourses = computed(() => {
@@ -134,10 +145,9 @@ const filteredCourses = computed(() => {
 
 // Main methods
 function isCourseClickable(course: string): boolean {
-
   // temp code
-  if (course === 'Grundlagen der Programmierung' && (selectedMode.value === 'exam')) {
-    return false; // Exclude this course and 'exam' mode
+  if (course === 'Grundlagen der Programmierung' && selectedMode.value === 'exam') {
+    return false // Exclude this course and 'exam' mode
   }
   // end temp code
 
@@ -301,6 +311,7 @@ onMounted(() => {
 }
 
 .modes-container {
+  background-color: var(--sidebar-bg);
   bottom: 0;
   left: 0;
   width: 100%;
@@ -337,7 +348,6 @@ onMounted(() => {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-
 .equal-width-btn:hover {
   background-color: var(--mode-selector-bg-hover) !important;
 }
@@ -346,12 +356,8 @@ onMounted(() => {
   background-color: var(--mode-selector-bg-selected) !important;
 }
 
-.quiz-mode-text {
+.mode-text {
   transform: translate(30px, -5px);
-  font-size: 0.7rem;
-}
-.exam-mode-text {
-  transform: translate(34px, -5px);
   font-size: 0.7rem;
 }
 

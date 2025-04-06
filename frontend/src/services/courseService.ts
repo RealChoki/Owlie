@@ -26,9 +26,40 @@ export async function fetchCourses() {
   // }
 
   courses.value = [
-    "Grundlagen der Programmierung",
-    "Statistics",
-    "Software Engineering"
+    "Grundlagen der Programmierung", 
+    "Rechnernetze", 
+    "Einführung in die BWL und VWL", 
+    "Einführung in die Wirtschaftsinformatik", 
+    "Grundlagen des Software-Engineering", 
+    "Mathematik", 
+    "Angewandte Programmierung", 
+    "Datenmodellierung und Datenbanksysteme", 
+    "Unternehmens- und Personalmanagement", 
+    "Buchführung und Bilanzen", 
+    "Grundlagen Projektmanagement", 
+    "Geschäftsprozesse und betriebliche Anwendungen", 
+    "Webtechnologien", 
+    "Datenbanktechnologien", 
+    "Controlling", 
+    "Modellierung von Anwendungssystemen", 
+    "Statistik", 
+    "Fremdsprache", 
+    "Investition und Finanzierung", 
+    "Wahlpflichtmodul Soft Skills", 
+    "Fachpraktikum", 
+    "Seminar zum Fachpraktikum", 
+    "Verteilte Anwendungen", 
+    "Produktionswirtschaft/Logistik", 
+    "Unternehmenssoftware", 
+    "Wahlpflichtmodul Informatik", 
+    "Wahlpflichtmodul Ausgewählte Themen der BWL", 
+    "AWE-Modul 1", 
+    "Fremdsprache", 
+    "Bachelorarbeit", 
+    "Bachelorseminar/ Abschlusskolloquium", 
+    "Wahlpflichtmodul Wirtschaftsinformatik", 
+    "Wahlpflichtmodul Ausgewählte Themen der Wirtschaftsinformatik", 
+    "AWE-Modul 2"
   ];
 }
 

@@ -57,7 +57,7 @@
 
   --assistant-title-gradient: linear-gradient(90deg, #ffffff, #5b5b5b);
 
-  --buger-menu-icon-open: #ffffff;
+  --burger-menu-icon-open: #ffffff;
 
   --profile-icon-navbar: #5b5b5b;
 
@@ -74,6 +74,7 @@
   --custom-select-bg: #232323;
   --custom-select-border-color: #414141;
   --custom-select-hover-bg: #414141;
+  --custom-select-active-bg: #414141;
 
   --custom-select-option-bg: #2A2A2A;
   --custom-select-option-border-color: #414141;
@@ -85,7 +86,7 @@
 
   --course-search-bg: #2a2a2a;
 
-  --buger-menu-icon-close: #5b5b5b;
+  --burger-menu-icon-close: #5b5b5b;
 
   --magnifying-glass-icon-active: #ffffff;
   --magnifying-glass-icon-inactive: #5b5b5b;
@@ -103,6 +104,8 @@
   --mode-selector-bg: #2a2a2a;
   --mode-selector-bg-hover: #323232;
   --mode-selector-bg-selected: #4c4c4c;
+  --mode-selector-border: 1px solid #41414149;
+  --mode-info-icon-color: #131213;
 
 
   /* Main */
@@ -195,12 +198,12 @@
   --reload-icon-left: #000000;
   --reload-icon-right: #5D5D5D;
 
-  --hearts-bg-start: #383838;
-  --hearts-bg-end: #c0c0c0;
+  --hearts-bg-start: #000000;
+  --hearts-bg-end: #8a8a8a;
 
-  --assistant-title-gradient: linear-gradient(90deg, #383838, #c0c0c0);
+  --assistant-title-gradient: linear-gradient(90deg, #000000, #8a8a8a);
 
-  --buger-menu-icon-open: #5b5b5b;
+  --burger-menu-icon-open: #000000;
 
   --profile-icon-navbar: #5D5D5D;
 
@@ -215,8 +218,9 @@
 
   /* Navbar Settings Custom Select */
   --custom-select-bg: #ffffff;
-  --custom-select-border-color: #dadada;
+  --custom-select-border-color: #ECECEC;
   --custom-select-hover-bg: #ECECEC;
+  --custom-select-active-bg: #ECECEC;
 
   --custom-select-option-bg: #ffffff;
   --custom-select-option-border-color: #dadada;
@@ -227,26 +231,27 @@
   --sidebar-bg: #f9f9f9;
 
   --course-search-bg: #E3E3E3;
-  /*CHANGE*/
 
-  --buger-menu-icon-close: #ffffff;
+  --burger-menu-icon-close: #5D5D5D;
 
   --magnifying-glass-icon-active: #000000;
   --magnifying-glass-icon-inactive: #afafaf;
 
-  --course-sidebar-gradient: linear-gradient(to bottom, #383838, #c0c0c0);
+  --course-sidebar-gradient: linear-gradient(to bottom, #000000, #8a8a8a);
   --course-selected-bg: #E3E3E3;
   --course-hover-bg: #ECECEC;
 
   --info-icon-bg: #000000;
 
   --profile-icon-sidebar: #000000;
-  --profile-btn-hover-bg: #41414149;
-  --profile-btn-selected-bg: #41414160;
+  --profile-btn-hover-bg: #ECECEC49;
+  --profile-btn-selected-bg: #ECECEC60;
 
   --mode-selector-bg: #E3E3E3;
-  --mode-selector-bg-hover: #bbbbbb;
-  --mode-selector-bg-selected: #ECECEC;
+  --mode-selector-bg-hover: #d8d8d8;
+  --mode-selector-bg-selected: #dadada;
+  --mode-selector-border: 1px solid #dadada;
+  --mode-info-icon-color: #ffffff;
 
 
   /* Main */
