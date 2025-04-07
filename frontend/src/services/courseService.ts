@@ -2,6 +2,9 @@ import axios from "axios";
 import { ref } from "vue";
 import { updateAssistant } from "./openaiService";
 import { setOwlDisplayMessage, clearOwlDisplayMessage, displayAssistantNotFountMessage } from "./homeService";
+import i18n from '@/i18n'
+
+const t = i18n.global.t as (...args: any[]) => string;
 
 const activeCourses = ref<string[]>(["Grundlagen der Programmierung"]);
 export const courses = ref<string[]>([]);
@@ -65,7 +68,7 @@ export async function fetchCourses() {
 
 export async function fetchAssistantIds(courseName: string, modeName: string) {
   try {
-    setOwlDisplayMessage("Fetching assistant...");
+    setOwlDisplayMessage(t('services.owlDisplayMsg.createChat'));
     const response = await axios.get(
       "http://localhost:8000/api/get_assistant_ids",
       {

@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createVuetify } from 'vuetify'
+import i18n from '@/i18n'
 import App from './App.vue'
 //import posthogPlugin from "../plugins/posthog"; //import the plugin.
 import router from './router'
@@ -88,6 +89,7 @@ const app = createApp(App)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(vuetify)
 app.use(router)
+app.use(i18n)
 
 // Mount the app to the DOM
 app.mount('#app')

@@ -66,6 +66,9 @@ import {
   readPdfFile,
   fileCount
 } from '../services/filesService'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const isDragValid = ref(false)
 const isFileInvalid = ref(false)
@@ -76,8 +79,8 @@ interface ExtendedFile extends File {
 }
 
 const dragText = computed(() => {
-  if (!isDropped.value) return 'Drop file to upload'
-  return isFileInvalid.value ? 'Invalid file type' : 'Valid file type'
+  if (!isDropped.value) return t('owlie.fileDrop.title')
+  return isFileInvalid.value ? t('owlie.fileDrop.invalid') : t('owlie.fileDrop.valid')
 })
 
 function handleDragOver(event: DragEvent) {

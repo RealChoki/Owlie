@@ -3,35 +3,36 @@
     <img src="../assets/icons/htw.png" alt="" style="position: fixed; top: 20px; left: 30px; width: 50px" />
     <div class="login-left d-flex align-items-center justify-content-center">
       <div class="p-4 w-100">
-        <h1 class="text-center mb-4">Login</h1>
+        <h1 class="text-center mb-4">{{ $t('login.title') }}</h1>
         <form @submit.prevent="onSubmit">
           <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
+            <label for="username" class="form-label">{{ $t('login.username.label') }}</label>
             <input
               type="text"
               id="username"
               v-model="username"
               class="login-input w-100"
-              placeholder="Enter your username"
+              :placeholder="$t('login.username.placeholder')"
               required
             />
           </div>
           <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
+            <label for="password" class="form-label">{{ $t('login.password.label') }}</label>
             <input
               type="password"
               id="password"
               v-model="password"
               class="login-input w-100"
-              placeholder="Enter your password"
+              :placeholder="$t('login.password.placeholder')"
               required
             />
           </div>
 
           <!-- Text and Login Button Container -->
           <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
-            <span class="small text-start cursor-pointer" style="width: 50%"
-              >Don't have an account? <strong>Register</strong></span
+            <span class="small text-start" style="width: 50%"
+              >{{ $t('login.register.title') }}
+              <strong class="cursor-pointer">{{ $t('login.register.link') }}</strong></span
             >
 
             <button type="submit" class="btn btn-action" style="width: 50%">Login</button>

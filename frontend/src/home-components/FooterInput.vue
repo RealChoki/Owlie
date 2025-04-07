@@ -73,7 +73,7 @@
       <div class="position-relative d-flex align-items-center flex-grow-1">
         <textarea
           ref="textarea"
-          placeholder="Type a message..."
+          :placeholder="$t('footerInput.placeholder')"
           aria-label="Message input"
           v-model="currentUserInput"
           @input="resizeTextarea"

@@ -6,7 +6,9 @@
           class="modal-header d-flex justify-content-between align-items-center"
           style="border-color: var(--settings-seperator-color)"
         >
-          <h5 class="modal-title" style="color: var(--text-color)"><b>Settings</b></h5>
+          <h5 class="modal-title" style="color: var(--text-color)">
+            <b> {{ $t('profileMenu.settingsModal.title') }} </b>
+          </h5>
           <font-awesome-icon
             class="fa-2x cursor-pointer"
             style="color: var(--text-color)"
@@ -18,7 +20,9 @@
 
         <div class="modal-body">
           <div class="settings-option mb-1">
-            <label class="theme-label scroll-down" @click="handleThemeOpened">Theme</label>
+            <label class="theme-label scroll-down" @click="handleThemeOpened">
+              {{ $t('profileMenu.settingsModal.themeLabel') }}
+            </label>
             <div class="theme-select">
               <CustomSelect
                 v-model="theme"
@@ -31,7 +35,9 @@
           </div>
 
           <div class="settings-option">
-            <label class="language-label scroll-down" @click="handleLanguageOpened">Language</label>
+            <label class="language-label scroll-down" @click="handleLanguageOpened">{{
+              $t('profileMenu.settingsModal.languageLabel')
+            }}</label>
             <div class="language-select">
               <CustomSelect
                 v-model="language"
@@ -53,6 +59,10 @@ import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import CustomSelect from '@/home-components/CustomSelect.vue'
 import { setLanguageLS, getLanguageLS } from '@/services/localStorageService'
 import { useTheme } from '@/services/themeService'
+import { useI18n } from 'vue-i18n'
+import i18n from '@/i18n'
+
+const { t } = useI18n()
 
 defineEmits(['close'])
 
@@ -64,14 +74,14 @@ const themeSelectOpen = ref(false)
 const languageSelectOpen = ref(false)
 
 const themeOptions = [
-  { value: 'dark', label: 'Dark' },
-  { value: 'light', label: 'Light' }
+  { value: 'dark', label: t('profileMenu.settingsModal.customSelect.theme.dark') },
+  { value: 'light', label: t('profileMenu.settingsModal.customSelect.theme.light') }
 ]
 
 const languageOptions = [
-  { value: 'auto', label: 'Auto-detect' },
-  { value: 'en', label: 'English' },
-  { value: 'de', label: 'German' }
+  { value: 'auto', label: t('profileMenu.settingsModal.customSelect.language.system') },
+  { value: 'en', label: t('profileMenu.settingsModal.customSelect.language.en') },
+  { value: 'de', label: t('profileMenu.settingsModal.customSelect.language.de') }
 ]
 
 function handleThemeOpened() {
@@ -112,10 +122,19 @@ onBeforeUnmount(() => {
 })
 
 watch(language, (newLanguage) => {
-  setLanguageLS(newLanguage)
+  if (newLanguage !== 'auto'){
+    setLanguageLS(newLanguage)
+    i18n.global.locale.value = newLanguage
+  }
+  if (newLanguage === 'auto') {
+    const systemLanguage = navigator.language.split('-')[0]
+    const userLanguage = systemLanguage || 'en'
+    setLanguageLS('auto')
+    i18n.global.locale.value = userLanguage
+  }
+
 })
 </script>
-
 
 <style scoped>
 .settings-option {

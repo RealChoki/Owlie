@@ -112,7 +112,9 @@
                 </svg>
               </template>
             </span>
-            <div v-if="tooltipVisible" class="tooltip" :style="tooltipStyle">Tokens: {{ userMessageTokens }}</div>
+            <div v-if="tooltipVisible" class="tooltip" :style="tooltipStyle">
+              {{ $t('navbar.tokens') }} {{ userMessageTokens }}
+            </div>
           </div>
           <p class="assistant-title">
             {{ navbarCourseTitle }}
@@ -124,7 +126,7 @@
             class="nav-icon cursor-pointer icon-click-effect"
             :icon="['fas', 'user-circle']"
             @click="toggleProfileMenu"
-            style="color: var(--profile-icon-navbar);"
+            style="color: var(--profile-icon-navbar)"
           />
           <font-awesome-icon
             v-else
@@ -132,7 +134,7 @@
             :class="{ 'cursor-pointer icon-click-effect': !isBurgerMenuOpen }"
             :icon="['fas', 'arrows-rotate']"
             @click="handleRefreshClick"
-            style="color: var(--reload-icon-right);"
+            style="color: var(--reload-icon-right)"
           />
         </div>
       </div>
@@ -156,7 +158,7 @@ import SettingsMenuModal from '@/home-components/SettingsMenuModal.vue'
 import { heartCount, clearMessages, userMessageTokens } from '../services/chatService'
 import { getHeartCountLS, setHeartCountLS } from '../services/localStorageService'
 import { navbarCourseTitle } from '../services/homeService'
-import { stopTTS } from "../services/ttsService";
+import { stopTTS } from '../services/ttsService'
 import {
   totalHearts,
   initializeHeartCount,
@@ -232,7 +234,6 @@ const handleRefreshClick = async () => {
     clearMessages(false)
     clearThread()
     await initializeThread()
-
   }
 }
 

@@ -65,6 +65,9 @@ export interface PostMessageResponse extends RunStatus {}
 import { getAssistantId } from '../services/openaiService';
 import { setOwlDisplayMessage } from '../services/homeService';
 import { getOldThreadIdLS } from '@/services/localStorageService';
+import i18n from '@/i18n'
+
+const t = i18n.global.t as (...args: any[]) => string;
 
 // REST Service functions
 export const createNewThread = async (): Promise<CreateThreadResponse | undefined> => {
@@ -88,7 +91,7 @@ export const createNewThread = async (): Promise<CreateThreadResponse | undefine
             throw new Error(`Error: ${response.statusText}`);
         }
         const data: CreateThreadResponse = await response.json();
-        setOwlDisplayMessage("Chat created");
+        setOwlDisplayMessage(t("services.owlDisplayMsg.chatCreated"));
         setTimeout(() => { setOwlDisplayMessage(" (˶˃ ᵕ ˂˶) .ᐟ.ᐟ"); }, 1000);
         setTimeout(() => { setOwlDisplayMessage(""); }, 2000);
         return data;

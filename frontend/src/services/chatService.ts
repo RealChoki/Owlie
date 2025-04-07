@@ -3,6 +3,9 @@ import { getHeartCountLS, setHeartCountLS, getUserMessageTokensLS, setUserMessag
 
 import { getAssistantId, getAssistantThreadId } from '../services/openaiService'
 import websocketService from '../services/websocketService'
+import i18n from '@/i18n'
+
+const t = i18n.global.t as (...args: any[]) => string;
 
 // Reactive state
 const chatState = reactive({
@@ -29,14 +32,14 @@ watch(userMessageTokens, (newValue) => {
 
 // No hearts messages
 const noHeartsMessages = [
-  'Zzzz... schnarch',
-  'Ich bin gleich wieder da. Nur ein kurzes Nickerchen... zzzz...',
-  'Was für eine wundervolle... zzz... Frage...',
-  'Hoot. Ich bin gerade ein bisschen müde... zzzz...',
-  'Zzzz... Oh, hast du mich geweckt? Nein, nein, alles gut. Hoot. Nur ein kleines Augenzwinkern... zzzz...',
-  'Flügel ausstrecken, Kopf ins Gefieder, und... zzzz...',
-  'Hoot. So ein schöner Mond heute, aber... zzzz...',
-  'Psst. Ich bin eine Eule, Nachtaktivität ist meine Stärke... normalerweise... hoot... aber manchmal... schnarch zzzz...'
+  t('services.noHeartMsgs.message1'),
+  t('services.noHeartMsgs.message2'),
+  t('services.noHeartMsgs.message3'),
+  t('services.noHeartMsgs.message4'),
+  t('services.noHeartMsgs.message5'),
+  t('services.noHeartMsgs.message6'),
+  t('services.noHeartMsgs.message7'),
+  t('services.noHeartMsgs.message8')
 ]
 
 // Utility functions

@@ -15,7 +15,7 @@
         <textarea
           class="full-screen-textarea flex-grow-1"
           style="background-color: var(--expanded-input-bg); color: var(--text-color)"
-          placeholder="Type a message..."
+          :placeholder="$t('expandedInput.placeholder')"
           aria-label="Message input"
           v-model="currentUserInput"
           @focus="isSearchFocused = true"

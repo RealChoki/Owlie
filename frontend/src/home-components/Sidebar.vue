@@ -6,7 +6,7 @@
         type="text"
         v-model="searchQuery"
         class="sidebar-search-bar w-100"
-        placeholder="Search courses..."
+        :placeholder="$t('sidebar.searchPlaceholder')"
         @focus="isSearchFocused = true"
         @blur="isSearchFocused = false"
         :class="{ 'input-focused': isSearchFocused }"
@@ -48,9 +48,9 @@
               {{ course }}
               <span
                 v-if="selectedMode !== 'general'"
-                class="mode-text text-secondary small position-absolute top-0 end-0"
+                class="mode-text text-secondary small position-absolute top-0 start-0"
               >
-                ({{ selectedMode.charAt(0).toUpperCase() + selectedMode.slice(1) }})
+                ({{ $t(`sidebar.courseTitleMode.${selectedMode}`) }})
               </span>
             </span>
           </p>
@@ -61,7 +61,7 @@
     <div class="mode-toggle d-flex flex-column align-items-center modes-container p-3 pt-2">
       <div class="d-flex gap-2" style="color: var(--text-color)">
         <h6 class="m-0">
-          Select a mode
+          {{ $t('sidebar.modeSelectTitle') }}
           <font-awesome-icon
             :icon="['fas', 'circle-info']"
             class="circle-info cursor-pointer"
@@ -72,15 +72,13 @@
       </div>
       <div v-if="showInfo" class="small mt-1 text-warning text-center">
         <div v-if="selectedMode === 'general'">
-          An open learning environment for exploring course material, asking questions, and understanding concepts at
-          your own pace.
+          {{ $t('sidebar.modeGeneralDescription') }}
         </div>
         <div v-if="selectedMode === 'quiz'">
-          A quiz feature that assesses knowledge, tracks performance, and provides personalized feedback.
+          {{ $t('sidebar.modeQuizDescription') }}
         </div>
         <div v-if="selectedMode === 'exam'">
-          A mock exam experience using professor-uploaded materials, where realistic exam-style questions are generated
-          for focused practice.
+          {{ $t('sidebar.modeExamDescription') }}
         </div>
       </div>
 
@@ -92,14 +90,14 @@
           base-color="var(--mode-selector-bg)"
           class="equal-width-toggle"
         >
-          <v-btn value="general" class="equal-width-btn">General</v-btn>
+          <v-btn value="general" class="equal-width-btn"> {{ $t('sidebar.modeGeneral') }} </v-btn>
           <v-btn
             value="quiz"
             class="equal-width-btn"
             style="border-left: var(--mode-selector-border); border-right: var(--mode-selector-border)"
-            >Quiz</v-btn
+            >{{ $t('sidebar.modeQuiz') }}</v-btn
           >
-          <v-btn value="exam" class="equal-width-btn">Exam</v-btn>
+          <v-btn value="exam" class="equal-width-btn">{{ $t('sidebar.modeExam') }}</v-btn>
         </v-btn-toggle>
       </div>
     </div>
@@ -357,7 +355,7 @@ onMounted(() => {
 }
 
 .mode-text {
-  transform: translate(30px, -5px);
+  transform: translate(0px, -10px);
   font-size: 0.7rem;
 }
 

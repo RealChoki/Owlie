@@ -8,17 +8,10 @@
       </div>
 
       <img
-        v-if="isDarkMode"
-        src="../assets/icons/owl.svg"
+        src="../assets/icons/owl-filled-white.png"
         class="img-fluid owl-logo"
-        style="width: 75px"
-        @click="handleOwlClick"
-      />
-      <img
-        v-else
-        src="../assets/icons/OwlLogoWhiteMode.png"
-        class="img-fluid owl-logo"
-        style="width: 100px"
+        style="width: 75px;"
+        :style="isDarkMode ? 'filter: brightness(0.8)' : ''"
         @click="handleOwlClick"
       />
     </div>
@@ -26,33 +19,30 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { owlDisplayMessage } from '../services/homeService'
 import { isDarkMode } from '@/services/themeService'
+
+const { t } = useI18n()
 
 const clickCount = ref(0)
 
 const playfulMessages = [
-  'Hoot hoot!',
-  'Boop! That tickles!',
-  'I see you! Hoot!',
-  'Oh, hi again!',
-  'Fluffy hugs! Hoot!',
-  'Peek-a-hoot!',
-  'Too much love! Hoot!',
-  'Hoo-hoo, still here!',
-  'Careful, I’m blushing!',
-  'Boop! Let’s focus!'
+  t('owlie.default'),
+  t('owlie.boop'),
+  t('owlie.greeting'),
+  t('owlie.blushing'),
+  t('owlie.focus'),
 ]
 
 function handleOwlClick() {
   clickCount.value += 1
   const randomValue = Math.random()
   if (randomValue < 0.000001) {
-    owlDisplayMessage.value =
-      'Sending endless hoots of gratitude to @davidcraccer and @RealChoki for bringing me to life! 🦉✨'
+    owlDisplayMessage.value = t('owlie.onePiece')
   } else if (randomValue < 0.001) {
-    owlDisplayMessage.value = 'The One Piece! The One Piece is real!!!'
+    owlDisplayMessage.value = t('owlie.thankYou')
   } else if (randomValue < 0.1) {
     displayRandomMessage()
   }

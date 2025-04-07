@@ -26,14 +26,12 @@
   --hover: #414141;
   --color-disabled: rgb(196, 195, 195);
 
-
-
   /* View: Home */
 
   /* Footer */
   --message-input-bg: #232323;
   --message-input-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
-  
+
   --message-input-expand-icon-bg: #5b5b5b;
   --message-input-expand-icon: #232323;
   --message-input-expand-icon-border: 1px solid #5b5b5b;
@@ -62,7 +60,7 @@
   --profile-icon-navbar: #5b5b5b;
 
   /* Navbar Profile Menu */
-  --profile-menu-bg: #2A2A2A;
+  --profile-menu-bg: #2a2a2a;
   --profile-menu-border-color: #414141;
   --profile-menu-item-hover-bg: #414141;
 
@@ -76,13 +74,13 @@
   --custom-select-hover-bg: #414141;
   --custom-select-active-bg: #414141;
 
-  --custom-select-option-bg: #2A2A2A;
+  --custom-select-option-bg: #2a2a2a;
   --custom-select-option-border-color: #414141;
   --custom-select-option-bg-hover: #414141;
   --custom-select-option-bg-active: #414141;
 
   /* Sidebar */
-  --sidebar-bg: #0A0A0A;
+  --sidebar-bg: #0a0a0a;
 
   --course-search-bg: #2a2a2a;
 
@@ -107,7 +105,6 @@
   --mode-selector-border: 1px solid #41414149;
   --mode-info-icon-color: #131213;
 
-
   /* Main */
   --file-drop-border-dark: #414141;
   --file-drop-border-light: #5b5b5b;
@@ -118,28 +115,23 @@
   --owlie-speech-bubble-bg: #232323;
   --owlie-speech-bubble-shadow: 1.1px 1.1px #5b5b5b;
 
-  --chat-bubble-bg: #1A1A1B;
+  --chat-bubble-bg: #1a1a1b;
   --chat-bubble-shadow: 0 0px 10px #b0b0b0;
 
   --response-action-icon: #747474;
   --response-action-icon-hover: #2a2a2a;
-
-
 
   /* View: AboutUs */
 
   /* Navbar */
   --home-icon: #ffffff;
 
-
   /* ExpandedInput */
   --collapse-icon-bg: #ffffff;
-
 }
 
-
 /* Light mode — applied with: <html data-theme="white"> */
-[data-theme="light"] {
+[data-theme='light'] {
   /* General Colors */
   --color-white: #ffffff;
   --color-black: #0a0a0a;
@@ -161,26 +153,22 @@
   --color-gray-shadow: #5b5b5b;
   /* FontAwesome icons / Icon shadows */
 
-
-
-
   /* COMPONENT COLORS */
 
   /* General */
-  --text-color: #0D0D0D;
+  --text-color: #0d0d0d;
   --background: #ffffff;
-  --hover: #ECECEC;
+  --hover: #ececec;
   --color-disabled: rgb(168, 168, 168);
-
 
   /* View: Home */
 
   /* Footer */
   --message-input-bg: #ffffff;
   --message-input-shadow: 0px 3px 9px rgba(59, 59, 59, 0.2);
-  
+
   --message-input-expand-icon-bg: #ffffff;
-  --message-input-expand-icon: #5D5D5D;
+  --message-input-expand-icon: #5d5d5d;
   --message-input-expand-icon-border: 1px solid #dadada;
 
   --expanded-input-bg: #ffffff;
@@ -188,15 +176,14 @@
   --footer-buttons-color: #ffffff;
   --send-button-bg: #000000;
   --stop-button-bg: #000000;
-  --upload-file-button-bg: #5D5D5D;
+  --upload-file-button-bg: #5d5d5d;
   --file-widget-bg: #ffffff;
   --file-widget-border: #dadada;
-  --file-widget-x-icon: #5D5D5D;
-
+  --file-widget-x-icon: #5d5d5d;
 
   /* Navbar */
   --reload-icon-left: #000000;
-  --reload-icon-right: #5D5D5D;
+  --reload-icon-right: #5d5d5d;
 
   --hearts-bg-start: #000000;
   --hearts-bg-end: #8a8a8a;
@@ -205,12 +192,12 @@
 
   --burger-menu-icon-open: #000000;
 
-  --profile-icon-navbar: #5D5D5D;
+  --profile-icon-navbar: #5d5d5d;
 
   /* Navbar Profile Menu */
   --profile-menu-bg: #ffffff;
   --profile-menu-border-color: #dadada;
-  --profile-menu-item-hover-bg: #ECECEC;
+  --profile-menu-item-hover-bg: #ececec;
 
   /* Navbar Settings Modal */
   --settings-bg: #ffffff;
@@ -218,48 +205,47 @@
 
   /* Navbar Settings Custom Select */
   --custom-select-bg: #ffffff;
-  --custom-select-border-color: #ECECEC;
-  --custom-select-hover-bg: #ECECEC;
-  --custom-select-active-bg: #ECECEC;
+  --custom-select-border-color: #ececec;
+  --custom-select-hover-bg: #ececec;
+  --custom-select-active-bg: #ececec;
 
   --custom-select-option-bg: #ffffff;
   --custom-select-option-border-color: #dadada;
-  --custom-select-option-bg-hover: #ECECEC;
-  --custom-select-option-bg-active: #ECECEC;
+  --custom-select-option-bg-hover: #ececec;
+  --custom-select-option-bg-active: #ececec;
 
   /* Sidebar */
   --sidebar-bg: #f9f9f9;
 
-  --course-search-bg: #E3E3E3;
+  --course-search-bg: #e3e3e3;
 
-  --burger-menu-icon-close: #5D5D5D;
+  --burger-menu-icon-close: #5d5d5d;
 
   --magnifying-glass-icon-active: #000000;
   --magnifying-glass-icon-inactive: #afafaf;
 
   --course-sidebar-gradient: linear-gradient(to bottom, #000000, #8a8a8a);
-  --course-selected-bg: #E3E3E3;
-  --course-hover-bg: #ECECEC;
+  --course-selected-bg: #e3e3e3;
+  --course-hover-bg: #ececec;
 
   --info-icon-bg: #000000;
 
   --profile-icon-sidebar: #000000;
-  --profile-btn-hover-bg: #ECECEC49;
-  --profile-btn-selected-bg: #ECECEC60;
+  --profile-btn-hover-bg: #ececec49;
+  --profile-btn-selected-bg: #ececec60;
 
-  --mode-selector-bg: #E3E3E3;
+  --mode-selector-bg: #e3e3e3;
   --mode-selector-bg-hover: #d8d8d8;
   --mode-selector-bg-selected: #dadada;
   --mode-selector-border: 1px solid #dadada;
   --mode-info-icon-color: #ffffff;
-
 
   /* Main */
   --file-drop-border-dark: #414141;
   --file-drop-border-light: #5b5b5b;
   --file-drop-bg: #2a2a2a;
 
-  --owlie-gradient: linear-gradient(90deg, #5D5D5D, #000000);
+  --owlie-gradient: linear-gradient(90deg, #5d5d5d, #000000);
 
   --owlie-speech-bubble-bg: #f4f4f4;
   /*CHANGE*/
@@ -270,10 +256,8 @@
   --chat-bubble-shadow: 0 0px 0px #ffffff;
   /*CHANGE*/
 
-  --response-action-icon: #5D5D5D;
-  --response-action-icon-hover: #F9F9F9;
-
-
+  --response-action-icon: #5d5d5d;
+  --response-action-icon-hover: #f9f9f9;
 
   /* View: AboutUs */
 

@@ -1,29 +1,36 @@
-import { ref } from "vue";
+import { ref } from 'vue'
+import i18n from '@/i18n'
 
-const owlDisplayMessage = ref("");
-const navbarCourseTitle = ref("");
+const t = i18n.global.t as (...args: any[]) => string;
+
+const owlDisplayMessage = ref('')
+const navbarCourseTitle = ref('')
 
 const setOwlDisplayMessage = (message: string) => {
-  owlDisplayMessage.value = message;
-};
+  owlDisplayMessage.value = message
+}
 
 const setNavbarCourseTitle = (course: string, mode: string) => {
-    console.log("Course selected from home view:", course, mode);
-    navbarCourseTitle.value = mode !== "general" ? `${course} (${mode})` : course;
-};
+  if (mode !== 'general') {
+    const modeLabel = t(`navbar.courseTitleMode.${mode}`)
+    navbarCourseTitle.value = `${course} (${modeLabel})`
+  } else {
+    navbarCourseTitle.value = course
+  }
+}
 
 const clearOwlDisplayMessage = () => {
-  owlDisplayMessage.value = "";
-};
+  owlDisplayMessage.value = ''
+}
 
 const clearNavbarCourseTitle = () => {
-  navbarCourseTitle.value = "";
-};
+  navbarCourseTitle.value = ''
+}
 
 const displayAssistantNotFountMessage = () => {
-    setOwlDisplayMessage("Assistant not found!");
-    setTimeout(() => setOwlDisplayMessage("(｡>﹏<)"), 2000);
-    setTimeout(() => setOwlDisplayMessage("Assistant not found!"), 4000);
+  setOwlDisplayMessage(t('services.owlDisplayMsg.assistantNotFound'))
+  setTimeout(() => setOwlDisplayMessage('(｡>﹏<)'), 2000)
+  setTimeout(() => setOwlDisplayMessage(t('services.owlDisplayMsg.assistantNotFound')), 4000)
 }
 
 export {
@@ -33,5 +40,5 @@ export {
   setNavbarCourseTitle,
   clearOwlDisplayMessage,
   clearNavbarCourseTitle,
-  displayAssistantNotFountMessage,
-};
+  displayAssistantNotFountMessage
+}

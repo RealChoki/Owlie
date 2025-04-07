@@ -1,0 +1,121 @@
+{
+    "owlie": {
+        "default": "Hoot hoot!",
+        "boop": "Boop! That tickles!",
+        "greeting": "I see you! Hoot!",
+        "blushing": "Careful, I’m blushing!",
+        "focus": "Boop! Let’s focus!",
+        "thankYou": "Sending endless hoots of gratitude to @davidcraccer and @RealChoki for bringing me to life! 🦉✨",
+        "onePiece": "The One Piece! The One Piece is real!!!"
+    },
+    "sidebar": {
+        "searchPlaceholder": "Search courses...",
+        "courseTitleMode":{
+            "quiz": "Quiz",
+            "exam": "Exam"
+        },
+        "modeSelectTitle": "Select a mode",
+        "modeSelectTitleBurger": "Switch mode to:",
+        "modeGeneralDescription": "General mode: Answers course questions, clarifies concepts, and helps with homework.",
+        "modeQuizDescription": "Quiz mode: Assesses knowledge, tracks performance, and gives feedback.",
+        "modeExamDescription": "Exam mode: Creates mock questions and full exams formatted like the real course exam.",
+        "modeGeneral": "General",
+        "modeQuiz": "Quiz",
+        "modeExam": "Exam"
+    },
+    "fileDrop": {
+        "title": "Drop file to upload",
+        "valid": "Valid file type",
+        "invalid": "Invalid file type"
+    },
+    "footerInput": {
+        "placeholder": "Type a message..."
+    },
+    "expandedInput": {
+        "placeholder": "Type a message..."
+    },
+    "chatBubbleContainer": {
+        "responseThinking": "Thinking..."
+    },
+    "navbar": {
+        "tokens": "Tokens",
+        "courseTitleMode": {
+            "quiz": "quiz",
+            "exam": "exam"
+        }
+    },
+    "profileMenu": {
+        "profileTitle": "Profile",
+        "settingsTitle": "Settings",
+        "aboutUsTitle": "About Us",
+        "logoutTitle": "Log Out",
+        "settingsModal": {
+            "title": "Settings",
+            "themeLabel": "Theme",
+            "languageLabel": "Language",
+            "customSelect": {
+                "theme": {
+                    "dark": "Dark",
+                    "light": "Light"
+                },
+                "language": {
+                    "title": "Language",
+                    "system": "System language",
+                    "en": "English",
+                    "de": "German"
+                }
+            }
+        }
+    },
+    "aboutUs": {
+        "title": "Creating an AI Assistant that Empowers Independent Problem-Solving",
+        "description1": {
+            "beforeLinks": "Welcome! We are a passionate team of 2 business informatics students (",
+            "linkChoki": "Choki's GitHub",
+            "and": "and",
+            "linkDavid": "David's GitHub",
+            "afterLinks": ") from HTW Berlin with a dream. Meet Owlie – our innovative AI teaching assistant. Unlike traditional AI tools that often provide immediate answers, Owlie encourages students to think critically and solve problems independently by offering hints, guidance, and personalized feedback."
+        },
+        "description2": "Our goal is to address the challenges AI faces in education, such as promoting critical thinking over quick solutions, and fostering a deeper understanding of concepts. By helping students develop problem-solving skills, we believe AI can truly empower learners.",
+        "mobile": {
+            "beforeLinks": "We are two business informatics students (",
+            "linkChoki": "Choki",
+            "and": "and",
+            "linkDavid": "David",
+            "afterLinks": ") from HTW Berlin, passionate about AI in education. Meet Owlie – an innovative AI teaching assistant designed to encourage critical thinking. Instead of simply providing answers, Owlie offers hints, guidance, and personalized feedback to help students develop problem-solving skills while maintaining academic integrity."
+        }
+    },
+    "services": {
+        "owlDisplayMsg": {
+            "fetchingAssistant": "Fetching assistant...",
+            "assistantNotFound": "Assistant not found!",
+            "createChat": "Creating a new chat...",
+            "chatCreated": "Chat created"
+        },
+        "noHeartMsgs": {
+            "message1": "Zzzz... snore",
+            "message2": "I’ll be right back. Just a quick nap... zzzz...",
+            "message3": "What a wonderful... zzz... question...",
+            "message4": "Hoot. I'm feeling a bit sleepy right now... zzzz...",
+            "message5": "Zzzz... Oh, did you wake me? No, no, all good. Hoot. Just a little wink... zzzz...",
+            "message6": "Stretch the wings, tuck the head in the feathers, and... zzzz...",
+            "message7": "Hoot. Such a beautiful moon tonight, but... zzzz...",
+            "message8": "Psst. I'm an owl, night activity is my thing... usually... hoot... but sometimes... snore zzzz..."
+        }
+    },
+    "login": {
+        "title": "Login",
+        "username": {
+            "label": "Username",
+            "placeholder": "Enter your username"
+        },
+        "password": {
+            "label": "Password",
+            "placeholder": "Enter your password"
+        },
+        "register": {
+            "title": "Don't have an account?",
+            "link": "Register here"
+        }
+    }
+}

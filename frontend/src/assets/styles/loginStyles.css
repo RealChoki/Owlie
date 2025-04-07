@@ -14,7 +14,7 @@
   --color-disabled: rgb(220, 220, 220);
 }
 
-[data-theme="light"] {
+[data-theme='light'] {
   --background: #ffffff;
 
   --text-color: #000000;

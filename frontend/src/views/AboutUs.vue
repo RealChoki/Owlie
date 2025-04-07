@@ -9,37 +9,34 @@
   <div class="d-flex justify-content-center container">
     <div class="d-flex flex-column justify-content-center align-items-center text-center vh-100 w-75">
       <h1 class="fw-bold mb-4" style="color: var(--text-color)">
-        Creating an AI Assistant that Empowers Independent Problem-Solving
+        {{ $t('aboutUs.title') }}
       </h1>
       <p class="w-75 paragraph-desktop" style="color: var(--text-color)">
-        Welcome! We are a passionate team of 2 business informatics students (<a
-          href="https://github.com/RealChoki"
-          style="color: var(--text-color)"
-          >Choki's GitHub</a
-        >
-        and <a href="https://github.com/davidcraccer" style="color: var(--text-color)">David's GitHub</a>) from HTW
-        Berlin with a dream. Meet Owlie – our innovative AI teaching assistant. Unlike traditional AI tools that often
-        provide immediate answers, Owlie encourages students to think critically and solve problems independently by
-        offering hints, guidance, and personalized feedback.
+        {{ $t('aboutUs.description1.beforeLinks') }}
+        <a href="https://github.com/RealChoki" target="_blank" style="color: var(--text-color)">
+          {{ $t('aboutUs.description1.linkChoki') }}
+        </a>
+        {{ $t('aboutUs.description1.and') }}
+        <a href="https://github.com/davidcraccer" target="_blank" style="color: var(--text-color)">
+          {{ $t('aboutUs.description1.linkDavid') }}
+        </a>
+        {{ $t('aboutUs.description1.afterLinks') }}
       </p>
       <p class="w-75 paragraph-desktop" style="color: var(--text-color)">
-        Our goal is to address the challenges AI faces in education, such as promoting critical thinking over quick
-        solutions, and fostering a deeper understanding of concepts. By helping students develop problem-solving skills,
-        we believe AI can truly empower learners.
+        {{ $t('aboutUs.description2') }}
       </p>
       <p class="w-75 paragraph-mobile" style="color: var(--text-color)">
-        We are two business informatics students (<a
-          href="https://github.com/RealChoki"
-          style="color: var(--text-color)"
-          >Choki</a
-        >
-        and <a href="https://github.com/davidcraccer" style="color: var(--text-color)">David</a>) from HTW Berlin,
-        passionate about AI in education. Meet Owlie – an innovative AI teaching assistant designed to encourage
-        critical thinking. Instead of simply providing answers, Owlie offers hints, guidance, and personalized feedback
-        to help students develop problem-solving skills while maintaining academic integrity.
+        {{ $t('aboutUs.mobile.beforeLinks') }}
+        <a href="https://github.com/RealChoki" target="_blank" style="color: var(--text-color)">
+          {{ $t('aboutUs.mobile.linkChoki') }}
+        </a>
+        {{ $t('aboutUs.mobile.and') }}
+        <a href="https://github.com/davidcraccer" target="_blank" style="color: var(--text-color)">
+          {{ $t('aboutUs.mobile.linkDavid') }}
+        </a>
+        {{ $t('aboutUs.mobile.afterLinks') }}
       </p>
-      <img v-if="isDarkMode" class="owl-logo w-25 mt-4" src="../assets/icons/owl.svg" alt="Owl Logo" />
-      <img v-else class="owl-logo w-25 mt-4" src="../assets/icons/owlLogoWhiteMode.png" alt="Owl Logo" />
+      <img class="owl-logo w-25 mt-4" src="../assets/icons/owl-filled-white.png" alt="Owl Logo" />
     </div>
   </div>
 </template>

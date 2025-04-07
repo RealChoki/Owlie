@@ -16,28 +16,28 @@
         style="color: var(--text-color)"
         @click="navigateToProfile"
       >
-        <font-awesome-icon :icon="['fas', 'user-circle']" /> Profile
+        <font-awesome-icon :icon="['fas', 'user-circle']" /> {{ $t('profileMenu.profileTitle') }}
       </a>
       <a
         @click="emit('openSettings')"
         class="cursor-pointer d-flex align-items-center gap-2 text-decoration-none p-2 rounded"
         style="color: var(--text-color)"
       >
-        <font-awesome-icon :icon="['fas', 'gear']" /> Settings
+        <font-awesome-icon :icon="['fas', 'gear']" /> {{ $t('profileMenu.settingsTitle') }}
       </a>
       <a
         class="d-flex align-items-center gap-2 text-decoration-none p-2 rounded cursor-pointer"
         style="color: var(--text-color)"
         @click="navigateToAboutUs"
       >
-        <font-awesome-icon :icon="['fas', 'info-circle']" /> About Us
+        <font-awesome-icon :icon="['fas', 'info-circle']" /> {{ $t('profileMenu.aboutUsTitle') }}
       </a>
       <a
         class="d-flex align-items-center gap-2 text-decoration-none p-2 rounded cursor-pointer"
         style="color: var(--text-color)"
         @click="logout"
       >
-        <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Log Out
+        <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> {{ $t('profileMenu.logoutTitle') }}
       </a>
     </nav>
   </div>

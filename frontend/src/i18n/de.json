@@ -1,0 +1,121 @@
+{
+  "owlie": {
+    "default": "Huu huu!",
+    "boop": "Boop! Das kitzelt!",
+    "greeting": "Ich sehe dich! Huu!",
+    "blushing": "Vorsicht, ich werde rot!",
+    "focus": "Boop! Lass uns konzentrieren!",
+    "thankYou": "Unendliche Huu-Rufe des Dankes an @davidcraccer und @RealChoki, die mich zum Leben erweckt haben! 🦉✨",
+    "onePiece": "Das One Piece! Das One Piece ist real!!!"
+  },
+  "sidebar": {
+    "searchPlaceholder": "Kurse durchsuchen...",
+    "courseTitleMode": {
+      "quiz": "Quiz",
+      "exam": "Prüfung"
+    },
+    "modeSelectTitle": "Modus auswählen",
+    "modeSelectTitleBurger": "Modus wechseln zu:",
+    "modeGeneralDescription": "Standard Modus: Beantwortet Kursfragen, erklärt Konzepte und hilft bei Hausaufgaben.",
+    "modeQuizDescription": "Quiz-Modus: Bewertet Wissen, verfolgt Leistung und gibt Feedback.",
+    "modeExamDescription": "Prüfungsmodus: Erstellt Übungsfragen und vollständige Prüfungen im Format der echten Kursprüfung.",
+    "modeGeneral": "Standard",
+    "modeQuiz": "Quiz",
+    "modeExam": "Prüfung"
+  },
+  "fileDrop": {
+    "title": "Datei zum Hochladen ablegen",
+    "valid": "Gültiger Dateityp",
+    "invalid": "Ungültiger Dateityp"
+  },
+  "footerInput": {
+    "placeholder": "Frage stellen..."
+  },
+  "expandedInput": {
+    "placeholder": "Frage stellen..."
+  },
+  "chatBubbleContainer": {
+    "responseThinking": "Denke nach..."
+  },
+  "navbar": {
+    "tokens": "Tokens",
+    "courseTitleMode": {
+        "quiz": "quiz",
+        "exam": "prüfung"
+    }
+},
+  "profileMenu": {
+    "profileTitle": "Profil",
+    "settingsTitle": "Einstellungen",
+    "aboutUsTitle": "Über Uns",
+    "logoutTitle": "Abmelden",
+    "settingsModal": {
+      "title": "Einstellungen",
+      "themeLabel": "Design",
+      "languageLabel": "Sprache",
+      "customSelect": {
+        "theme": {
+          "dark": "Dunkel",
+          "light": "Hell"
+        },
+        "language": {
+          "title": "Sprache",
+          "system": "Systemsprache",
+          "en": "Englisch",
+          "de": "Deutsch"
+        }
+      }
+    }
+  },
+  "aboutUs": {
+    "title": "Ein KI-Assistent, der eigenständiges Problemlösen fördert",
+    "description1": {
+      "beforeLinks": "Willkommen! Wir sind ein leidenschaftliches Team aus zwei Wirtschaftsinformatik-Studierenden (",
+      "linkChoki": "Chokis GitHub",
+      "and": "und",
+      "linkDavid": "Davids GitHub",
+      "afterLinks": ") von der HTW Berlin mit einem Traum. Lerne Owlie kennen – unseren innovativen KI-Lernassistenten. Im Gegensatz zu traditionellen KI-Tools, die sofort Antworten liefern, regt Owlie zum kritischen Denken an und unterstützt mit Hinweisen, Orientierung und individuellem Feedback."
+    },
+    "description2": "Unser Ziel ist es, Herausforderungen der KI im Bildungsbereich zu begegnen, etwa durch die Förderung von kritischem Denken statt schneller Lösungen und ein tieferes Verständnis von Konzepten. Wir glauben, dass KI durch die Entwicklung von Problemlösungsfähigkeiten Lernende wirklich stärken kann.",
+    "mobile": {
+      "beforeLinks": "Wir sind zwei Wirtschaftsinformatik-Studierende (",
+      "linkChoki": "Choki",
+      "and": "und",
+      "linkDavid": "David",
+      "afterLinks": ") von der HTW Berlin, begeistert von KI in der Bildung. Lerne Owlie kennen – ein innovativer KI-Lernassistent, der kritisches Denken fördert. Anstatt direkt Antworten zu geben, unterstützt Owlie mit Hinweisen, Orientierung und individuellem Feedback und hilft so, Problemlösungsfähigkeiten zu entwickeln – bei gleichzeitiger Wahrung der akademischen Integrität."
+    }
+  },
+  "services": {
+    "owlDisplayMsg": {
+      "fetchingAssistant": "Assistent wird geladen...",
+      "assistantNotFound": "Assistent nicht gefunden!",
+      "createChat": "Neuer Chat wird erstellt...",
+      "chatCreated": "Chat erstellt"
+    },
+    "noHeartMsgs": {
+      "message1": "Zzzz... schnarch",
+      "message2": "Ich bin gleich wieder da. Nur ein kurzes Nickerchen... zzzz...",
+      "message3": "Was für eine wundervolle... zzz... Frage...",
+      "message4": "Hoot. Ich bin gerade ein bisschen müde... zzzz...",
+      "message5": "Zzzz... Oh, hast du mich geweckt? Nein, nein, alles gut. Hoot. Nur ein kleines Augenzwinkern... zzzz...",
+      "message6": "Flügel ausstrecken, Kopf ins Gefieder, und... zzzz...",
+      "message7": "Hoot. So ein schöner Mond heute, aber... zzzz...",
+      "message8": "Psst. Ich bin eine Eule, Nachtaktivität ist meine Stärke... normalerweise... hoot... aber manchmal... schnarch zzzz..."
+    }
+  },
+  "login": {
+    "title": "Anmelden",
+    "username": {
+      "label": "Benutzername",
+      "placeholder": "Benutzernamen eingeben"
+    },
+    "password": {
+      "label": "Passwort",
+      "placeholder": "Passwort eingeben"
+    },
+    "register": {
+      "title": "Noch kein Konto?",
+      "link": "Hier registrieren"
+    }
+  }
+}

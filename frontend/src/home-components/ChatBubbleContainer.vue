@@ -23,7 +23,7 @@
       >
         <img
           v-if="!thinking || message.isComplete"
-          :src="isDarkMode ? darkModeImage : lightModeImage"
+          src="../assets/icons/owl-filled-white.png"
           class="assistant-pfp p-1 pt-0"
           :style="isWideScreen ? 'position: absolute; left: 5px; top: 5px' : ''"
         />
@@ -68,7 +68,7 @@
     </div>
     <div v-if="thinking">
       <img
-        :src="isDarkMode ? darkModeImage : lightModeImage"
+        src="../assets/icons/owl-filled-white.png"
         alt="assistant"
         class="assistant-pfp p-1 pt-0"
       />
@@ -92,8 +92,6 @@ import { loadVoices, stopTTS, toggleTTS } from "../services/ttsService";
 import { useScreenWidth } from "../utils/useScreenWidth";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
-import darkModeImage from '@/assets/icons/owl.svg'
-import lightModeImage from '@/assets/icons/OwlLogoWhiteMode.png'
 import { isDarkMode } from '@/services/themeService'
 
 const messages = getMessages();
