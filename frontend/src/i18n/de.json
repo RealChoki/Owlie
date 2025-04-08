@@ -38,7 +38,7 @@
     "responseThinking": "Denke nach..."
   },
   "navbar": {
-    "tokens": "Tokens",
+    "tokens": "Tokens: ",
     "courseTitleMode": {
         "quiz": "quiz",
         "exam": "prüfung"

@@ -38,7 +38,7 @@
         "responseThinking": "Thinking..."
     },
     "navbar": {
-        "tokens": "Tokens",
+        "tokens": "Tokens: ",
         "courseTitleMode": {
             "quiz": "quiz",
             "exam": "exam"
