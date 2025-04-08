@@ -1,0 +1,121 @@
+{
+    "owlie": {
+        "default": "咕咕！",
+        "boop": "咕！好痒啊！",
+        "greeting": "我看到你了！咕！",
+        "blushing": "小心，我脸红了！",
+        "focus": "咕！让我们集中注意力！",
+        "thankYou": "向 @davidcraccer 和 @RealChoki 发送无尽的咕咕感谢，感谢他们赋予我生命！🦉✨",
+        "onePiece": "海贼王！海贼王是真的！！！"
+    },
+    "sidebar": {
+        "searchPlaceholder": "搜索课程...",
+        "mode": "模式",
+        "courseTitleMode": {
+            "general": "通用",
+            "quiz": "测验",
+            "exam": "考试"
+        },
+        "modeSelectTitle": "选择模式",
+        "modeSelectTitleBurger": "切换模式为：",
+        "modeGeneralDescription": "通用模式：回答课程问题，澄清概念，并帮助完成作业。",
+        "modeQuizDescription": "测验模式：评估知识，跟踪表现，并提供反馈。",
+        "modeExamDescription": "考试模式：创建模拟问题和完整的考试，格式与真实课程考试相同。",
+        "modeGeneral": "通用",
+        "modeQuiz": "测验",
+        "modeExam": "考试"
+    },
+    "fileDrop": {
+        "title": "拖放文件以上传",
+        "valid": "有效的文件类型",
+        "invalid": "无效的文件类型"
+    },
+    "footerInput": {
+        "placeholder": "输入消息..."
+    },
+    "expandedInput": {
+        "placeholder": "输入消息..."
+    },
+    "chatBubbleContainer": {
+        "responseThinking": "思考中..."
+    },
+    "navbar": {
+        "tokens": "令牌：",
+        "courseTitleMode": {
+            "quiz": "测验",
+            "exam": "考试"
+        }
+    },
+    "profileMenu": {
+        "profileTitle": "个人资料",
+        "settingsTitle": "设置",
+        "aboutUsTitle": "关于我们",
+        "logoutTitle": "退出登录",
+        "settingsModal": {
+            "title": "设置",
+            "themeLabel": "主题",
+            "languageLabel": "语言",
+            "customSelect": {
+                "theme": {
+                    "dark": "暗色",
+                    "light": "亮色"
+                },
+                "language": {
+                    "title": "语言",
+                    "system": "系统语言"
+                }
+            }
+        }
+    },
+    "aboutUs": {
+        "title": "创建一个促进独立解决问题的AI助手",
+        "description1": {
+            "beforeLinks": "欢迎！我们是来自HTW柏林的两名充满激情的商业信息学学生（",
+            "linkChoki": "Choki的GitHub",
+            "and": "和",
+            "linkDavid": "David的GitHub",
+            "afterLinks": "），怀揣着一个梦想。认识一下Owlie——我们创新的AI教学助手。与传统的AI工具通常直接提供答案不同，Owlie通过提供提示、指导和个性化反馈，鼓励学生进行批判性思考并独立解决问题。"
+        },
+        "description2": "我们的目标是解决AI在教育中面临的挑战，例如促进批判性思维而非快速解决方案，并加深对概念的理解。通过帮助学生培养解决问题的技能，我们相信AI可以真正赋予学习者力量。",
+        "mobile": {
+            "beforeLinks": "我们是来自HTW柏林的两名商业信息学学生（",
+            "linkChoki": "Choki",
+            "and": "和",
+            "linkDavid": "David",
+            "afterLinks": "），对教育中的AI充满热情。认识一下Owlie——一个旨在鼓励批判性思维的创新AI教学助手。Owlie不是简单地提供答案，而是通过提供提示、指导和个性化反馈，帮助学生培养解决问题的技能，同时保持学术诚信。"
+        }
+    },
+    "services": {
+        "owlDisplayMsg": {
+            "fetchingAssistant": "正在获取助手...",
+            "assistantNotFound": "未找到助手！",
+            "createChat": "正在创建新聊天...",
+            "chatCreated": "聊天已创建"
+        },
+        "noHeartMsgs": {
+            "message1": "Zzzz... 打鼾",
+            "message2": "我马上回来。只是小睡一会儿... zzzz...",
+            "message3": "多么美妙的... zzz... 问题...",
+            "message4": "咕。我现在有点困... zzzz...",
+            "message5": "Zzzz... 哦，你把我吵醒了吗？不，不，一切都好。咕。只是小小的打盹... zzzz...",
+            "message6": "伸展翅膀，把头埋在羽毛里，然后... zzzz...",
+            "message7": "咕。今晚的月亮真美，但是... zzzz...",
+            "message8": "嘘。我是一只猫头鹰，夜间活动是我的强项... 通常是... 咕... 但有时... 打鼾 zzzz..."
+        }
+    },
+    "login": {
+        "title": "登录",
+        "username": {
+            "label": "用户名",
+            "placeholder": "输入您的用户名"
+        },
+        "password": {
+            "label": "密码",
+            "placeholder": "输入您的密码"
+        },
+        "register": {
+            "title": "没有账号？",
+            "link": "在这里注册"
+        }
+    }
+}

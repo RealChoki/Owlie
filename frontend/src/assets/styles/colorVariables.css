@@ -29,6 +29,8 @@
   /* View: Home */
 
   /* Footer */
+  --character-count-danger: #dc3545;
+
   --message-input-bg: #232323;
   --message-input-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
 
@@ -85,6 +87,7 @@
   --course-search-bg: #2a2a2a;
 
   --burger-menu-icon-close: #5b5b5b;
+  --assistant-mode-title: #54B6B2;
 
   --magnifying-glass-icon-active: #ffffff;
   --magnifying-glass-icon-inactive: #5b5b5b;
@@ -92,6 +95,8 @@
   --course-sidebar-gradient: linear-gradient(to bottom, #ffffff, #5b5b5b);
   --course-selected-bg: #2a2a2a;
   --course-hover-bg: #414141;
+
+  --course-description-color: #fd7e14;
 
   --info-icon-bg: #ffffff;
 
@@ -164,6 +169,8 @@
   /* View: Home */
 
   /* Footer */
+  --character-count-danger: #dc3545;
+
   --message-input-bg: #ffffff;
   --message-input-shadow: 0px 3px 9px rgba(59, 59, 59, 0.2);
 
@@ -220,6 +227,7 @@
   --course-search-bg: #e3e3e3;
 
   --burger-menu-icon-close: #5d5d5d;
+  --assistant-mode-title: #54B6B2;
 
   --magnifying-glass-icon-active: #000000;
   --magnifying-glass-icon-inactive: #afafaf;
@@ -228,11 +236,13 @@
   --course-selected-bg: #e3e3e3;
   --course-hover-bg: #ececec;
 
+  --course-description-color: #fd7e14;
+
   --info-icon-bg: #000000;
 
   --profile-icon-sidebar: #000000;
-  --profile-btn-hover-bg: #ececec49;
-  --profile-btn-selected-bg: #ececec60;
+  --profile-btn-hover-bg: #ecececa9;
+  --profile-btn-selected-bg: #ecececef;
 
   --mode-selector-bg: #e3e3e3;
   --mode-selector-bg-hover: #d8d8d8;

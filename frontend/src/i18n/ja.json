@@ -1,0 +1,121 @@
+{
+    "owlie": {
+        "default": "ホーホー！",
+        "boop": "ブープ！くすぐったいよ！",
+        "greeting": "見つけたよ！ホー！",
+        "blushing": "気をつけて、赤面しちゃう！",
+        "focus": "ブープ！集中しよう！",
+        "thankYou": "@davidcraccerさんと@RealChokiさんに無限の感謝のホーを送ります！🦉✨",
+        "onePiece": "ワンピース！ワンピースは本当に存在する！！！"
+    },
+    "sidebar": {
+        "searchPlaceholder": "コースを検索...",
+        "mode": "モード",
+        "courseTitleMode": {
+            "general": "一般",
+            "quiz": "クイズ",
+            "exam": "試験"
+        },
+        "modeSelectTitle": "モードを選択",
+        "modeSelectTitleBurger": "モードを切り替える：",
+        "modeGeneralDescription": "一般モード：コースの質問に答え、概念を明確にし、宿題を手伝います。",
+        "modeQuizDescription": "クイズモード：知識を評価し、パフォーマンスを追跡し、フィードバックを提供します。",
+        "modeExamDescription": "試験モード：模擬問題や本番の試験形式での完全な試験を作成します。",
+        "modeGeneral": "一般",
+        "modeQuiz": "クイズ",
+        "modeExam": "試験"
+    },
+    "fileDrop": {
+        "title": "ファイルをドロップしてアップロード",
+        "valid": "有効なファイルタイプ",
+        "invalid": "無効なファイルタイプ"
+    },
+    "footerInput": {
+        "placeholder": "メッセージを入力..."
+    },
+    "expandedInput": {
+        "placeholder": "メッセージを入力..."
+    },
+    "chatBubbleContainer": {
+        "responseThinking": "考え中..."
+    },
+    "navbar": {
+        "tokens": "トークン：",
+        "courseTitleMode": {
+            "quiz": "クイズ",
+            "exam": "試験"
+        }
+    },
+    "profileMenu": {
+        "profileTitle": "プロフィール",
+        "settingsTitle": "設定",
+        "aboutUsTitle": "私たちについて",
+        "logoutTitle": "ログアウト",
+        "settingsModal": {
+            "title": "設定",
+            "themeLabel": "テーマ",
+            "languageLabel": "言語",
+            "customSelect": {
+                "theme": {
+                    "dark": "ダーク",
+                    "light": "ライト"
+                },
+                "language": {
+                    "title": "言語",
+                    "system": "システム言語"
+                }
+            }
+        }
+    },
+    "aboutUs": {
+        "title": "独立した問題解決を支援するAIアシスタントの作成",
+        "description1": {
+            "beforeLinks": "ようこそ！私たちはHTWベルリンの情熱的な2人のビジネス情報学の学生（",
+            "linkChoki": "ChokiのGitHub",
+            "and": "と",
+            "linkDavid": "DavidのGitHub",
+            "afterLinks": "）で、夢を持っています。これがOwlie – 私たちの革新的なAI教育アシスタントです。従来のAIツールが即座に答えを提供するのとは異なり、Owlieはヒント、ガイダンス、個別のフィードバックを提供することで、学生が批判的思考を行い、独立して問題を解決することを促します。"
+        },
+        "description2": "私たちの目標は、迅速な解決策よりも批判的思考を促進し、概念の深い理解を育むなど、教育におけるAIが直面する課題に対処することです。学生が問題解決能力を身につけることで、AIは本当に学習者を支援できると信じています。",
+        "mobile": {
+            "beforeLinks": "私たちはHTWベルリンの2人のビジネス情報学の学生（",
+            "linkChoki": "Choki",
+            "and": "と",
+            "linkDavid": "David",
+            "afterLinks": "）で、教育におけるAIに情熱を持っています。これがOwlie – 批判的思考を促進するために設計された革新的なAI教育アシスタントです。Owlieは単に答えを提供するのではなく、ヒント、ガイダンス、個別のフィードバックを提供することで、学生が学術的誠実性を維持しながら問題解決能力を身につけるのを助けます。"
+        }
+    },
+    "services": {
+        "owlDisplayMsg": {
+            "fetchingAssistant": "アシスタントを取得中...",
+            "assistantNotFound": "アシスタントが見つかりません！",
+            "createChat": "新しいチャットを作成中...",
+            "chatCreated": "チャットが作成されました"
+        },
+        "noHeartMsgs": {
+            "message1": "Zzzz... いびき",
+            "message2": "すぐ戻ります。ちょっとお昼寝を... zzzz...",
+            "message3": "なんて素晴らしい... zzz... 質問...",
+            "message4": "ホー。ちょっと眠いな... zzzz...",
+            "message5": "Zzzz... ああ、起こした？いやいや、大丈夫。ホー。ちょっと目を閉じてただけ... zzzz...",
+            "message6": "翼を伸ばして、頭を羽毛にうずめて、そして... zzzz...",
+            "message7": "ホー。今夜は美しい月だけど... zzzz...",
+            "message8": "シー。私はフクロウ、夜行性が得意... 普段はね... ホー... でも時々... いびき zzzz..."
+        }
+    },
+    "login": {
+        "title": "ログイン",
+        "username": {
+            "label": "ユーザー名",
+            "placeholder": "ユーザー名を入力してください"
+        },
+        "password": {
+            "label": "パスワード",
+            "placeholder": "パスワードを入力してください"
+        },
+        "register": {
+            "title": "アカウントをお持ちでない方？",
+            "link": "こちらで登録"
+        }
+    }
+}

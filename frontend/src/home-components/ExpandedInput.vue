@@ -152,7 +152,7 @@ function sendMessage() {
 }
 
 .text-danger {
-  color: red !important;
+  color: var(--character-count-danger) !important;
 }
 
 @media (min-width: 768px) {

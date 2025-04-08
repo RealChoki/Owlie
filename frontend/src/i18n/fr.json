@@ -1,0 +1,121 @@
+{
+    "owlie": {
+        "default": "Hoo hoo!",
+        "boop": "Boop! Ça chatouille!",
+        "greeting": "Je te vois! Hoo!",
+        "blushing": "Fais attention, je deviens rouge!",
+        "focus": "Boop! Concentrons-nous!",
+        "thankYou": "Envoyant des hoots de gratitude sans fin à @davidcraccer et @RealChoki pour m'avoir donné vie! 🦉✨",
+        "onePiece": "Le One Piece! Le One Piece est réel!!!"
+    },
+    "sidebar": {
+        "searchPlaceholder": "Rechercher des cours...",
+        "mode": "Mode",
+        "courseTitleMode": {
+            "general": "Général",
+            "quiz": "Quiz",
+            "exam": "Examen"
+        },
+        "modeSelectTitle": "Sélectionner un mode",
+        "modeSelectTitleBurger": "Passer en mode :",
+        "modeGeneralDescription": "Mode général : Répond aux questions, clarifie les concepts et aide aux devoirs.",
+        "modeQuizDescription": "Mode quiz : Évalue les connaissances, suit les résultats et donne un retour.",
+        "modeExamDescription": "Mode examen : Crée des questions et examens comme l’examen réel.",
+        "modeGeneral": "Général",
+        "modeQuiz": "Quiz",
+        "modeExam": "Examen"
+    },
+    "fileDrop": {
+        "title": "Déposez le fichier pour le télécharger",
+        "valid": "Type de fichier valide",
+        "invalid": "Type de fichier invalide"
+    },
+    "footerInput": {
+        "placeholder": "Tapez un message..."
+    },
+    "expandedInput": {
+        "placeholder": "Tapez un message..."
+    },
+    "chatBubbleContainer": {
+        "responseThinking": "En train de réfléchir..."
+    },
+    "navbar": {
+        "tokens": "Tokens: ",
+        "courseTitleMode": {
+            "quiz": "quiz",
+            "exam": "examen"
+        }
+    },
+    "profileMenu": {
+        "profileTitle": "Profil",
+        "settingsTitle": "Paramètres",
+        "aboutUsTitle": "À propos de nous",
+        "logoutTitle": "Se déconnecter",
+        "settingsModal": {
+            "title": "Paramètres",
+            "themeLabel": "Thème",
+            "languageLabel": "Langue",
+            "SettingsCustomSelect": {
+                "theme": {
+                    "dark": "Sombre",
+                    "light": "Clair"
+                },
+                "language": {
+                    "title": "Langue",
+                    "system": "Langue du système"
+                }
+            }
+        }
+    },
+    "aboutUs": {
+        "title": "Créer un assistant IA qui favorise la résolution indépendante de problèmes",
+        "description1": {
+            "beforeLinks": "Bienvenue! Nous sommes une équipe passionnée de 2 étudiants en informatique de gestion (",
+            "linkChoki": "GitHub de Choki",
+            "and": "et",
+            "linkDavid": "GitHub de David",
+            "afterLinks": ") de la HTW Berlin avec un rêve. Découvrez Owlie, notre assistant d'enseignement IA innovant. Contrairement aux outils IA traditionnels qui donnent souvent des réponses immédiates, Owlie encourage les étudiants à réfléchir de manière critique et à résoudre des problèmes de manière autonome en offrant des indices, des conseils et des retours personnalisés."
+        },
+        "description2": "Notre objectif est de relever les défis que l'IA rencontre dans l'éducation, tels que promouvoir la pensée critique plutôt que des solutions rapides, et favoriser une compréhension plus approfondie des concepts. Nous croyons qu'en aidant les étudiants à développer des compétences de résolution de problèmes, l'IA peut véritablement renforcer les apprenants.",
+        "mobile": {
+            "beforeLinks": "Nous sommes deux étudiants en informatique de gestion (",
+            "linkChoki": "Choki",
+            "and": "et",
+            "linkDavid": "David",
+            "afterLinks": ") de la HTW Berlin, passionnés par l'IA dans l'éducation. Découvrez Owlie, un assistant IA innovant conçu pour encourager la pensée critique. Au lieu de fournir simplement des réponses, Owlie offre des indices, des conseils et des retours personnalisés pour aider les étudiants à développer des compétences de résolution de problèmes tout en maintenant l'intégrité académique."
+        }
+    },
+    "services": {
+        "owlDisplayMsg": {
+            "fetchingAssistant": "Chargement de l'assistant...",
+            "assistantNotFound": "Assistant introuvable!",
+            "createChat": "Création d'un nouveau chat...",
+            "chatCreated": "Chat créé"
+        },
+        "noHeartMsgs": {
+            "message1": "Zzzz... ronflement",
+            "message2": "Je serai de retour tout de suite. Juste une petite sieste... zzzz...",
+            "message3": "Quelle merveilleuse... zzz... question...",
+            "message4": "Hoo. Je me sens un peu fatigué en ce moment... zzzz...",
+            "message5": "Zzzz... Oh, tu m'as réveillé? Non, non, tout va bien. Hoo. Juste un petit clin d'œil... zzzz...",
+            "message6": "Étends les ailes, mets la tête dans les plumes et... zzzz...",
+            "message7": "Hoo. Quelle belle lune ce soir, mais... zzzz...",
+            "message8": "Psst. Je suis une chouette, l'activité nocturne c'est mon truc... normalement... hoo... mais parfois... ronflement zzzz..."
+        }
+    },
+    "login": {
+        "title": "Se connecter",
+        "username": {
+            "label": "Nom d'utilisateur",
+            "placeholder": "Entrez votre nom d'utilisateur"
+        },
+        "password": {
+            "label": "Mot de passe",
+            "placeholder": "Entrez votre mot de passe"
+        },
+        "register": {
+            "title": "Pas encore de compte?",
+            "link": "Inscrivez-vous ici"
+        }
+    }
+}

@@ -10,8 +10,8 @@
             <b> {{ $t('profileMenu.settingsModal.title') }} </b>
           </h5>
           <font-awesome-icon
-            class="fa-2x cursor-pointer"
-            style="color: var(--text-color)"
+            class="cursor-pointer"
+            style="color: var(--text-color); font-size: 1.7em"
             :icon="['fas', 'xmark']"
             data-bs-dismiss="modal"
             aria-label="Close"
@@ -24,7 +24,7 @@
               {{ $t('profileMenu.settingsModal.themeLabel') }}
             </label>
             <div class="theme-select">
-              <CustomSelect
+              <SettingsCustomSelect
                 v-model="theme"
                 :options="themeOptions"
                 :isOpen="themeSelectOpen"
@@ -39,7 +39,7 @@
               $t('profileMenu.settingsModal.languageLabel')
             }}</label>
             <div class="language-select">
-              <CustomSelect
+              <SettingsCustomSelect
                 v-model="language"
                 :options="languageOptions"
                 :isOpen="languageSelectOpen"
@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
-import CustomSelect from '@/home-components/CustomSelect.vue'
+import SettingsCustomSelect from '@/home-components/SettingsCustomSelect.vue'
 import { setLanguageLS, getLanguageLS } from '@/services/localStorageService'
 import { useTheme } from '@/services/themeService'
 import { useI18n } from 'vue-i18n'
@@ -74,14 +74,21 @@ const themeSelectOpen = ref(false)
 const languageSelectOpen = ref(false)
 
 const languageOptions = computed(() => [
-  { value: 'auto', label: t('profileMenu.settingsModal.customSelect.language.system') },
-  { value: 'en', label: t('profileMenu.settingsModal.customSelect.language.en') },
-  { value: 'de', label: t('profileMenu.settingsModal.customSelect.language.de') }
+  { value: 'auto', label: t('profileMenu.settingsModal.SettingsCustomSelect.language.system') },
+  { value: 'en', label: 'English' },
+  { value: 'de', label: 'Deutsch' },
+  { value: 'es', label: 'Español' },
+  { value: 'fr', label: 'Français' },
+  { value: 'it', label: 'Italiano' },
+  { value: 'pt', label: 'Português' },
+  { value: 'ru', label: 'Русский' },
+  { value: 'zh', label: '中文' },
+  { value: 'ja', label: '日本語' }
 ])
 
 const themeOptions = computed(() => [
-  { value: 'dark', label: t('profileMenu.settingsModal.customSelect.theme.dark') },
-  { value: 'light', label: t('profileMenu.settingsModal.customSelect.theme.light') }
+  { value: 'dark', label: t('profileMenu.settingsModal.SettingsCustomSelect.theme.dark') },
+  { value: 'light', label: t('profileMenu.settingsModal.SettingsCustomSelect.theme.light') }
 ])
 
 function handleThemeOpened() {

@@ -10,15 +10,17 @@
     },
     "sidebar": {
         "searchPlaceholder": "Search courses...",
+        "mode": "Mode",
         "courseTitleMode":{
+            "general": "General",
             "quiz": "Quiz",
             "exam": "Exam"
         },
         "modeSelectTitle": "Select a mode",
         "modeSelectTitleBurger": "Switch mode to:",
-        "modeGeneralDescription": "General mode: Answers course questions, clarifies concepts, and helps with homework.",
-        "modeQuizDescription": "Quiz mode: Assesses knowledge, tracks performance, and gives feedback.",
-        "modeExamDescription": "Exam mode: Creates mock questions and full exams formatted like the real course exam.",
+        "modeGeneralDescription": "General mode: Answers questions, clarifies concepts, helps with homework",
+        "modeQuizDescription": "Quiz mode: Assesses knowledge, tracks performance, and gives feedback",
+        "modeExamDescription": "Exam mode: Creates mock questions and full exams formatted like the real exam",
         "modeGeneral": "General",
         "modeQuiz": "Quiz",
         "modeExam": "Exam"
@@ -53,16 +55,14 @@
             "title": "Settings",
             "themeLabel": "Theme",
             "languageLabel": "Language",
-            "customSelect": {
+            "SettingsCustomSelect": {
                 "theme": {
                     "dark": "Dark",
                     "light": "Light"
                 },
                 "language": {
                     "title": "Language",
-                    "system": "System language",
-                    "en": "English",
-                    "de": "German"
+                    "system": "System language"
                 }
             }
         }

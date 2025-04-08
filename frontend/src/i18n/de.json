@@ -10,15 +10,17 @@
   },
   "sidebar": {
     "searchPlaceholder": "Kurse durchsuchen...",
+    "mode": "Modus",
     "courseTitleMode": {
+      "general": "Standard",
       "quiz": "Quiz",
       "exam": "Prüfung"
     },
     "modeSelectTitle": "Modus auswählen",
     "modeSelectTitleBurger": "Modus wechseln zu:",
-    "modeGeneralDescription": "Standard Modus: Beantwortet Kursfragen, erklärt Konzepte und hilft bei Hausaufgaben.",
-    "modeQuizDescription": "Quiz-Modus: Bewertet Wissen, verfolgt Leistung und gibt Feedback.",
-    "modeExamDescription": "Prüfungsmodus: Erstellt Übungsfragen und vollständige Prüfungen im Format der echten Kursprüfung.",
+    "modeGeneralDescription": "Standardmodus: Beantwortet Fragen, erklärt Konzepte, hilft bei Aufgaben",
+    "modeQuizDescription": "Quiz-Modus: Bewertet Wissen, verfolgt Fortschritte und gibt Feedback",
+    "modeExamDescription": "Prüfungsmodus: Erstellt Übungsfragen und Prüfungen im echten Format",
     "modeGeneral": "Standard",
     "modeQuiz": "Quiz",
     "modeExam": "Prüfung"
@@ -53,16 +55,14 @@
       "title": "Einstellungen",
       "themeLabel": "Design",
       "languageLabel": "Sprache",
-      "customSelect": {
+      "SettingsCustomSelect": {
         "theme": {
           "dark": "Dunkel",
           "light": "Hell"
         },
         "language": {
           "title": "Sprache",
-          "system": "Systemsprache",
-          "en": "Englisch",
-          "de": "Deutsch"
+          "system": "Systemsprache"
         }
       }
     }

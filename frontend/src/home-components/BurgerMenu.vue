@@ -1,37 +1,45 @@
 <template>
   <div class="burger-menu py-3 px-3 rounded shadow-sm">
-    <div class="search-container">
-      <input
-        ref="searchInput"
-        type="text"
-        v-model="searchQuery"
-        class="burger-menu-search-bar w-100"
-        :placeholder="$t('sidebar.searchPlaceholder')"
-        @focus="isSearchFocused = true"
-        @blur="isSearchFocused = false"
-        :class="{ 'input-focused': isSearchFocused }"
-        maxlength="50"
-      />
-      <font-awesome-icon
-        :icon="['fas', 'magnifying-glass']"
-        class="magnifying-glass cursor-pointer"
-        :style="{
-          color: isSearchFocused ? 'var(--magnifying-glass-icon-active)' : 'var(--magnifying-glass-icon-inactive)'
-        }"
-        @click="focusInput"
-      />
-      <svg
-        width="30"
-        height="30"
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-        class="ms-3 icon-click-effect cursor-pointer"
-        @click="closeBurgerMenu"
-      >
-        <rect x="0" y="15" width="33" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
-        <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
-        <rect x="0" y="73" width="100" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
-      </svg>
+    <div>
+      <div class="search-container">
+        <input
+          ref="searchInput"
+          type="text"
+          v-model="searchQuery"
+          class="burger-menu-search-bar w-100"
+          :placeholder="$t('sidebar.searchPlaceholder')"
+          @focus="isSearchFocused = true"
+          @blur="isSearchFocused = false"
+          :class="{ 'input-focused': isSearchFocused }"
+          maxlength="50"
+        />
+        <font-awesome-icon
+          :icon="['fas', 'magnifying-glass']"
+          class="magnifying-glass cursor-pointer"
+          :style="{
+            color: isSearchFocused ? 'var(--magnifying-glass-icon-active)' : 'var(--magnifying-glass-icon-inactive)'
+          }"
+          @click="focusInput"
+        />
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 100 100"
+          xmlns="http://www.w3.org/2000/svg"
+          class="ms-3 icon-click-effect cursor-pointer"
+          @click="closeBurgerMenu"
+        >
+          <rect x="0" y="15" width="33" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
+          <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
+          <rect x="0" y="73" width="100" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
+        </svg>
+      </div>
+
+      <div>
+        <p class="small fst-italic text-end m-0" style="color: var(--assistant-mode-title)">
+          {{ $t(`sidebar.courseTitleMode.${selectedMode}`) }} {{ $t('sidebar.mode') }}
+        </p>
+      </div>
     </div>
 
     <!-- Scrollable Course List -->
@@ -50,12 +58,6 @@
           <p class="m-0 py-2 px-2 d-flex align-items-start position-relative">
             <span class="course-name position-relative">
               {{ course }}
-              <span
-                v-if="selectedMode !== 'general'"
-                class="mode-text text-secondary small position-absolute top-0 end-0"
-              >
-                ({{ $t(`sidebar.courseTitleMode.${selectedMode}`) }})
-              </span>
             </span>
           </p>
         </li>
@@ -66,7 +68,7 @@
       <div class="d-flex gap-2" style="color: var(--text-color)">
         <h6 class="m-0">{{ $t('sidebar.modeSelectTitleBurger') }}</h6>
       </div>
-      <div v-if="showInfo" class="small mt-1 text-warning text-center max-width-450">
+      <div v-if="showInfo" class="small mt-1 text-center max-width-450" style="color: var(--course-description-color)">
         <div v-if="selectedMode === 'general'">
           {{ $t('sidebar.modeGeneralDescription') }}
         </div>
@@ -357,7 +359,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   position: relative;
-  padding-bottom: 0.75em;
+  padding-bottom: 0.7em;
 }
 
 .magnifying-glass {
@@ -466,11 +468,6 @@ onUnmounted(() => {
 .modes-container {
   background-color: var(--sidebar-bg);
   overflow: visible;
-}
-
-.mode-text {
-  transform: translate(32px, -5px);
-  font-size: 0.7rem;
 }
 
 .selected-course {

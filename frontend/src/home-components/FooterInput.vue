@@ -437,4 +437,8 @@ watch(fileCount, () => {
   color: var(--file-widget-x-icon);
   padding: 0.15em;
 }
+
+.text-danger {
+  color: var(--character-count-danger) !important;
+}
 </style>

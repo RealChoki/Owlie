@@ -1,36 +1,47 @@
 <template>
   <div class="sidebar py-3 px-3 vh-100">
-    <div class="search-container">
-      <input
-        ref="searchInput"
-        type="text"
-        v-model="searchQuery"
-        class="sidebar-search-bar w-100"
-        :placeholder="$t('sidebar.searchPlaceholder')"
-        @focus="isSearchFocused = true"
-        @blur="isSearchFocused = false"
-        :class="{ 'input-focused': isSearchFocused }"
-      />
-      <font-awesome-icon
-        :icon="['fas', 'magnifying-glass']"
-        class="magnifying-glass cursor-pointer"
-        :style="{
-          color: isSearchFocused ? 'var(--magnifying-glass-icon-active)' : 'var(--magnifying-glass-icon-inactive)'
-        }"
-        @click="focusInput"
-      />
-      <svg
-        width="30"
-        height="30"
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-        class="ms-3 icon-click-effect cursor-pointer"
-        @click="closeSidebar"
-      >
-        <rect x="0" y="15" width="33" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
-        <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
-        <rect x="0" y="73" width="100" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
-      </svg>
+    <div>
+      <div class="search-container">
+        <input
+          ref="searchInput"
+          type="text"
+          v-model="searchQuery"
+          class="sidebar-search-bar w-100"
+          :placeholder="$t('sidebar.searchPlaceholder')"
+          @focus="isSearchFocused = true"
+          @blur="isSearchFocused = false"
+          :class="{ 'input-focused': isSearchFocused }"
+        />
+        <font-awesome-icon
+          :icon="['fas', 'magnifying-glass']"
+          class="magnifying-glass cursor-pointer"
+          :style="{
+            color: isSearchFocused ? 'var(--magnifying-glass-icon-active)' : 'var(--magnifying-glass-icon-inactive)'
+          }"
+          @click="focusInput"
+        />
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 100 100"
+          xmlns="http://www.w3.org/2000/svg"
+          class="ms-3 icon-click-effect cursor-pointer"
+          @click="closeSidebar"
+        >
+          <rect x="0" y="15" width="33" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
+          <rect x="0" y="44" width="66" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
+          <rect x="0" y="73" width="100" height="12" rx="4" fill="var(--burger-menu-icon-close)" />
+        </svg>
+      </div>
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <SidebarSemesterSelect v-model="selectedSemester" :options="semesterOptions" />
+        </div>
+
+        <p class="small fst-italic text-end m-0" style="color: var(--assistant-mode-title)">
+          {{ $t(`sidebar.courseTitleMode.${selectedMode}`) }} {{ $t('sidebar.mode') }}
+        </p>
+      </div>
     </div>
 
     <!-- Scrollable Course List -->
@@ -46,12 +57,6 @@
           <p class="m-0 py-2 px-2 d-flex align-items-start position-relative">
             <span class="course-name position-relative">
               {{ course }}
-              <span
-                v-if="selectedMode !== 'general'"
-                class="mode-text text-secondary small position-absolute top-0 start-0"
-              >
-                ({{ $t(`sidebar.courseTitleMode.${selectedMode}`) }})
-              </span>
             </span>
           </p>
         </li>
@@ -70,7 +75,7 @@
           />
         </h6>
       </div>
-      <div v-if="showInfo" class="small mt-1 text-warning text-center">
+      <div v-if="showInfo" class="small mt-1 text-center " style="color: var(--course-description-color)">
         <div v-if="selectedMode === 'general'">
           {{ $t('sidebar.modeGeneralDescription') }}
         </div>
@@ -113,6 +118,15 @@ import { fetchAssistantIds, courses } from '../services/courseService'
 import { getAssistantCourse, getAssistantMode, setAssistantCourse, setAssistantMode } from '../services/openaiService'
 import { setNavbarCourseTitle } from '../services/homeService'
 import { stopTTS } from '../services/ttsService'
+
+import SidebarSemesterSelect from '@/home-components/SidebarSemesterSelect.vue'
+
+const selectedSemester = ref('SoSe2024')
+
+const semesterOptions = [
+  { value: 'SoSe2024', label: 'SoSe2024' },
+  { value: 'WiSe2024', label: 'WiSe2024' }
+]
 
 const props = defineProps({
   isSidebarOpen: Boolean
@@ -235,6 +249,7 @@ onMounted(() => {
   position: relative;
   z-index: 1000;
   padding-right: 10px !important;
+  max-width: 450px !important;
 }
 
 .sidebar-search-bar {
@@ -262,7 +277,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   position: relative;
-  padding-bottom: 0.75em;
+  padding-bottom: 0.7em;
 }
 
 .magnifying-glass {
@@ -352,11 +367,6 @@ onMounted(() => {
 
 .equal-width-btn.v-btn--active {
   background-color: var(--mode-selector-bg-selected) !important;
-}
-
-.mode-text {
-  transform: translate(0px, -10px);
-  font-size: 0.7rem;
 }
 
 .selected-course {
