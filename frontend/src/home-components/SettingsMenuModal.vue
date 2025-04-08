@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
 import CustomSelect from '@/home-components/CustomSelect.vue'
 import { setLanguageLS, getLanguageLS } from '@/services/localStorageService'
 import { useTheme } from '@/services/themeService'
@@ -73,16 +73,16 @@ const language = ref(getLanguageLS())
 const themeSelectOpen = ref(false)
 const languageSelectOpen = ref(false)
 
-const themeOptions = [
-  { value: 'dark', label: t('profileMenu.settingsModal.customSelect.theme.dark') },
-  { value: 'light', label: t('profileMenu.settingsModal.customSelect.theme.light') }
-]
-
-const languageOptions = [
+const languageOptions = computed(() => [
   { value: 'auto', label: t('profileMenu.settingsModal.customSelect.language.system') },
   { value: 'en', label: t('profileMenu.settingsModal.customSelect.language.en') },
   { value: 'de', label: t('profileMenu.settingsModal.customSelect.language.de') }
-]
+])
+
+const themeOptions = computed(() => [
+  { value: 'dark', label: t('profileMenu.settingsModal.customSelect.theme.dark') },
+  { value: 'light', label: t('profileMenu.settingsModal.customSelect.theme.light') }
+])
 
 function handleThemeOpened() {
   themeSelectOpen.value = true
