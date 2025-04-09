@@ -87,7 +87,7 @@
   --course-search-bg: #2a2a2a;
 
   --burger-menu-icon-close: #5b5b5b;
-  --assistant-mode-title: #54B6B2;
+  --assistant-mode-title: #54b6b2;
 
   --magnifying-glass-icon-active: #ffffff;
   --magnifying-glass-icon-inactive: #5b5b5b;
@@ -133,6 +133,15 @@
 
   /* ExpandedInput */
   --collapse-icon-bg: #ffffff;
+
+  /* View: Login */
+  --login-button-bg: #ffffff;
+  --login-button-bg-hover: #e0e0e0;
+  --login-button-bg-active: #d1d1d1;
+  --login-button-color: #000000;
+
+  --login-input-bg: #2a2a2a;
+  --login-input-border-color: #414141;
 }
 
 /* Light mode — applied with: <html data-theme="white"> */
@@ -227,7 +236,7 @@
   --course-search-bg: #e3e3e3;
 
   --burger-menu-icon-close: #5d5d5d;
-  --assistant-mode-title: #54B6B2;
+  --assistant-mode-title: #54b6b2;
 
   --magnifying-glass-icon-active: #000000;
   --magnifying-glass-icon-inactive: #afafaf;
@@ -276,4 +285,13 @@
 
   /* ExpandedInput */
   --collapse-icon-bg: #000000;
+
+  /* View: Login */
+  --login-button-bg: #000000;
+  --login-button-bg-hover: #1a1a1a;
+  --login-button-bg-active: #333333;
+  --login-button-color: #ffffff;
+
+  --login-input-bg: #f0f0f0;
+  --login-input-border-color: #cccccc;
 }
