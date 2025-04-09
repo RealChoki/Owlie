@@ -7,9 +7,8 @@ import router from './router'
 
 // Import Vuetify styles and other dependencies
 import 'vuetify/styles'
-import '@mdi/font/css/materialdesignicons.css'
+import { VBtn, VBtnToggle } from 'vuetify/components'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@/assets/styles/colorVariables.css'
 import '@/assets/styles/globalClasses.css'
@@ -70,17 +69,14 @@ library.add(
   faVolumeXmark
 )
 
-// Import Vuetify components and directives
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
-
-// Create Vuetify instance
 const vuetify = createVuetify({
-  components,
-  directives,
+  components: {
+    VBtn,
+    VBtnToggle,
+  },
   theme: {
-    defaultTheme: 'dark'
-  }
+    defaultTheme: 'dark',
+  },
 })
 
 // Create Vue app instance
