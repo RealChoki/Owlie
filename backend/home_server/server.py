@@ -5,7 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Import API routers
 from routes.courses import router as courses_router
-from routes.files import router as file_manager_router
 from routes.thread import router as thread_router
 from routes.websocket_endpoint import websocket_endpoint
 
@@ -27,9 +26,6 @@ app.add_middleware(
 
 # Include WebSocket route
 app.add_api_websocket_route("/ws", websocket_endpoint)
-
-# Include the file manager endpoints
-app.include_router(file_manager_router, prefix="/api")
 
 # Include course-related endpoints
 app.include_router(courses_router, prefix="/api")
